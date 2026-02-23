@@ -1,0 +1,243 @@
+:root {
+    --mustard: #D4AF37;
+    --mustard-dark: #caa532;
+    --card: #ffffff;
+    --input: #F3F4F6;
+    --text: #1D2939;
+    --muted: #667085;
+    --shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+}
+
+/* RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* BODY */
+body {
+    background: var(--mustard);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* WRAPPER (centers card properly) */
+.auth-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 60px;
+}
+
+/* ================= LOGO ================= */
+
+.brand {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.brand__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand__icon {
+    font-size: 42px;
+    color: #000;
+}
+
+.brand__name {
+    font-weight: 700;
+    font-size: 24px;
+    color: #000;
+    letter-spacing: 0.3px;
+}
+
+/* ================= CARD ================= */
+
+.card {
+    width: 420px;
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 50px 40px;
+}
+
+/* TITLE */
+.card__title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 35px;
+}
+
+/* ================= FORM ================= */
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* GRID FOR FIRST/LAST NAME */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ================= INPUT ================= */
+
+.input {
+    width: 100%;
+    height: 52px;
+    border: none;
+    background: var(--input);
+    border-radius: 12px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #101828;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input::placeholder {
+    color: #98A2B3;
+    font-weight: 500;
+}
+
+.input:focus {
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+}
+
+/* ================= PASSWORD ================= */
+
+.password {
+    position: relative;
+}
+
+.password .input {
+    padding-right: 45px;
+}
+
+.eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #98A2B3;
+    transition: 0.2s;
+}
+
+.eye:hover {
+    color: #667085;
+}
+
+/* ================= OPTIONS ROW (LOGIN ONLY) ================= */
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+}
+
+.remember input {
+    accent-color: var(--mustard);
+}
+
+.forgot {
+    color: var(--mustard);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* ================= BUTTON ================= */
+
+.btn {
+    height: 52px;
+    background: var(--mustard);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--mustard-dark);
+}
+
+/* ================= FOOTER ================= */
+
+.footer {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 25px;
+    color: var(--muted);
+}
+
+.link {
+    color: var(--mustard);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ================= MESSAGES ================= */
+
+.messages {
+    margin-bottom: 16px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.alert-success {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 480px) {
+    .card {
+        width: 90%;
+        padding: 40px 25px;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
