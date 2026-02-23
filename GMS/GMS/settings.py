@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'GMS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'name',
+        'NAME': 'gms',
         'USER': 'postgres', 
         'PASSWORD': 'sampada', 
         'HOST': 'localhost',
@@ -124,3 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTH_USER_MODEL="adminpanel.Users"
+
+LOGIN_URL="login"
