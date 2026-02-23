@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'admin',
+    'customer',
+    'staff',
 ]
 
 MIDDLEWARE = [
@@ -72,16 +75,18 @@ WSGI_APPLICATION = 'GMS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'gms',  
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'name',
         'USER': 'postgres', 
         'PASSWORD': 'ankita', 
         'HOST': 'localhost',
-        'PORT': '5432',  
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
