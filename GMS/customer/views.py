@@ -120,6 +120,7 @@ def verify_email(request, token):
 
     return redirect("login")
 
+
 @login_required
 def customer_dashboard(request):
     return render(request, "dashboard.html")
