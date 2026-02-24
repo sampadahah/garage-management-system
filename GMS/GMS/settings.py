@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'gms',
         'USER': 'postgres', 
-        'PASSWORD': 'ankita', 
+        'PASSWORD': 'sampada', 
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -125,7 +125,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL="customer.Users"
+# AUTH_USER_MODEL="customer.Users"
 
 LOGIN_URL="login"
 
