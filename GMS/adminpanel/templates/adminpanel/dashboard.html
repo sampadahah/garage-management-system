@@ -1,0 +1,218 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Dashboard - Garage Management System{% endblock %}
+
+{% block page_subtitle %}Let's check your garage today{% endblock %}
+
+{% block content %}
+<div class="summary-cards">
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ total_items }}</div>
+                <div class="card-label">Total Items</div>
+            </div>
+            <div class="card-icon inventory">
+                <i class="fas fa-boxes"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ low_stock_items }}</div>
+                <div class="card-label">Low Stock Items</div>
+            </div>
+            <div class="card-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ out_of_stock_items }}</div>
+                <div class="card-label">Out of Stock</div>
+            </div>
+            <div class="card-icon danger">
+                <i class="fas fa-times-circle"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ total_jobs }}</div>
+                <div class="card-label">Active Jobs</div>
+            </div>
+            <div class="card-icon success">
+                <i class="fas fa-tools"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if out_of_stock_items > 0 %}
+<div class="alert-box">
+    <div class="alert-icon">
+        <i class="fas fa-exclamation-circle"></i>
+    </div>
+    <div class="alert-content">
+        <h4>{{ out_of_stock_items }} item{{ out_of_stock_items|pluralize }} out of stock!</h4>
+        <p>Immediate reorder recommended to avoid service delays.</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3>Recent Inventory</h3>
+        <a href="{% url 'inventory' %}" class="btn btn-outline">
+            <i class="fas fa-eye"></i> View All
+        </a>
+    </div>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Part Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Stock Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_inventory %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                        <span class="status-badge status-{{ item.stock_status_color }}">
+                            {{ item.stock_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'edit_inventory_item' item.part_id %}" class="btn btn-outline btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No inventory items found. <a href="{% url 'add_inventory_item' %}">Add your first item</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3>Recent Jobs</h3>
+        <a href="{% url 'jobs' %}" class="btn btn-outline">
+            <i class="fas fa-eye"></i> View All
+        </a>
+    </div>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Work ID</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Appointment</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in recent_jobs %}
+                <tr>
+                    <td>#{{ job.work_list_id }}</td>
+                    <td>{{ job.user.get_full_name|default:job.user.username }}</td>
+                    <td>
+                        {% if job.job_status == 'completed' %}
+                        <span class="status-badge status-success">Completed</span>
+                        {% elif job.job_status == 'in_progress' %}
+                        <span class="status-badge status-warning">In Progress</span>
+                        {% elif job.job_status == 'assigned' %}
+                        <span class="status-badge status-danger">Assigned</span>
+                        {% else %}
+                        <span class="status-badge">{{ job.job_status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>#{{ job.appointment.appointment_id }}</td>
+                    <td>{{ job.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No jobs found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="summary-cards mt-30">
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ total_customers }}</div>
+                <div class="card-label">Total Customers</div>
+            </div>
+            <div class="card-icon success">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <div class="mt-20">
+            <small>{{ new_customers_today }} new today</small>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ pending_jobs }}</div>
+                <div class="card-label">Pending Jobs</div>
+            </div>
+            <div class="card-icon warning">
+                <i class="fas fa-clock"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ in_progress_jobs }}</div>
+                <div class="card-label">Jobs in Progress</div>
+            </div>
+            <div class="card-icon inventory">
+                <i class="fas fa-tools"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="summary-card">
+        <div class="card-header">
+            <div>
+                <div class="card-value">{{ pending_appointments }}</div>
+                <div class="card-label">Pending Appointments</div>
+            </div>
+            <div class="card-icon danger">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
