@@ -51,7 +51,6 @@ def customer_signup(request):
                 phone=phone,
                 address=address,
                 role="Customer",
-                status="Active",
                 is_active=False,      #  must verify email first
                 is_verified=False,
             )

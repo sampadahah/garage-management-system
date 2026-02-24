@@ -125,7 +125,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# AUTH_USER_MODEL="customer.Users"
+AUTH_USER_MODEL="customer.Users"
 
 LOGIN_URL="login"
 

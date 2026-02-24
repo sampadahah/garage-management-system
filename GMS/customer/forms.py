@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-
-User = get_user_model()
+from .models import *
+# User = get_user_model()
 
 class SignUpForm(forms.ModelForm):
     password1 = forms.CharField(
@@ -15,7 +15,7 @@ class SignUpForm(forms.ModelForm):
     )
 
     class Meta:
-        model = User
+        model = Users
         fields = ["name", "email", "phone", "address"]
         widgets = {
             "name": forms.TextInput(attrs={"placeholder": "Full name"}),
@@ -26,7 +26,7 @@ class SignUpForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower().strip()
-        if User.objects.filter(email=email).exists():
+        if Users.objects.filter(email=email).exists():
             raise forms.ValidationError("This email is already registered.")
         return email
 
