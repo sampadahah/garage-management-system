@@ -128,6 +128,8 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL="customer.Users"
 
 LOGIN_URL="login"
+LOGIN_REDIRECT_URL = "dashboard"
+LOGOUT_REDIRECT_URL = "login"
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

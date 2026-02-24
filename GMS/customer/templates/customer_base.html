@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'customer.css' %}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <i class="bi bi-car-front-fill sidebar__icon"></i>
+            <span class="sidebar__brand">e-Garage</span>
+        </div>
+
+        <nav class="sidebar__nav">
+
+            <a href="{% url 'customer_dashboard' %}" class="sidebar__link active">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'signup' %}" class="sidebar__link">
+                <i class="bi bi-car-front"></i>
+                <span>My Vehicles</span>
+            </a>
+
+            <a href="{% url 'signup' %}" class="sidebar__link">
+                <i class="bi bi-calendar-check"></i>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{% url 'signup' %}" class="sidebar__link">
+                <i class="bi bi-receipt"></i>
+                <span>Invoices</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="main">
+    <div class="topbar">
+
+        <div class="topbar__left">
+            <h2 class="topbar__title">
+                {% block page_title %}{% endblock %}
+            </h2>
+            <p class="topbar__subtitle">
+                {% block page_subtitle %}
+                {% endblock %}
+            </p>
+        </div>
+
+        <div class="topbar__center">
+            <div class="search">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search..." />
+            </div>
+        </div>
+
+        <div class="topbar__right">
+            <div class="profile" id="profileToggle">
+
+                <div class="profile__info">
+                    <span class="profile__name">
+                        {{ request.user.name }}
+                    </span>
+                    <span class="profile__role">
+                        {{ request.user.role|capfirst }}
+                    </span>
+                </div>
+
+                <div class="profile__avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+
+                <div class="profile__dropdown">
+                    <a href="{% url 'profile' %}">
+                        <i class="bi bi-person"></i> My Profile
+                    </a>
+                    <a href="{% url 'logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+</main>
+</div>
+<script>
+const profile = document.getElementById("profileToggle");
+
+profile.addEventListener("click", function(e){
+    e.stopPropagation();
+    this.classList.toggle("active");
+});
+
+document.addEventListener("click", function(){
+    profile.classList.remove("active");
+});
+</script>
+
+</body>
+</html>
