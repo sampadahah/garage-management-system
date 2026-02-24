@@ -52,7 +52,7 @@ def customer_signup(request):
                 address=address,
                 role="Customer",
                 status="Active",
-                is_active=False,      # ✅ must verify email first
+                is_active=False,      
                 is_verified=False,
             )
             user.set_password(password1)
