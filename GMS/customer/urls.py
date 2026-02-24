@@ -42,4 +42,7 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+
+    path("profile/", profile_view, name="profile"),
+    path("logout/", logout_view, name="logout"),
 ]

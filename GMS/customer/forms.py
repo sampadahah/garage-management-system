@@ -52,3 +52,59 @@ class SignUpForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class ProfileForm(forms.ModelForm):
+
+    new_password1 = forms.CharField(
+        label="New Password",
+        widget=forms.PasswordInput(attrs={
+            "class": "profile-input",
+            "placeholder": "Enter new password"
+        }),
+        required=False
+    )
+
+    new_password2 = forms.CharField(
+        label="Confirm New Password",
+        widget=forms.PasswordInput(attrs={
+            "class": "profile-input",
+            "placeholder": "Confirm new password"
+        }),
+        required=False
+    )
+
+    class Meta:
+        model = Users
+        fields = ("name", "email", "phone", "address")
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "profile-input",
+                "placeholder": "Full Name"
+            }),
+            "email": forms.EmailInput(attrs={
+                "class": "profile-input",
+                "placeholder": "Email Address"
+            }),
+            "phone": forms.TextInput(attrs={
+                "class": "profile-input",
+                "placeholder": "Phone Number"
+            }),
+            "address": forms.TextInput(attrs={
+                "class": "profile-input",
+                "placeholder": "Address"
+            }),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        p1 = cleaned_data.get("new_password1")
+        p2 = cleaned_data.get("new_password2")
+
+        # Only validate if user is changing password
+        if p1 or p2:
+            if p1 != p2:
+                raise forms.ValidationError("Passwords do not match.")
+            validate_password(p1)
+
+        return cleaned_data

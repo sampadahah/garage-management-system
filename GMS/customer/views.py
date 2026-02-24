@@ -1,12 +1,15 @@
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate,login, get_user_model
+from django.contrib.auth import authenticate,login, get_user_model, logout, update_session_auth_hash
 from .forms import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
 
 User = get_user_model()
 
@@ -92,7 +95,20 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
+        # Try to authenticate using email as username
         user = authenticate(request, username=email, password=password)
+        
+        # If authentication fails, try manual verification for email-based users
+        if user is None:
+            try:
+                user = User.objects.get(email=email)
+                if user.check_password(password):
+                    # Password is correct, use this user
+                    pass
+                else:
+                    user = None
+            except User.DoesNotExist:
+                user = None
 
         if user is not None:
             if not user.is_active:
@@ -124,3 +140,31 @@ def verify_email(request, token):
 @login_required
 def customer_dashboard(request):
     return render(request, "dashboard.html")
+
+@login_required
+def profile_view(request):
+    user = request.user
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save(commit=False)
+
+            new_password = form.cleaned_data.get("new_password1")
+            if new_password:
+                user.set_password(new_password)
+                update_session_auth_hash(request, user)
+                messages.success(request, "Profile and password updated successfully!")
+            else:
+                messages.success(request, "Profile updated successfully!")
+
+            user.save()
+            return redirect("profile")
+    else:
+        form = ProfileForm(instance=user)
+
+    return render(request, "profile.html", {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect("login")
