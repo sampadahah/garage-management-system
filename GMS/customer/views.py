@@ -1,7 +1,7 @@
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate,login, get_user_model
-from .forms import SignUpForm
+from .forms import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
@@ -51,8 +51,7 @@ def customer_signup(request):
                 phone=phone,
                 address=address,
                 role="Customer",
-                status="Active",
-                is_active=False,      # ✅ must verify email first
+                is_active=False,      #  must verify email first
                 is_verified=False,
             )
             user.set_password(password1)
@@ -120,6 +119,7 @@ def verify_email(request, token):
         messages.info(request, "Your email is already verified. Please log in.")
 
     return redirect("login")
+
 
 @login_required
 def customer_dashboard(request):
