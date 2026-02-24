@@ -1,9 +1,12 @@
 # Create your views here.
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate,login, get_user_model
 from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.conf import settings
+from django.core.mail import send_mail
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -48,17 +51,40 @@ def customer_signup(request):
                 phone=phone,
                 address=address,
                 role="Customer",
-                status="Active"
+                status="Active",
+                is_active=False,      # ✅ must verify email first
+                is_verified=False,
             )
             user.set_password(password1)
             user.save()
-            login(request, user)  # auto login after signup
-            messages.success(request, "Account created successfully!")
-            return redirect("customer_dashboard")
+
+            verify_path = reverse("verify_email", args=[str(user.email_verification_token)])
+            verify_link = request.build_absolute_uri(verify_path)
+
+            subject = "Verify your email"
+            message = (
+                f"Hi {user.name},\n\n"
+                f"Thanks for signing up.\n"
+                f"Please verify your email by clicking the link below:\n\n"
+                f"{verify_link}\n\n"
+                f"If you did not create this account, you can ignore this email."
+            )
+
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "Account created! Please check your email to verify your account.")
+            return redirect("login")
+
         except Exception as e:
             messages.error(request, f"Error creating account: {str(e)}")
             return render(request, "signup.html")
-    
+
     return render(request, "signup.html")
 
 
@@ -70,12 +96,30 @@ def login_view(request):
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
+            if not user.is_active:
+                messages.error(request, "Please verify your email first. Check your inbox.")
+                return redirect("login")
+
             login(request, user)
-            return redirect("customer_dashboard")  
+            return redirect("customer_dashboard")
         else:
-            print("Invalid credentials")
+            messages.error(request, "Invalid email or password.")
 
     return render(request, "login.html")
+
+def verify_email(request, token):
+    user = get_object_or_404(User, email_verification_token=token)
+
+    if not user.is_verified:
+        user.is_verified = True
+        user.is_active = True
+        user.email_verification_token = None  # optional: invalidate token
+        user.save()
+        messages.success(request, "Email verified successfully! You can now log in.")
+    else:
+        messages.info(request, "Your email is already verified. Please log in.")
+
+    return redirect("login")
 
 @login_required
 def customer_dashboard(request):
