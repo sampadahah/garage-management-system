@@ -1,0 +1,107 @@
+{% extends 'garage_admin/base.html' %}
+
+{% block title %}Bookings - Garage Management System{% endblock %}
+
+{% block page_subtitle %}Manage customer appointments and time slots{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3>Appointments</h3>
+        <div class="d-flex align-center gap-20">
+            <form method="get" class="d-flex align-center gap-10">
+                <input type="date" name="date" class="form-control" style="width: 200px;">
+                <button type="submit" class="btn btn-outline">
+                    <i class="fas fa-filter"></i> Filter by Date
+                </button>
+            </form>
+            <a href="{% url 'create_appointment' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Appointment Slot
+            </a>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Appointment ID</th>
+                    <th>Customer</th>
+                    <th>Vehicle</th>
+                    <th>Service</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>#{{ appointment.appointment_id }}</td>
+                    <td>{{ appointment.user.get_full_name|default:appointment.user.username }}</td>
+                    <td>
+                        {{ appointment.vehicle.model }}
+                        <br><small class="text-light">{{ appointment.vehicle.plate_no }}</small>
+                    </td>
+                    <td>{{ appointment.service_package.name }}</td>
+                    <td>
+                        {{ appointment.appointment_date|date:"M d, Y" }}
+                        <br><small class="text-light">{{ appointment.start_time|time:"H:i" }}</small>
+                    </td>
+                    <td>
+                        {% if appointment.status == 'completed' %}
+                        <span class="status-badge status-success">Completed</span>
+                        {% elif appointment.status == 'confirmed' %}
+                        <span class="status-badge status-warning">Confirmed</span>
+                        {% elif appointment.status == 'in_progress' %}
+                        <span class="status-badge status-warning">In Progress</span>
+                        {% elif appointment.status == 'pending' %}
+                        <span class="status-badge status-danger">Pending</span>
+                        {% else %}
+                        <span class="status-badge">{{ appointment.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ appointment.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline btn-sm view-appointment-btn" data-appointment-id="{{ appointment.appointment_id }}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-outline btn-sm update-appointment-btn" data-appointment-id="{{ appointment.appointment_id }}">
+                                <i class="fas fa-edit"></i> Update
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No appointments found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Add event listeners for view and update appointment buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.view-appointment-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const appointmentId = this.getAttribute('data-appointment-id');
+            alert(`Viewing appointment #${appointmentId}`);
+            // In a real app, this would show appointment details
+        });
+    });
+    
+    document.querySelectorAll('.update-appointment-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const appointmentId = this.getAttribute('data-appointment-id');
+            alert(`Updating appointment #${appointmentId}`);
+            // In a real app, this would open update modal
+        });
+    });
+});
+</script>
+{% endblock %}
