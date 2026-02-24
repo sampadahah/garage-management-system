@@ -26,7 +26,7 @@ class Users(AbstractUser):
         ("Mechanic", "Mechanic"),
     )
 
-    # Use email as the login field (more standard for your system)
+    
     username = None
     email = models.EmailField(unique=True)
 
