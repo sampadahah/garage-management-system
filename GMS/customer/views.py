@@ -7,9 +7,9 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
-
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 
 User = get_user_model()
 
@@ -60,7 +60,10 @@ def customer_signup(request):
             user.set_password(password1)
             user.save()
 
-            verify_path = reverse("verify_email", args=[str(user.email_verification_token)])
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            verify_path = reverse("verify_email", kwargs={"uidb64": uidb64, "token": token})
             verify_link = request.build_absolute_uri(verify_path)
 
             subject = "Verify your email"
@@ -95,7 +98,14 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Try to authenticate using email as username
+        try:
+            u = User.objects.get(email=email)
+            if not u.is_active:
+                messages.error(request, "Please verify your email first. Check your inbox.")
+                return render(request, "login.html")
+        except User.DoesNotExist:
+            pass
+
         user = authenticate(request, username=email, password=password)
         
         # If authentication fails, try manual verification for email-based users
@@ -111,28 +121,31 @@ def login_view(request):
                 user = None
 
         if user is not None:
-            if not user.is_active:
-                messages.error(request, "Please verify your email first. Check your inbox.")
-                return redirect("login")
-
             login(request, user)
             return redirect("customer_dashboard")
-        else:
-            messages.error(request, "Invalid email or password.")
-
+        
+        messages.error(request, "Invalid email or password.")
+        return render(request, "login.html")
+        
     return render(request, "login.html")
 
-def verify_email(request, token):
-    user = get_object_or_404(User, email_verification_token=token)
+def verify_email(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError):
+        user = None
 
-    if not user.is_verified:
-        user.is_verified = True
-        user.is_active = True
-        user.email_verification_token = None  # optional: invalidate token
-        user.save()
-        messages.success(request, "Email verified successfully! You can now log in.")
+    if user is not None and default_token_generator.check_token(user, token):
+        if not user.is_verified:
+            user.is_verified = True
+            user.is_active = True
+            user.save()
+            messages.success(request, "Email verified successfully! You can now log in.")
+        else:
+            messages.info(request, "Your email is already verified. Please log in.")
     else:
-        messages.info(request, "Your email is already verified. Please log in.")
+        messages.error(request, "Verification link is invalid or expired.")
 
     return redirect("login")
 

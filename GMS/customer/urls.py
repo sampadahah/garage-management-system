@@ -6,7 +6,7 @@ urlpatterns = [
     path("signup/", customer_signup, name="signup"),
     path("dashboard/", customer_dashboard, name="customer_dashboard"),
     path("login/", login_view, name="login"),
-    path("verify-email/<uuid:token>/", verify_email, name="verify_email"),
+    path("verify-email/<uidb64>/<token>/", verify_email, name="verify_email"),
 
         path(
         "forgot-password/",
