@@ -1,243 +1,377 @@
 :root {
-    --mustard: #D4AF37;
-    --mustard-dark: #caa532;
-    --card: #ffffff;
-    --input: #F3F4F6;
-    --text: #1D2939;
-    --muted: #667085;
-    --shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
+  --mustard: #D4AF37;
+  --mustard-dark: #caa532;
+  --card: #ffffff;
+  --input: #F3F4F6;
+  --text: #1D2939;
+  --muted: #667085;
+  --shadow: 0 25px 60px rgba(0, 0, 0, 0.18);
 }
 
 /* RESET */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
 }
 
 /* BODY */
 body {
-    background: var(--mustard);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  background: var(--mustard);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* WRAPPER (centers card properly) */
+/* =========================================================
+   SHARED CENTERING (works for both pages)
+========================================================= */
+
+/* signup uses .page, login uses .auth-wrapper */
+.page,
 .auth-wrapper {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 60px;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* ✅ centers like screenshot */
+  padding: 40px 16px;      /* ✅ same spacing both pages */
 }
 
-/* ================= LOGO ================= */
+/* =========================================================
+   BRAND / LOGO (shared)
+========================================================= */
 
 .brand {
-    text-align: center;
-    margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* your signup has nested .brand inside header; this keeps it safe */
+.brand .brand {
+  margin-bottom: 0;
 }
 
 .brand__logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .brand__icon {
-    font-size: 42px;
-    color: #000;
+  font-size: 42px;
+  color: #000;
 }
 
 .brand__name {
-    font-weight: 700;
-    font-size: 24px;
-    color: #000;
-    letter-spacing: 0.3px;
+  font-weight: 700;
+  font-size: 24px;
+  color: #000;
+  letter-spacing: 0.3px;
 }
 
-/* ================= CARD ================= */
+/* =========================================================
+   SIGNUP CARD (existing)
+========================================================= */
 
 .card {
-    width: 420px;
-    background: var(--card);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    padding: 50px 40px;
+  width: 420px;
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 38px 32px;
 }
 
 /* TITLE */
 .card__title {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 35px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 24px;
 }
 
-/* ================= FORM ================= */
-
+/* FORM */
 .form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* GRID FOR FIRST/LAST NAME */
 .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-/* ================= INPUT ================= */
+/* label (your HTML uses .label but CSS missing in your snippet) */
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
 
+/* INPUT */
 .input {
-    width: 100%;
-    height: 52px;
-    border: none;
-    background: var(--input);
-    border-radius: 12px;
-    padding: 0 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #101828;
-    outline: none;
-    transition: all 0.2s ease;
+  width: 100%;
+  height: 52px;
+  border: none;
+  background: var(--input);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #101828;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 .input::placeholder {
-    color: #98A2B3;
-    font-weight: 500;
+  color: #98A2B3;
+  font-weight: 500;
 }
 
 .input:focus {
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
 }
 
-/* ================= PASSWORD ================= */
-
+/* PASSWORD (signup) */
 .password {
-    position: relative;
+  position: relative;
 }
 
 .password .input {
-    padding-right: 45px;
+  padding-right: 45px;
 }
 
 .eye {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    color: #98A2B3;
-    transition: 0.2s;
+  position: absolute;
+  right: 15px;
+  top: 58%; /* sits better because label exists */
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #98A2B3;
+  transition: 0.2s;
 }
 
 .eye:hover {
-    color: #667085;
+  color: #667085;
 }
 
-/* ================= OPTIONS ROW (LOGIN ONLY) ================= */
-
-.options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-}
-
-.remember {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--muted);
-}
-
-.remember input {
-    accent-color: var(--mustard);
-}
-
-.forgot {
-    color: var(--mustard);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-/* ================= BUTTON ================= */
-
+/* BUTTON (signup) */
 .btn {
-    height: 52px;
-    background: var(--mustard);
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.2s ease;
+  height: 52px;
+  background: var(--mustard);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .btn:hover {
-    background: var(--mustard-dark);
+  background: var(--mustard-dark);
 }
 
-/* ================= FOOTER ================= */
-
+/* FOOTER (signup) */
 .footer {
-    text-align: center;
-    font-size: 14px;
-    margin-top: 25px;
-    color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+  color: var(--muted);
 }
 
-.link {
-    color: var(--mustard);
-    font-weight: 600;
-    text-decoration: none;
+.footer a {
+  color: var(--mustard);
+  font-weight: 600;
+  text-decoration: none;
 }
 
-/* ================= MESSAGES ================= */
+.footer a:hover {
+  text-decoration: underline;
+}
 
+/* MESSAGES */
 .messages {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .alert {
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .alert-error {
-    background: #FEE2E2;
-    color: #991B1B;
+  background: #FEE2E2;
+  color: #991B1B;
 }
 
 .alert-success {
-    background: #D1FAE5;
-    color: #065F46;
+  background: #D1FAE5;
+  color: #065F46;
 }
 
-/* ================= RESPONSIVE ================= */
+/* =========================================================
+   LOGIN STYLES (added for your login.html)
+========================================================= */
+
+.auth-card {
+  width: 420px;
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 50px 40px;
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 35px;
+}
+
+.auth-input {
+  width: 100%;
+  height: 52px;
+  border: none;
+  background: var(--input);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #101828;
+  outline: none;
+  transition: all 0.2s ease;
+  margin-bottom: 14px;
+}
+
+.auth-input::placeholder {
+  color: #98A2B3;
+  font-weight: 500;
+}
+
+.auth-input:focus {
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+}
+
+/* password wrapper (login) */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper .auth-input {
+  padding-right: 45px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #98A2B3;
+  transition: 0.2s;
+}
+
+.toggle-password:hover {
+  color: #667085;
+}
+
+/* remember + forgot (login) */
+.auth-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-top: 2px;
+  margin-bottom: 18px;
+  color: var(--muted);
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.remember input {
+  accent-color: var(--mustard);
+}
+
+.forgot-link {
+  color: var(--mustard);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* login button */
+.auth-button {
+  width: 100%;
+  height: 52px;
+  background: var(--mustard);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.auth-button:hover {
+  background: var(--mustard-dark);
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 25px;
+  color: var(--muted);
+}
+
+.auth-footer a {
+  color: var(--mustard);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media (max-width: 480px) {
-    .card {
-        width: 90%;
-        padding: 40px 25px;
-    }
+  .card,
+  .auth-card {
+    width: 92%;
+    padding: 40px 22px;
+  }
 
-    .grid-2 {
-        grid-template-columns: 1fr;
-    }
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
 }
