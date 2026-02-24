@@ -178,6 +178,67 @@ def profile_view(request):
 
     return render(request, "profile.html", {"form": form})
 
+
+@login_required
+def vehicle_list(request):
+    vehicles = Vehicle.objects.filter(user=request.user)
+    return render(request, "vehicle_list.html", {
+        "vehicles": vehicles
+    })
+
+
+@login_required
+def vehicle_create(request):
+    if request.method == "POST":
+        form = VehicleForm(request.POST, request.FILES)
+        if form.is_valid():
+            vehicle = form.save(commit=False)
+            vehicle.user = request.user
+            vehicle.save()
+            messages.success(request, "Vehicle added successfully!")
+            return redirect("vehicle_list")
+    else:
+        form = VehicleForm()
+
+    return render(request, "vehicle_form.html", {
+        "form": form,
+        "title": "Add Vehicle"
+    })
+
+
+@login_required
+def vehicle_update(request, pk):
+    vehicle = get_object_or_404(Vehicle, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        form = VehicleForm(request.POST, request.FILES, instance=vehicle)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vehicle updated successfully!")
+            return redirect("vehicle_list")
+    else:
+        form = VehicleForm(instance=vehicle)
+
+    return render(request, "vehicle_form.html", {
+        "form": form,
+        "vehicle": vehicle,
+        "title": "Edit Vehicle"
+    })
+
+
+@login_required
+def vehicle_delete(request, pk):
+    vehicle = get_object_or_404(Vehicle, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        vehicle.delete()
+        messages.success(request, "Vehicle deleted!")
+        return redirect("vehicle_list")
+
+    return render(request, "vehicle_confirm_delete.html", {
+        "vehicle": vehicle
+    })
+
 def logout_view(request):
     logout(request)
     return redirect("login")

@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'gms',
         'USER': 'postgres', 
-        'PASSWORD': 'ankita', 
+        'PASSWORD': 'sampada', 
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -119,6 +119,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
