@@ -1,5 +1,6 @@
 # Create your models here.
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class UserManager(BaseUserManager):
@@ -50,3 +51,23 @@ class Users(AbstractUser):
     def __str__(self):
         return f"{self.name} ({self.role})"
     
+
+class Vehicle(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="vehicles"
+    )
+    model = models.CharField(max_length=120)
+    year = models.PositiveIntegerField()
+    plate_no = models.CharField(max_length=20)
+    image = models.ImageField(upload_to="vehicles/",blank=True,null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "plate_no")  # same user can't duplicate plate
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.model} ({self.plate_no})"

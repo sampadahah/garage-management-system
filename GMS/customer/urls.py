@@ -45,4 +45,9 @@ urlpatterns = [
 
     path("profile/", profile_view, name="profile"),
     path("logout/", logout_view, name="logout"),
+
+    path("vehicles/", vehicle_list, name="vehicle_list"),
+    path("vehicles/add/", vehicle_create, name="vehicle_add"),
+    path("vehicles/<int:pk>/edit/", vehicle_update, name="vehicle_edit"),
+    path("vehicles/<int:pk>/delete/", vehicle_delete, name="vehicle_delete"),
 ]

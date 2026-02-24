@@ -108,3 +108,14 @@ class ProfileForm(forms.ModelForm):
             validate_password(p1)
 
         return cleaned_data
+
+class VehicleForm(forms.ModelForm):
+    class Meta:
+        model = Vehicle
+        fields = ["model", "year", "plate_no", "image"]
+        widgets = {
+            "model": forms.TextInput(attrs={"class": "profile-input"}),
+            "year": forms.NumberInput(attrs={"class": "profile-input"}),
+            "plate_no": forms.TextInput(attrs={"class": "profile-input"}),
+            "image": forms.FileInput(attrs={"class": "profile-input"}),
+        }
