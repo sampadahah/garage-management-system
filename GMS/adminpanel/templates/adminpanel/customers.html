@@ -1,0 +1,53 @@
+{% extends "adminpanel/base.html" %}
+
+{% block page_title %}Customers{% endblock %}
+{% block page_subtitle %}Manage customer accounts{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3><i class="fas fa-users"></i> Customer Management</h3>
+        <div class="action-buttons">
+            <span class="btn btn-outline">
+                <i class="fas fa-users"></i> Total: {{ total_customers }}
+            </span>
+        </div>
+    </div>
+    
+    {% if customers %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th><i class="fas fa-envelope"></i> Email</th>
+                        <th><i class="fas fa-phone"></i> Phone</th>
+                        <th><i class="fas fa-map-marker-alt"></i> Address</th>
+                        
+                        <th><i class="fas fa-calendar"></i> Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td><strong>{{ customer.name }}</strong></td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone|default:"N/A" }}</td>
+                        <td>{{ customer.address|default:"N/A"|truncatewords:5 }}</td>
+                        <td>{{ customer.date_joined|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert-box">
+            <i class="fas fa-info-circle alert-icon"></i>
+            <div class="alert-content">
+                <h4>No Customers Found</h4>
+                <p>No customers have registered yet.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

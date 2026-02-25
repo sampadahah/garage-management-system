@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path("", include("customer.urls")),
 
-    # path("adminpanel/", include("adminpanel.urls")),
+    path("adminpanel/", include("adminpanel.urls")),
     path("customer/", include("customer.urls")),
     # path("staff/", include("staff.urls")),
     path("", login_view, name="login"), 

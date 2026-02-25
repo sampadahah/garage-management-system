@@ -1,0 +1,110 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Staff - Garage Management System{% endblock %}
+
+{% block page_subtitle %}Manage staff members and roles{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3>Staff Management</h3>
+        <a href="{% url 'create_user' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Staff Member
+        </a>
+    </div>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff in staff_list %}
+                <tr>
+                    <td>#{{ staff.id }}</td>
+                    <td>
+                        <strong>{{ staff.get_full_name|default:staff.username }}</strong>
+                        {% if staff.address %}
+                        <br><small class="text-light">{{ staff.address|truncatechars:30 }}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ staff.email }}</td>
+                    <td>{{ staff.phone|default:"Not set" }}</td>
+                    <td>
+                        <span class="status-badge {% if staff.role == 'admin' %}status-danger{% else %}status-warning{% endif %}">
+                            {{ staff.get_role_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge {% if staff.status == 'active' %}status-success{% else %}status-danger{% endif %}">
+                            {{ staff.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ staff.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline btn-sm view-staff-btn" data-staff-id="{{ staff.id }}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn btn-outline btn-sm edit-staff-btn" data-staff-id="{{ staff.id }}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            {% if staff.role != 'admin' %}
+                            <button class="btn btn-outline btn-sm assign-work-btn" data-staff-id="{{ staff.id }}">
+                                <i class="fas fa-tasks"></i> Assign
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No staff members found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Add event listeners for staff action buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // View staff buttons
+    document.querySelectorAll('.view-staff-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const staffId = this.getAttribute('data-staff-id');
+            alert(`Viewing staff member #${staffId}`);
+            // In a real app, this would show staff details
+        });
+    });
+    
+    // Edit staff buttons
+    document.querySelectorAll('.edit-staff-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const staffId = this.getAttribute('data-staff-id');
+            alert(`Editing staff member #${staffId}`);
+            // In a real app, this would open edit modal
+        });
+    });
+    
+    // Assign work buttons
+    document.querySelectorAll('.assign-work-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const staffId = this.getAttribute('data-staff-id');
+            alert(`Assigning work to staff member #${staffId}`);
+            // In a real app, this would open work assignment modal
+        });
+    });
+});
+</script>
+{% endblock %}

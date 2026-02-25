@@ -1,0 +1,86 @@
+{% extends "adminpanel/base.html" %}
+
+{% block page_title %}Add Slot{% endblock %}
+{% block page_subtitle %}Create a new booking slot{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3><i class="fas fa-plus-circle"></i> Add New Slot</h3>
+        <a href="{% url 'adminpanel:slot_calendar' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Calendar
+        </a>
+    </div>
+    
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="alert-box">
+                <i class="fas fa-exclamation-triangle alert-icon"></i>
+                <div class="alert-content">
+                    <h4>Error</h4>
+                    <p>{{ form.non_field_errors }}</p>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.date.id_for_label }}">
+                <i class="fas fa-calendar"></i> Date
+            </label>
+            {{ form.date }}
+            {% if form.date.errors %}
+                <small style="color: var(--danger-red); display: block; margin-top: 5px;">
+                    {{ form.date.errors }}
+                </small>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.start_time.id_for_label }}">
+                <i class="fas fa-clock"></i> Start Time
+            </label>
+            {{ form.start_time }}
+            {% if form.start_time.errors %}
+                <small style="color: var(--danger-red); display: block; margin-top: 5px;">
+                    {{ form.start_time.errors }}
+                </small>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="{{ form.end_time.id_for_label }}">
+                <i class="fas fa-clock"></i> End Time
+            </label>
+            {{ form.end_time }}
+            {% if form.end_time.errors %}
+                <small style="color: var(--danger-red); display: block; margin-top: 5px;">
+                    {{ form.end_time.errors }}
+                </small>
+            {% endif %}
+        </div>
+        
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            {{ form.is_booked }}
+            <label class="form-label" for="{{ form.is_booked.id_for_label }}" style="margin-bottom: 0;">
+                <i class="fas fa-check-square"></i> Mark as Booked
+            </label>
+            {% if form.is_booked.errors %}
+                <small style="color: var(--danger-red); display: block; margin-top: 5px;">
+                    {{ form.is_booked.errors }}
+                </small>
+            {% endif %}
+        </div>
+        
+        <div class="action-buttons mt-30">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-check"></i> Create Slot
+            </button>
+            <a href="{% url 'adminpanel:slot_calendar' %}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
