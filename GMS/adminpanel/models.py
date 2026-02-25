@@ -38,7 +38,9 @@ class Part(models.Model):
     category = models.ForeignKey(
         InventoryCategory, on_delete=models.SET_NULL, null=True, blank=True
     )
-    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
+    brand = models.ForeignKey(
+        Brand, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     image = models.ImageField(upload_to="parts/", null=True, blank=True)
     description = models.TextField(blank=True, null=True)
@@ -54,7 +56,7 @@ class Part(models.Model):
         return self.name
 
     @property
-    def stock_status_display(self) -> str:
+    def stock_status_display(self):
         if self.quantity == 0:
             return "Out of Stock"
         if self.quantity <= self.min_stock_level:
@@ -62,8 +64,7 @@ class Part(models.Model):
         return "In Stock"
 
     @property
-    def stock_status_color(self) -> str:
-        # matches your template: status-success / status-warning / status-danger
+    def stock_status_color(self):
         if self.quantity == 0:
             return "danger"
         if self.quantity <= self.min_stock_level:
@@ -78,6 +79,7 @@ class JobVacancy(models.Model):
         ("reception", "Reception"),
         ("other", "Other"),
     ]
+
     STATUS_CHOICES = [
         ("open", "Open"),
         ("closed", "Closed"),
@@ -104,7 +106,6 @@ class JobVacancy(models.Model):
 
 
 class Appointment(models.Model):
-    # Minimal model so dashboard can show job.appointment.appointment_id
     appointment_id = models.AutoField(primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -123,24 +124,13 @@ class WorkList(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
 
-    job_status = models.CharField(max_length=20, choices=JOB_STATUS_CHOICES, default="assigned")
+    job_status = models.CharField(
+        max_length=20,
+        choices=JOB_STATUS_CHOICES,
+        default="assigned"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "work_list"
         ordering = ["-created_at"]
-
-
-class Notification(models.Model):
-    title = models.CharField(max_length=200)
-    message = models.TextField()
-
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "notifications"
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return self.title

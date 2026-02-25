@@ -210,34 +210,6 @@ def create_job(request):
     return render(request, "adminpanel/create_job.html", {"page_title": "Jobs", "form": form})
 
 
-# -------- Notifications --------
-@login_required
-@user_passes_test(is_admin)
-def notifications(request):
-    notifications_qs = Notification.objects.all()
-    return render(
-        request,
-        "adminpanel/notifications.html",
-        {"page_title": "Notifications", "notifications": notifications_qs},
-    )
-
-
-@login_required
-@user_passes_test(is_admin)
-def mark_notification_read(request, id):
-    n = get_object_or_404(Notification, id=id)
-    n.is_read = True
-    n.save(update_fields=["is_read"])
-    return redirect("notifications")
-
-
-@login_required
-@user_passes_test(is_admin)
-def mark_all_notifications_read(request):
-    Notification.objects.filter(is_read=False).update(is_read=True)
-    return redirect("notifications")
-
-
 # -------- Logout --------
 @login_required
 def admin_logout(request):
