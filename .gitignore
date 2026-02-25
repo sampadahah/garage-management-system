@@ -6,6 +6,9 @@ __pycache__/
 myenv/
 .venv/
 
+# Environment variables
+.env
+
 
 # Django
 db.sqlite3
@@ -13,10 +16,8 @@ db.sqlite3
 media/
 
 # Migrations (optional)
-# */migrations/
-# !*/migrations/__init__.py
-
-# Environment variables
+*/migrations/
+!*/migrations/__init__.py
 
 
 # IDE / Editor
