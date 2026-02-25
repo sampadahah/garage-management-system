@@ -1,0 +1,142 @@
+{% extends "customer_base.html" %}
+
+{% block page_title %}Reports{% endblock %}
+{% block page_subtitle %}Download various reports{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <h3 style="margin-bottom: 25px;"><i class="fas fa-download"></i> Download Reports</h3>
+    <p style="color: var(--text-light); margin-bottom: 30px;">
+        Export your data in CSV format for analysis and record keeping.
+    </p>
+    
+    <div class="summary-cards">
+        <div class="summary-card" style="cursor: pointer;" onclick="window.location.href='{% url 'adminpanel:download_slots_report' %}'">
+            <div class="card-header">
+                <div class="card-icon inventory">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ total_slots }}</div>
+            <div class="card-label">Total Slots</div>
+            <div style="margin-top: 15px;">
+                <a href="{% url 'adminpanel:download_slots_report' %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fas fa-download"></i> Download Slots Report
+                </a>
+            </div>
+        </div>
+        
+        <div class="summary-card" style="cursor: pointer;" onclick="window.location.href='{% url 'adminpanel:download_customers_report' %}'">
+            <div class="card-header">
+                <div class="card-icon warning">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ total_customers }}</div>
+            <div class="card-label">Total Customers</div>
+            <div style="margin-top: 15px;">
+                <a href="{% url 'adminpanel:download_customers_report' %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fas fa-download"></i> Download Customers Report
+                </a>
+            </div>
+        </div>
+        
+        <div class="summary-card" style="cursor: pointer;" onclick="window.location.href='{% url 'adminpanel:download_bookings_report' %}'">
+            <div class="card-header">
+                <div class="card-icon danger">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ booked_slots }}</div>
+            <div class="card-label">Total Bookings</div>
+            <div style="margin-top: 15px;">
+                <a href="{% url 'adminpanel:download_bookings_report' %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fas fa-download"></i> Download Bookings Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <h3 style="margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Report Details</h3>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-file-alt"></i> Report Name</th>
+                    <th><i class="fas fa-info-circle"></i> Description</th>
+                    <th><i class="fas fa-list"></i> Includes</th>
+                    <th><i class="fas fa-download"></i> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Slots Report</strong></td>
+                    <td>Complete list of all time slots</td>
+                    <td>Date, Time, Status, Created By</td>
+                    <td>
+                        <a href="{% url 'adminpanel:download_slots_report' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Customers Report</strong></td>
+                    <td>All registered customers information</td>
+                    <td>Name, Email, Phone, Address, Status</td>
+                    <td>
+                        <a href="{% url 'adminpanel:download_customers_report' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Bookings Report</strong></td>
+                    <td>All booked slots details</td>
+                    <td>Date, Time, Customer, Booking Date</td>
+                    <td>
+                        <a href="{% url 'adminpanel:download_bookings_report' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <h3 style="margin-bottom: 20px;"><i class="fas fa-lightbulb"></i> Tips</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div style="padding: 20px; background: var(--bg-gray); border-radius: 12px; border-left: 4px solid var(--primary-gold);">
+            <h4 style="margin-bottom: 10px; color: var(--text-dark);">
+                <i class="fas fa-file-csv"></i> CSV Format
+            </h4>
+            <p style="color: var(--text-light); font-size: 0.9rem;">
+                All reports are downloaded in CSV format, which can be opened in Excel, Google Sheets, or any spreadsheet application.
+            </p>
+        </div>
+        
+        <div style="padding: 20px; background: var(--bg-gray); border-radius: 12px; border-left: 4px solid var(--success-green);">
+            <h4 style="margin-bottom: 10px; color: var(--text-dark);">
+                <i class="fas fa-sync"></i> Real-Time Data
+            </h4>
+            <p style="color: var(--text-light); font-size: 0.9rem;">
+                Reports are generated in real-time with the latest data from your system. Download anytime to get current information.
+            </p>
+        </div>
+        
+        <div style="padding: 20px; background: var(--bg-gray); border-radius: 12px; border-left: 4px solid var(--danger-red);">
+            <h4 style="margin-bottom: 10px; color: var(--text-dark);">
+                <i class="fas fa-shield-alt"></i> Data Security
+            </h4>
+            <p style="color: var(--text-light); font-size: 0.9rem;">
+                Downloaded reports contain sensitive information. Please store them securely and follow your organization's data protection policies.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
