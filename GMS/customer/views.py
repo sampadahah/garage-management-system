@@ -167,7 +167,11 @@ def verify_email(request, uidb64, token):
 
 @login_required
 def customer_dashboard(request):
-    return render(request, "dashboard.html")
+    vehicles = Vehicle.objects.filter(user=request.user)
+
+    return render(request, "dashboard.html", {
+        "vehicles": vehicles
+    })
 
 @login_required
 def profile_view(request):
