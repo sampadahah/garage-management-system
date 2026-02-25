@@ -1,0 +1,91 @@
+{% extends 'staff/base.html' %}
+
+{% block title %}{{ action }} Schedule{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-calendar-plus"></i> {{ action }} Schedule</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Staff Member *</label>
+                    {{ form.staff }}
+                    {% if form.staff.errors %}
+                        <div class="text-danger small">{{ form.staff.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Day of Week *</label>
+                    {{ form.day_of_week }}
+                    {% if form.day_of_week.errors %}
+                        <div class="text-danger small">{{ form.day_of_week.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Shift *</label>
+                    {{ form.shift }}
+                    {% if form.shift.errors %}
+                        <div class="text-danger small">{{ form.shift.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Start Time *</label>
+                    {{ form.start_time }}
+                    {% if form.start_time.errors %}
+                        <div class="text-danger small">{{ form.start_time.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">End Time *</label>
+                    {{ form.end_time }}
+                    {% if form.end_time.errors %}
+                        <div class="text-danger small">{{ form.end_time.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <div class="text-danger small">{{ form.notes.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.is_active }}
+                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                    Active Schedule
+                </label>
+            </div>
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> {{ action }} Schedule
+                </button>
+                <a href="{% url 'schedule_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'staff/base.html' %}
+
+{% block title %}{{ action }} Role{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-shield-plus"></i> {{ action }} Role</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label class="form-label">Role Name *</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="text-danger small">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger small">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <hr class="my-4">
+            
+            <h5 class="mb-3">Permissions</h5>
+            
+            <div class="mb-3 form-check">
+                {{ form.can_manage_staff }}
+                <label class="form-check-label" for="{{ form.can_manage_staff.id_for_label }}">
+                    <strong>Manage Staff</strong><br>
+                    <small class="text-muted">Create, update, and delete staff members</small>
+                </label>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.can_manage_customers }}
+                <label class="form-check-label" for="{{ form.can_manage_customers.id_for_label }}">
+                    <strong>Manage Customers</strong><br>
+                    <small class="text-muted">View and manage customer information</small>
+                </label>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.can_manage_schedules }}
+                <label class="form-check-label" for="{{ form.can_manage_schedules.id_for_label }}">
+                    <strong>Manage Schedules</strong><br>
+                    <small class="text-muted">Create and modify work schedules</small>
+                </label>
+            </div>
+            
+            <div class="mb-3 form-check">
+                {{ form.can_view_reports }}
+                <label class="form-check-label" for="{{ form.can_view_reports.id_for_label }}">
+                    <strong>View Reports</strong><br>
+                    <small class="text-muted">Access system reports and analytics</small>
+                </label>
+            </div>
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> {{ action }} Role
+                </button>
+                <a href="{% url 'role_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -100,7 +100,13 @@ def login_view(request):
                 return redirect("login")
 
             login(request, user)
-            return redirect("customer_dashboard")
+            
+            # Check if user is staff and redirect accordingly
+            if hasattr(user, 'staff_profile'):
+                messages.success(request, f'Welcome back, {user.name}!')
+                return redirect("staff_dashboard")
+            else:
+                return redirect("customer_dashboard")
         else:
             messages.error(request, "Invalid email or password.")
 

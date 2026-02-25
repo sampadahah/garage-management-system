@@ -1,0 +1,84 @@
+{% extends 'staff/base.html' %}
+
+{% block title %}Roles & Permissions{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-shield-check"></i> Roles & Permissions</h2>
+    <a href="{% url 'role_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add New Role
+    </a>
+</div>
+
+<div class="row">
+    {% for role in roles %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">{{ role.name }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">{{ role.description|default:"No description" }}</p>
+                
+                <h6 class="mt-3">Permissions:</h6>
+                <ul class="list-unstyled">
+                    <li>
+                        {% if role.can_manage_staff %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                        {% endif %}
+                        Manage Staff
+                    </li>
+                    <li>
+                        {% if role.can_manage_customers %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                        {% endif %}
+                        Manage Customers
+                    </li>
+                    <li>
+                        {% if role.can_manage_schedules %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                        {% endif %}
+                        Manage Schedules
+                    </li>
+                    <li>
+                        {% if role.can_view_reports %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                        {% endif %}
+                        View Reports
+                    </li>
+                </ul>
+                
+                <div class="mt-3">
+                    <span class="badge bg-info">{{ role.staff_members.count }} staff member(s)</span>
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <a href="{% url 'role_update' role.pk %}" class="btn btn-sm btn-outline-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'role_delete' role.pk %}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center text-muted py-5">
+                <i class="bi bi-shield-x" style="font-size: 3rem;"></i><br>
+                No roles found
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
