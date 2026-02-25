@@ -13,7 +13,7 @@ db.sqlite3
 media/
 
 # Migrations (optional)
-# */migrations/
+migrations
 # !*/migrations/__init__.py
 
 # Environment variables
