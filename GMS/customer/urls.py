@@ -8,7 +8,7 @@ urlpatterns = [
     path("login/", login_view, name="login"),
     path("verify-email/<uidb64>/<token>/", verify_email, name="verify_email"),
 
-        path(
+    path(
         "forgot-password/",
         auth_views.PasswordResetView.as_view(
             template_name="password_reset.html",
@@ -50,4 +50,6 @@ urlpatterns = [
     path("vehicles/add/", vehicle_create, name="vehicle_add"),
     path("vehicles/<int:pk>/edit/", vehicle_update, name="vehicle_edit"),
     path("vehicles/<int:pk>/delete/", vehicle_delete, name="vehicle_delete"),
+
+    path("appointments/", create_appointment, name="create_appointment"),
 ]

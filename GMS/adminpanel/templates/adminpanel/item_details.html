@@ -1,0 +1,268 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}{{ item.name }} - Garage Management System{% endblock %}
+
+{% block page_subtitle %}Part Details{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions">
+        <h3>{{ item.name }} - Details</h3>
+        <a href="{% url 'inventory' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Inventory
+        </a>
+    </div>
+    
+    <div class="item-details-container">
+        <div class="item-details-card">
+            <div class="item-details-grid">
+                <div class="item-image-section">
+                    {% if item.image %}
+                    <div class="item-image">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="item-image">
+                    </div>
+                    {% else %}
+                    <div class="item-image-placeholder">
+                        <i class="fas fa-box fa-4x"></i>
+                        <p>No image available</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="item-info-section">
+                    <div class="item-header">
+                        <h2>{{ item.name }}</h2>
+                        <div class="item-status">
+                            <span class="status-badge status-{{ item.stock_status_color }}">
+                                {{ item.stock_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="item-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Part Name:</span>
+                            <span class="detail-value">{{ item.name }}</span>
+                        </div>
+                        
+                        {% if item.compatible_model %}
+                        <div class="detail-item">
+                            <span class="detail-label">Compatible Model:</span>
+                            <span class="detail-value">{{ item.compatible_model }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">{{ item.price }}</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Quantity in Stock:</span>
+                            <span class="detail-value">{{ item.quantity }} units</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Minimum Stock Level:</span>
+                            <span class="detail-value">{{ item.min_stock_level }} units</span>
+                        </div>
+                        
+                        {% if item.category %}
+                        <div class="detail-item">
+                            <span class="detail-label">Category:</span>
+                            <span class="detail-value">{{ item.category.category_name }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if item.brand %}
+                        <div class="detail-item">
+                            <span class="detail-label">Brand:</span>
+                            <span class="detail-value">{{ item.brand.brand_name }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Stock Status:</span>
+                            <span class="status-badge status-{{ item.stock_status_color }}">
+                                {{ item.stock_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value">{{ item.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span class="detail-label">Last Updated:</span>
+                            <span class="detail-value">{{ item.updated_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if item.description %}
+                    <div class="description-section">
+                        <h4>Description</h4>
+                        <p>{{ item.description }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'edit_inventory_item' item.part_id %}" class="btn btn-outline">
+                            <i class="fas fa-edit"></i> Edit Item
+                        </a>
+                        <a href="{% url 'inventory' %}" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i> Back to Inventory
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.item-details-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.item-details-card {
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.item-details-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    padding: 30px;
+}
+
+.item-image-section {
+    text-align: center;
+}
+
+.item-image {
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.item-image-placeholder {
+    width: 300px;
+    height: 300px;
+    background: var(--bg-gray);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 1.2rem;
+}
+
+.item-info-section {
+    flex: 1;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.item-header h2 {
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.item-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.detail-item {
+    margin-bottom: 15px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.status-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.status-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.description-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.description-section h4 {
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.description-section p {
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .item-details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .item-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
