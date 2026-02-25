@@ -110,6 +110,9 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
+            # Redirect admin/staff users to admin panel
+            if user.is_staff or user.is_superuser:
+                return redirect("adminpanel:dashboard")
             return redirect("customer_dashboard")
         
         messages.error(request, "Invalid email or password.")

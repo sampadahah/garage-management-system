@@ -1,0 +1,115 @@
+{% extends "adminpanel/base.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Manage your garage booking slots efficiently{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="summary-cards">
+        <div class="summary-card">
+            <div class="card-header">
+                <div class="card-icon inventory">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ total_slots }}</div>
+            <div class="card-label">Total Slots</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="card-header">
+                <div class="card-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ available_slots }}</div>
+            <div class="card-label">Available Slots</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="card-header">
+                <div class="card-icon danger">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ booked_slots }}</div>
+            <div class="card-label">Booked Slots</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="card-header">
+                <div class="card-icon warning">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+            </div>
+            <div class="card-value">{{ today_slots }}</div>
+            <div class="card-label">Today's Slots</div>
+        </div>
+    </div>
+    
+    <div class="header-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+            <a href="{% url 'adminpanel:slot_calendar' %}" class="btn btn-primary">
+                <i class="fas fa-calendar-alt"></i> View Calendar
+            </a>
+            <a href="{% url 'adminpanel:add_slot' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Add New Slot
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <h3 style="margin-bottom: 20px;">Slot Management</h3>
+    <p style="color: var(--text-light); margin-bottom: 25px;">
+        Manage your garage booking slots efficiently. Create, view, and organize time slots for customer appointments.
+    </p>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-calendar-alt"></i> Feature</th>
+                    <th><i class="fas fa-info-circle"></i> Description</th>
+                    <th><i class="fas fa-cog"></i> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Slot Calendar</strong></td>
+                    <td>View and manage all booking slots by date</td>
+                    <td>
+                        <a href="{% url 'adminpanel:slot_calendar' %}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Add New Slot</strong></td>
+                    <td>Create new time slots for customer bookings</td>
+                    <td>
+                        <a href="{% url 'adminpanel:add_slot' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Create
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Available Slots</strong></td>
+                    <td>View all available slots ready for booking</td>
+                    <td>
+                        <span class="status-badge status-success">{{ available_slots }} Available</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Booked Slots</strong></td>
+                    <td>View all slots that have been booked</td>
+                    <td>
+                        <span class="status-badge status-danger">{{ booked_slots }} Booked</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
