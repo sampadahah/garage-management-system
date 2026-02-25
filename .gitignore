@@ -5,12 +5,15 @@ __pycache__/
 # Virtual environment
 myenv/
 .venv/
-
+migrations/
 
 # Django
 db.sqlite3
 *.log
 media/
+
+*/migrations/
+!*/migrations/__init__.py
 
 # Migrations (optional)
 # */migrations/
