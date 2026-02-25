@@ -5,7 +5,7 @@ __pycache__/
 # Virtual environment
 myenv/
 .venv/
-migrations/
+
 
 # Django
 db.sqlite3
