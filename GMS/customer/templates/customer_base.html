@@ -17,11 +17,17 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar__logo">
+        {% comment %} <div class="sidebar__logo">
             <i class="bi bi-car-front-fill sidebar__icon"></i>
+            <iconify-icon icon="bxs:car-garage"></iconify-icon>
             <span class="sidebar__brand">e-Garage</span>
+        </div> {% endcomment %}
+        <div class="sidebar__brand">
+            <iconify-icon icon="bxs:car-garage"></iconify-icon>
+            <h2 class="brand-name">
+                <span class="brand-e">e-</span>Garage
+            </h2>
         </div>
-        
         <nav class="sidebar__nav">
 
             <a href="{% url 'customer_dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}">
@@ -141,5 +147,7 @@ setTimeout(() => {
   }
 }, 3000);
 </script>
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+
 </body>
 </html>
