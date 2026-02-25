@@ -130,8 +130,8 @@ AUTH_USER_MODEL="customer.Users"
 
 LOGIN_URL="login"
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ankitapalikhe27@gmail.com'
-EMAIL_HOST_PASSWORD = 'goid ombh dnrc kngi'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'ankitapalikhe27@gmail.com'
+# EMAIL_HOST_PASSWORD = 'goid ombh dnrc kngi'
