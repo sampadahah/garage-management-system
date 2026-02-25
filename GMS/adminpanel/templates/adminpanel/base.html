@@ -1,4 +1,4 @@
-{% load static %}
+{% comment %} {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -763,23 +763,23 @@
 </div>
         
         <nav class="menu">
-            <a href="{% url 'dashboard' %}" class="menu-item {% if page_title == 'Dashboard' %}active{% endif %}">
+            <a href="{% url 'adminpanel:dashboard' %}" class="menu-item {% if page_title == 'Dashboard' %}active{% endif %}">
              
                 <span>Dashboard</span>
             </a>
-            <a href="{% url 'inventory' %}" class="menu-item {% if page_title == 'Inventory' %}active{% endif %}">
+            <a href="{% url 'adminpanel:inventory' %}" class="menu-item {% if page_title == 'Inventory' %}active{% endif %}">
                
                 <span>Inventory</span>
             </a>
-            <a href="{% url 'jobs' %}" class="menu-item {% if page_title == 'Jobs' %}active{% endif %}">
+            <a href="{% url 'adminpanel:jobs' %}" class="menu-item {% if page_title == 'Jobs' %}active{% endif %}">
                
                 <span>Jobs</span>
             </a>
-            <a href="{% url 'customers' %}" class="menu-item {% if page_title == 'Customers' %}active{% endif %}">
+            <a href="{% url 'adminpanel:customers' %}" class="menu-item {% if page_title == 'Customers' %}active{% endif %}">
                 
                 <span>Customers</span>
             </a>
-            <a href="{% url 'appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
+            <a href="{% url 'adminpanel:appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
                 
                 <span>Slots</span>
             </a>
@@ -1029,4 +1029,4 @@
     
     {% block extra_js %}{% endblock %}
 </body>
-</html>
+</html> {% endcomment %}

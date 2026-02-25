@@ -121,8 +121,23 @@ def login_view(request):
                 user = None
 
         if user is not None:
-            login(request, user)
-            return redirect("customer_dashboard")
+            if user is not None:
+                login(request, user)
+
+                # Superuser
+                if user.is_superuser:
+                    return redirect("adminpanel:dashboard")
+
+                # Staff / Admin role (if you use role field)
+                if hasattr(user, "role") and user.role == "admin":
+                    return redirect("adminpanel:dashboard")
+
+                # Or if using is_staff
+                if user.is_staff:
+                    return redirect("adminpanel:dashboard")
+
+                # Default → Customer
+                return redirect("customer_dashboard")
         
         messages.error(request, "Invalid email or password.")
         return render(request, "login.html")
