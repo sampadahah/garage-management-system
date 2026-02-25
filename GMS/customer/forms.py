@@ -143,7 +143,7 @@ class VehicleForm(forms.ModelForm):
                     )
 
         return plate
-    
+
 class AppointmentCreateForm(forms.ModelForm):
     class Meta:
         model = Appointment
