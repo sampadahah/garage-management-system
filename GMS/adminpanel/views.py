@@ -7,6 +7,7 @@ from .forms import SlotForm
 from datetime import date, datetime, timedelta
 from django.http import HttpResponseForbidden
 
+
 def is_staff_or_superuser(u):
     return u.is_authenticated and (u.is_staff or u.is_superuser)
 
@@ -92,3 +93,192 @@ def add_slot(request):
     else:
         form = SlotForm()
     return render(request, "adminpanel/add_slot.html", {"form": form})
+
+@login_required
+@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+def customers(request):
+    """View all customers"""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    # Get all customers (non-staff users)
+    customers_list = User.objects.filter(is_staff=False, is_superuser=False).order_by('-date_joined')
+    
+    context = {
+        'customers': customers_list,
+        'total_customers': customers_list.count(),
+    }
+    return render(request, "adminpanel/customers.html", context)
+
+@login_required
+@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+def reports(request):
+    """View reports page with download options"""
+    from django.contrib.auth import get_user_model
+    
+    User = get_user_model()
+    
+    # Get counts for display
+    total_slots = Slot.objects.count()
+    total_customers = User.objects.filter(is_staff=False, is_superuser=False).count()
+    booked_slots = Slot.objects.filter(is_booked=True).count()
+    
+    context = {
+        'total_slots': total_slots,
+        'total_customers': total_customers,
+        'booked_slots': booked_slots,
+    }
+    return render(request, "adminpanel/reports.html", context)
+
+@login_required
+@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+def download_slots_report(request):
+    """Download slots report as CSV"""
+    import csv
+    from django.http import HttpResponse
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="slots_report.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Start Time', 'End Time', 'Status', 'Created By', 'Created At'])
+    
+    slots = Slot.objects.all().order_by('-date', 'start_time')
+    for slot in slots:
+        writer.writerow([
+            slot.date.strftime('%Y-%m-%d'),
+            slot.start_time.strftime('%H:%M'),
+            slot.end_time.strftime('%H:%M'),
+            'Booked' if slot.is_booked else 'Available',
+            slot.created_by.email if slot.created_by else 'N/A',
+            slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+    
+    return response
+
+@login_required
+@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+def download_customers_report(request):
+    """Download customers report as CSV"""
+    import csv
+    from django.http import HttpResponse
+    from django.contrib.auth import get_user_model
+    
+    User = get_user_model()
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="customers_report.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Name', 'Email', 'Phone', 'Address', 'Role', 'Verified', 'Active', 'Date Joined'])
+    
+    customers = User.objects.filter(is_staff=False, is_superuser=False).order_by('-date_joined')
+    for customer in customers:
+        writer.writerow([
+            customer.name,
+            customer.email,
+            customer.phone or 'N/A',
+            customer.address or 'N/A',
+            customer.role,
+            'Yes' if customer.is_verified else 'No',
+            'Yes' if customer.is_active else 'No',
+            customer.date_joined.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+    
+    return response
+
+@login_required
+@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+def download_bookings_report(request):
+    """Download bookings report as CSV"""
+    import csv
+    from django.http import HttpResponse
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="bookings_report.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Start Time', 'End Time', 'Created By', 'Booked At'])
+    
+    booked_slots = Slot.objects.filter(is_booked=True).order_by('-date', 'start_time')
+    for slot in booked_slots:
+        writer.writerow([
+            slot.date.strftime('%Y-%m-%d'),
+            slot.start_time.strftime('%H:%M'),
+            slot.end_time.strftime('%H:%M'),
+            slot.created_by.email if slot.created_by else 'N/A',
+            slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+    
+    return response
+
+@login_required
+@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+def download_all_reports(request):
+    """Download all reports as ZIP file"""
+    import csv
+    import zipfile
+    import io
+    from django.http import HttpResponse
+    from django.contrib.auth import get_user_model
+    
+    User = get_user_model()
+    
+    # Create in-memory zip file
+    zip_buffer = io.BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # Slots Report
+        slots_data = io.StringIO()
+        slots_writer = csv.writer(slots_data)
+        slots_writer.writerow(['Date', 'Start Time', 'End Time', 'Status', 'Created By', 'Created At'])
+        slots = Slot.objects.all().order_by('-date', 'start_time')
+        for slot in slots:
+            slots_writer.writerow([
+                slot.date.strftime('%Y-%m-%d'),
+                slot.start_time.strftime('%H:%M'),
+                slot.end_time.strftime('%H:%M'),
+                'Booked' if slot.is_booked else 'Available',
+                slot.created_by.email if slot.created_by else 'N/A',
+                slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            ])
+        zip_file.writestr('slots_report.csv', slots_data.getvalue())
+        
+        # Customers Report
+        customers_data = io.StringIO()
+        customers_writer = csv.writer(customers_data)
+        customers_writer.writerow(['Name', 'Email', 'Phone', 'Address', 'Role', 'Verified', 'Active', 'Date Joined'])
+        customers = User.objects.filter(is_staff=False, is_superuser=False).order_by('-date_joined')
+        for customer in customers:
+            customers_writer.writerow([
+                customer.name,
+                customer.email,
+                customer.phone or 'N/A',
+                customer.address or 'N/A',
+                customer.role,
+                'Yes' if customer.is_verified else 'No',
+                'Yes' if customer.is_active else 'No',
+                customer.date_joined.strftime('%Y-%m-%d %H:%M:%S')
+            ])
+        zip_file.writestr('customers_report.csv', customers_data.getvalue())
+        
+        # Bookings Report
+        bookings_data = io.StringIO()
+        bookings_writer = csv.writer(bookings_data)
+        bookings_writer.writerow(['Date', 'Start Time', 'End Time', 'Created By', 'Booked At'])
+        booked_slots = Slot.objects.filter(is_booked=True).order_by('-date', 'start_time')
+        for slot in booked_slots:
+            bookings_writer.writerow([
+                slot.date.strftime('%Y-%m-%d'),
+                slot.start_time.strftime('%H:%M'),
+                slot.end_time.strftime('%H:%M'),
+                slot.created_by.email if slot.created_by else 'N/A',
+                slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            ])
+        zip_file.writestr('bookings_report.csv', bookings_data.getvalue())
+    
+    # Prepare response
+    response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="all_reports.zip"'
+    
+    return response

@@ -1,104 +1,53 @@
-{% extends 'adminpanel/base.html' %}
+{% extends "adminpanel/base.html" %}
 
-{% block title %}Customers - Garage Management System{% endblock %}
-
-{% block page_subtitle %}Manage customer information and history{% endblock %}
+{% block page_title %}Customers{% endblock %}
+{% block page_subtitle %}Manage customer accounts{% endblock %}
 
 {% block content %}
 <div class="content-wrapper">
     <div class="header-actions">
-        <h3>Customers</h3>
-        <div class="d-flex align-center gap-20">
-            <form method="get" class="d-flex align-center gap-10">
-                <input type="text" name="search" placeholder="Search customers..." class="form-control" style="width: 250px;">
-                <button type="submit" class="btn btn-outline">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </form>
-            <a href="{% url 'create_user' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add Customer
-            </a>
+        <h3><i class="fas fa-users"></i> Customer Management</h3>
+        <div class="action-buttons">
+            <span class="btn btn-outline">
+                <i class="fas fa-users"></i> Total: {{ total_customers }}
+            </span>
         </div>
     </div>
     
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Customer ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for customer in customers %}
-                <tr>
-                    <td>#{{ customer.id }}</td>
-                    <td>
-                        <strong>{{ customer.get_full_name|default:customer.username }}</strong>
-                        {% if customer.address %}
-                        <br><small class="text-light">{{ customer.address|truncatechars:30 }}</small>
-                        {% endif %}
-                    </td>
-                    <td>{{ customer.email }}</td>
-                    <td>{{ customer.phone|default:"Not set" }}</td>
-                    <td>
-                        <span class="status-badge {% if customer.role == 'customer' %}status-success{% else %}status-warning{% endif %}">
-                            {{ customer.get_role_display }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="status-badge {% if customer.status == 'active' %}status-success{% else %}status-danger{% endif %}">
-                            {{ customer.get_status_display }}
-                        </span>
-                    </td>
-                    <td>{{ customer.date_joined|date:"M d, Y" }}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm view-customer-btn" data-customer-id="{{ customer.id }}">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="btn btn-outline btn-sm edit-customer-btn" data-customer-id="{{ customer.id }}">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="8" class="text-center">No customers found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% if customers %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th><i class="fas fa-envelope"></i> Email</th>
+                        <th><i class="fas fa-phone"></i> Phone</th>
+                        <th><i class="fas fa-map-marker-alt"></i> Address</th>
+                        
+                        <th><i class="fas fa-calendar"></i> Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td><strong>{{ customer.name }}</strong></td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone|default:"N/A" }}</td>
+                        <td>{{ customer.address|default:"N/A"|truncatewords:5 }}</td>
+                        <td>{{ customer.date_joined|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert-box">
+            <i class="fas fa-info-circle alert-icon"></i>
+            <div class="alert-content">
+                <h4>No Customers Found</h4>
+                <p>No customers have registered yet.</p>
+            </div>
+        </div>
+    {% endif %}
 </div>
-
-<script>
-// Add event listeners for view and edit buttons
-document.addEventListener('DOMContentLoaded', function() {
-    // View customer buttons
-    document.querySelectorAll('.view-customer-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const customerId = this.getAttribute('data-customer-id');
-            alert(`Viewing customer #${customerId}`);
-            // In a real app, this would redirect to customer detail page
-        });
-    });
-    
-    // Edit customer buttons
-    document.querySelectorAll('.edit-customer-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const customerId = this.getAttribute('data-customer-id');
-            alert(`Editing customer #${customerId}`);
-            // In a real app, this would open edit modal or redirect
-        });
-    });
-});
-</script>
 {% endblock %}

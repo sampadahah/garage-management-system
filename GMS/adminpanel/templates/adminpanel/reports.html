@@ -1,174 +1,142 @@
-{% extends 'adminpanel/base.html' %}
+{% extends "adminpanel/base.html" %}
 
-{% block title %}Reports - Garage Management System{% endblock %}
-
-{% block page_subtitle %}View analytics and insights{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block page_subtitle %}Download various reports{% endblock %}
 
 {% block content %}
-<div class="summary-cards mb-30">
-    <div class="summary-card">
-        <div class="card-header">
-            <div>
-                <div class="card-value">{{ parts_stats.total_value|floatformat:2 }}</div>
-                <div class="card-label">Total Inventory Value</div>
-            </div>
-            <div class="card-icon inventory">
-                <i class="fas fa-calculator"></i>
-            </div>
-        </div>
-    </div>
+<div class="content-wrapper">
+    <h3 style="margin-bottom: 25px;"><i class="fas fa-download"></i> Download Reports</h3>
+    <p style="color: var(--text-light); margin-bottom: 30px;">
+        Export your data in CSV format for analysis and record keeping.
+    </p>
     
-    <div class="summary-card">
-        <div class="card-header">
-            <div>
-                <div class="card-value">{{ parts_stats.total_items }}</div>
-                <div class="card-label">Total Parts</div>
-            </div>
-            <div class="card-icon success">
-                <i class="fas fa-boxes"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="summary-card">
-        <div class="card-header">
-            <div>
-                <div class="card-value">{{ work_stats.total_revenue|floatformat:2 }}</div>
-                <div class="card-label">Total Revenue</div>
-            </div>
-            <div class="card-icon warning">
-                <i class="fas fa-chart-line"></i>
-            </div>
-        </div>
-    </div>
-    
-    <div class="summary-card">
-        <div class="card-header">
-            <div>
-                <div class="card-value">{{ customer_stats.total_customers }}</div>
-                <div class="card-label">Total Customers</div>
-            </div>
-            <div class="card-icon success">
-                <i class="fas fa-users"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="content-wrapper mb-30">
-    <h3>Inventory Analysis</h3>
-    <div class="d-flex gap-20 mt-20">
-        <div style="flex: 1; padding: 20px; background-color: var(--bg-gray); border-radius: 10px;">
-            <h4>Stock Status</h4>
-            <div class="mt-20">
-                <div class="d-flex justify-between mb-10">
-                    <span>In Stock</span>
-                    <span>{{ parts_stats.total_items|add:parts_stats.low_stock_count|add:parts_stats.out_of_stock_count|default:0 }}</span>
+    <div class="summary-cards">
+        <div class="summary-card" style="cursor: pointer;" onclick="window.location.href='{% url 'adminpanel:download_slots_report' %}'">
+            <div class="card-header">
+                <div class="card-icon inventory">
+                    <i class="fas fa-calendar-alt"></i>
                 </div>
-                <div class="d-flex justify-between mb-10">
-                    <span>Low Stock</span>
-                    <span class="text-warning">{{ parts_stats.low_stock_count }}</span>
-                </div>
-                <div class="d-flex justify-between">
-                    <span>Out of Stock</span>
-                    <span class="text-danger">{{ parts_stats.out_of_stock_count }}</span>
-                </div>
+            </div>
+            <div class="card-value">{{ total_slots }}</div>
+            <div class="card-label">Total Slots</div>
+            <div style="margin-top: 15px;">
+                <a href="{% url 'adminpanel:download_slots_report' %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fas fa-download"></i> Download Slots Report
+                </a>
             </div>
         </div>
         
-        <div style="flex: 1; padding: 20px; background-color: var(--bg-gray); border-radius: 10px;">
-            <h4>Work Status</h4>
-            <div class="mt-20">
-                <div class="d-flex justify-between mb-10">
-                    <span>Total Jobs</span>
-                    <span>{{ work_stats.total_jobs }}</span>
+        <div class="summary-card" style="cursor: pointer;" onclick="window.location.href='{% url 'adminpanel:download_customers_report' %}'">
+            <div class="card-header">
+                <div class="card-icon warning">
+                    <i class="fas fa-users"></i>
                 </div>
-                <div class="d-flex justify-between mb-10">
-                    <span>Completed</span>
-                    <span class="text-success">{{ work_stats.completed_jobs }}</span>
-                </div>
-                <div class="d-flex justify-between">
-                    <span>Completion Rate</span>
-                    <span>
-                        {% if work_stats.total_jobs > 0 %}
-                        {{ work_stats.completed_jobs|floatformat:0 }}%
-                        {% else %}
-                        0%
-                        {% endif %}
-                    </span>
-                </div>
+            </div>
+            <div class="card-value">{{ total_customers }}</div>
+            <div class="card-label">Total Customers</div>
+            <div style="margin-top: 15px;">
+                <a href="{% url 'adminpanel:download_customers_report' %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fas fa-download"></i> Download Customers Report
+                </a>
             </div>
         </div>
         
-        <div style="flex: 1; padding: 20px; background-color: var(--bg-gray); border-radius: 10px;">
-            <h4>Customer Growth</h4>
-            <div class="mt-20">
-                <div class="d-flex justify-between mb-10">
-                    <span>Total Customers</span>
-                    <span>{{ customer_stats.total_customers }}</span>
+        <div class="summary-card" style="cursor: pointer;" onclick="window.location.href='{% url 'adminpanel:download_bookings_report' %}'">
+            <div class="card-header">
+                <div class="card-icon danger">
+                    <i class="fas fa-calendar-check"></i>
                 </div>
-                <div class="d-flex justify-between mb-10">
-                    <span>New This Month</span>
-                    <span class="text-success">{{ customer_stats.new_customers_month }}</span>
-                </div>
-                <div class="d-flex justify-between">
-                    <span>Growth Rate</span>
-                    <span>
-                        {% if customer_stats.total_customers > 0 %}
-                        {{ customer_stats.new_customers_month|floatformat:0 }}%
-                        {% else %}
-                        0%
-                        {% endif %}
-                    </span>
-                </div>
+            </div>
+            <div class="card-value">{{ booked_slots }}</div>
+            <div class="card-label">Total Bookings</div>
+            <div style="margin-top: 15px;">
+                <a href="{% url 'adminpanel:download_bookings_report' %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    <i class="fas fa-download"></i> Download Bookings Report
+                </a>
             </div>
         </div>
     </div>
 </div>
 
 <div class="content-wrapper">
-    <h3>Quick Actions</h3>
-    <div class="d-flex gap-20 mt-20">
-        <a href="{% url 'download_inventory_report' %}" class="btn btn-outline" style="flex: 1; padding: 20px; text-decoration: none; text-align: center;">
-            <i class="fas fa-file-csv fa-2x mb-10"></i>
-            <br>
-            <span>Inventory Report (CSV)</span>
-        </a>
-        
-        <a href="{% url 'download_sales_report' %}" class="btn btn-outline" style="flex: 1; padding: 20px; text-decoration: none; text-align: center;">
-            <i class="fas fa-chart-bar fa-2x mb-10"></i>
-            <br>
-            <span>Sales Report (CSV)</span>
-        </a>
-        
-        <a href="{% url 'download_customer_report' %}" class="btn btn-outline" style="flex: 1; padding: 20px; text-decoration: none; text-align: center;">
-            <i class="fas fa-users fa-2x mb-10"></i>
-            <br>
-            <span>Customer Report (CSV)</span>
-        </a>
-        
-        <a href="{% url 'export_all_data' %}" class="btn btn-outline" style="flex: 1; padding: 20px; text-decoration: none; text-align: center;">
-            <i class="fas fa-download fa-2x mb-10"></i>
-            <br>
-            <span>Export All Data (ZIP)</span>
-        </a>
+    <h3 style="margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Report Details</h3>
+    
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-file-alt"></i> Report Name</th>
+                    <th><i class="fas fa-info-circle"></i> Description</th>
+                    <th><i class="fas fa-list"></i> Includes</th>
+                    <th><i class="fas fa-download"></i> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Slots Report</strong></td>
+                    <td>Complete list of all time slots</td>
+                    <td>Date, Time, Status, Created By</td>
+                    <td>
+                        <a href="{% url 'adminpanel:download_slots_report' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Customers Report</strong></td>
+                    <td>All registered customers information</td>
+                    <td>Name, Email, Phone, Address, Status</td>
+                    <td>
+                        <a href="{% url 'adminpanel:download_customers_report' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Bookings Report</strong></td>
+                    <td>All booked slots details</td>
+                    <td>Date, Time, Customer, Booking Date</td>
+                    <td>
+                        <a href="{% url 'adminpanel:download_bookings_report' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download CSV
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<style>
-.btn-outline {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.btn-outline:hover {
-    background-color: var(--primary-gold);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-}
-</style>
+<div class="content-wrapper">
+    <h3 style="margin-bottom: 20px;"><i class="fas fa-lightbulb"></i> Tips</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div style="padding: 20px; background: var(--bg-gray); border-radius: 12px; border-left: 4px solid var(--primary-gold);">
+            <h4 style="margin-bottom: 10px; color: var(--text-dark);">
+                <i class="fas fa-file-csv"></i> CSV Format
+            </h4>
+            <p style="color: var(--text-light); font-size: 0.9rem;">
+                All reports are downloaded in CSV format, which can be opened in Excel, Google Sheets, or any spreadsheet application.
+            </p>
+        </div>
+        
+        <div style="padding: 20px; background: var(--bg-gray); border-radius: 12px; border-left: 4px solid var(--success-green);">
+            <h4 style="margin-bottom: 10px; color: var(--text-dark);">
+                <i class="fas fa-sync"></i> Real-Time Data
+            </h4>
+            <p style="color: var(--text-light); font-size: 0.9rem;">
+                Reports are generated in real-time with the latest data from your system. Download anytime to get current information.
+            </p>
+        </div>
+        
+        <div style="padding: 20px; background: var(--bg-gray); border-radius: 12px; border-left: 4px solid var(--danger-red);">
+            <h4 style="margin-bottom: 10px; color: var(--text-dark);">
+                <i class="fas fa-shield-alt"></i> Data Security
+            </h4>
+            <p style="color: var(--text-light); font-size: 0.9rem;">
+                Downloaded reports contain sensitive information. Please store them securely and follow your organization's data protection policies.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}
