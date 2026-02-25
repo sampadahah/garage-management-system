@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -741,6 +742,11 @@
                 flex-wrap: wrap;
             }
         }
+        .logo-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
     </style>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -749,40 +755,40 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-car"></i>
-            </div>
-            <h1>e-Garage</h1>
-        </div>
+       <div class="logo">
+    <div class="logo-icon">
+        <img src="{% static 'adminpanel/images/logo.png' %}" alt="e-Garage Logo">
+    </div>
+    <h1>e-Garage</h1>
+</div>
         
         <nav class="menu">
             <a href="{% url 'dashboard' %}" class="menu-item {% if page_title == 'Dashboard' %}active{% endif %}">
-                <i class="fas fa-tachometer-alt"></i>
+             
                 <span>Dashboard</span>
             </a>
             <a href="{% url 'inventory' %}" class="menu-item {% if page_title == 'Inventory' %}active{% endif %}">
-                <i class="fas fa-boxes"></i>
+               
                 <span>Inventory</span>
             </a>
             <a href="{% url 'jobs' %}" class="menu-item {% if page_title == 'Jobs' %}active{% endif %}">
-                <i class="fas fa-tools"></i>
+               
                 <span>Jobs</span>
             </a>
             <a href="{% url 'customers' %}" class="menu-item {% if page_title == 'Customers' %}active{% endif %}">
-                <i class="fas fa-users"></i>
+                
                 <span>Customers</span>
             </a>
             <a href="{% url 'appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
-                <i class="fas fa-calendar-check"></i>
-                <span>Bookings</span>
+                
+                <span>Slots</span>
             </a>
             <a href="{% url 'reports' %}" class="menu-item {% if page_title == 'Reports' %}active{% endif %}">
-                <i class="fas fa-chart-bar"></i>
+                
                 <span>Reports</span>
             </a>
             <a href="{% url 'staff' %}" class="menu-item {% if page_title == 'Staff' %}active{% endif %}">
-                <i class="fas fa-user-tie"></i>
+                
                 <span>Staff</span>
             </a>
         </nav>
@@ -794,7 +800,7 @@
         <div class="top-navbar">
             <div class="page-header">
                 <h2>{% block page_title %}{{ page_title }}{% endblock %}</h2>
-                <p>{% block page_subtitle %}Let's manage your garage efficiently{% endblock %}</p>
+              
             </div>
             
             <div class="search-bar">
@@ -826,10 +832,10 @@
                         <span>Settings</span>
                         <i class="fas fa-chevron-right settings-arrow"></i>
                     </div>
-                    <div class="dropdown-item" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </div>
+                   <a href="{% url 'admin_logout' %}" class="dropdown-item">
+    <i class="fas fa-sign-out-alt"></i>
+    <span>Logout</span>
+</a>
                 </div>
                 
                 <!-- Settings Submenu -->
@@ -857,6 +863,7 @@
                         <i class="fas fa-language"></i>
                         <span>Language</span>
                         <span class="dropdown-value">English</span>
+                        <span class="dropdown-value">Nepali</span>
                     </div>
                 </div>
             </div>

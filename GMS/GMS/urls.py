@@ -24,4 +24,5 @@ urlpatterns = [
     # path("adminpanel/", include("adminpanel.urls")),
     path("customer/", include("customer.urls")),
     # path("staff/", include("staff.urls")),
+    path("", include("adminpanel.urls")), 
 ]
