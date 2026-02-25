@@ -110,6 +110,7 @@ class ProfileForm(forms.ModelForm):
         return cleaned_data
 
 class VehicleForm(forms.ModelForm):
+
     class Meta:
         model = Vehicle
         fields = ["model", "year", "plate_no", "image"]
@@ -119,3 +120,26 @@ class VehicleForm(forms.ModelForm):
             "plate_no": forms.TextInput(attrs={"class": "profile-input"}),
             "image": forms.FileInput(attrs={"class": "profile-input"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_plate_no(self):
+        plate = self.cleaned_data.get("plate_no")
+
+        if plate:
+            plate = plate.upper().strip()
+
+            if self.user:
+                exists = Vehicle.objects.filter(
+                    user=self.user,
+                    plate_no__iexact=plate
+                ).exclude(pk=self.instance.pk).exists()
+
+                if exists:
+                    raise forms.ValidationError(
+                        "You already have a vehicle registered with this plate number."
+                    )
+
+        return plate
