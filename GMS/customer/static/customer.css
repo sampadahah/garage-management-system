@@ -39,9 +39,10 @@
 
 /* SIDEBAR */
 .sidebar {
-    width: 240px;
-    background: var(--sidebar-bg);
-    padding: 30px 20px;
+    width: 230px;
+    /* background: var(--sidebar-bg); */
+    background: #fff;
+    padding: 10px 20px;
     display: flex;
     flex-direction: column;
     border-right: 1px solid #e5e7eb;
@@ -56,7 +57,7 @@
 }
 
 /* LOGO */
-.sidebar__logo {
+/* .sidebar__logo {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -72,6 +73,39 @@
     font-weight: 700;
     font-size: 18px;
     color: var(--mustard);
+} */
+ /* =========================
+   SIDEBAR BRAND EXACT STYLE
+========================= */
+
+.sidebar__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 0 20px;
+    text-align: center;
+}
+
+/* ICON */
+.sidebar__brand iconify-icon {
+    font-size: 60px;          /* Big like screenshot */
+    color: #D4AF37;           /* Mustard */
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+/* TEXT */
+.brand-name {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.3px;
+    color: #111827;           /* Dark black */
+}
+
+.brand-e {
+    color: #D4AF37;           /* Mustard e- */
 }
 
 /* NAVIGATION */
@@ -98,7 +132,8 @@
 /* ICON */
 .sidebar__link i {
     font-size: 16px;
-    color: var(--muted);
+    /* color: var(--muted); */
+    color: #D4AF37;
 }
 
 /* HOVER */
@@ -120,7 +155,7 @@
 
 .content {
     flex: 1;
-    padding: 40px;
+    padding: 20px;
 }
 
 /* DROPDOWN */
@@ -621,4 +656,111 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+
+/* =========================
+   DASHBOARD VEHICLES
+========================= */
+
+.dashboard-wrapper {
+    padding: 0px 20px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1D2939;
+}
+
+.add-vehicle-btn {
+    background: #D4AF37;
+    color: #000;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.add-vehicle-btn:hover {
+    background: #caa532;
+}
+
+/* Grid Layout */
+.vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* Card */
+.vehicle-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    transition: 0.2s ease;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Image */
+.vehicle-image {
+    height: 180px;
+    overflow: hidden;
+}
+
+.vehicle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4f4f4;
+    font-size: 40px;
+    color: #D4AF37;
+}
+
+/* Info */
+.vehicle-info {
+    padding: 18px;
+}
+
+.vehicle-info h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.vehicle-info p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #667085;
+}
+
+.vehicle-info .plate {
+    margin-top: 8px;
+    font-weight: 600;
+    color: #D4AF37;
+}
+
+/* Empty */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
 }
