@@ -110,6 +110,7 @@ class ProfileForm(forms.ModelForm):
         return cleaned_data
 
 class VehicleForm(forms.ModelForm):
+
     class Meta:
         model = Vehicle
         fields = ["model", "year", "plate_no", "image"]
@@ -120,24 +121,25 @@ class VehicleForm(forms.ModelForm):
             "image": forms.FileInput(attrs={"class": "profile-input"}),
         }
 
-class AppointmentCreateForm(forms.ModelForm):
-    class Meta:
-        model = Appointment
-        fields = ["vehicle",  "appointment_date", "appointment_time", "notes"]
-        widgets = {
-            "appointment_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
-            "appointment_time": forms.TimeInput(attrs={"type": "time", "class": "form-control"}),
-            "notes": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Write additional notes..."}),
-        }
-
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-        self.fields["vehicle"].widget.attrs.update({"class": "form-select"})
-       
+    def clean_plate_no(self):
+        plate = self.cleaned_data.get("plate_no")
 
-        if user:
-            self.fields["vehicle"].queryset = Vehicle.objects.filter(user=user).order_by("-created_at")
+        if plate:
+            plate = plate.upper().strip()
 
-        self.fields["vehicle"].empty_label = "Choose vehicle"
+            if self.user:
+                exists = Vehicle.objects.filter(
+                    user=self.user,
+                    plate_no__iexact=plate
+                ).exclude(pk=self.instance.pk).exists()
+
+                if exists:
+                    raise forms.ValidationError(
+                        "You already have a vehicle registered with this plate number."
+                    )
+
+        return plate
