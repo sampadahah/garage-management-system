@@ -165,3 +165,4 @@ class AppointmentCreateForm(forms.ModelForm):
             self.fields["vehicle"].queryset = Vehicle.objects.filter(user=user).order_by("-created_at")
 
         self.fields["vehicle"].empty_label = "Choose vehicle"
+
