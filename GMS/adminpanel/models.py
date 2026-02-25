@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 
+
 class InventoryCategory(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=100, unique=True)
@@ -134,3 +135,4 @@ class WorkList(models.Model):
     class Meta:
         db_table = "work_list"
         ordering = ["-created_at"]
+

@@ -8,7 +8,9 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 
 from .forms import JobVacancyForm, PartForm
-from .models import JobVacancy, Notification, Part, WorkList
+from .models import JobVacancy, Part, WorkList
+
+
 
 
 def admin_login(request):
@@ -167,12 +169,14 @@ def edit_inventory_item(request, part_id):
 
 @login_required
 @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def delete_inventory_item(request, part_id):
     item = get_object_or_404(Part, part_id=part_id)
 
     if request.method == "POST":
         item.delete()
-        return redirect("inventory")
+        return redirect("adminpanel:inventory")  # ✅ FIXED
 
     return render(
         request,
@@ -203,11 +207,15 @@ def create_job(request):
         form = JobVacancyForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("jobs")
+            return redirect("adminpanel:jobs")  # ✅ FIX
     else:
         form = JobVacancyForm()
 
-    return render(request, "adminpanel/create_job.html", {"page_title": "Jobs", "form": form})
+    return render(
+        request,
+        "adminpanel/create_job.html",
+        {"page_title": "Jobs", "form": form},
+    )
 
 
 # -------- Logout --------
@@ -216,3 +224,13 @@ def admin_logout(request):
     logout(request)
     # change this to your login url name if different
     return redirect("admin_login")
+
+# @login_required
+# @user_passes_test(is_admin)
+# def leaves(request):
+#     leaves = LeaveApplication.objects.select_related("user").order_by("-applied_at")
+#     return render(
+#         request,
+#         "adminpanel/leaves.html",
+#         {"page_title": "Leaves", "leaves": leaves},
+#     )

@@ -74,7 +74,7 @@
   <div class="content-wrapper">
     <div class="header-actions">
       <h3>Recent Inventory</h3>
-      <a href="{% url 'inventory' %}" class="btn btn-outline"><i class="fas fa-eye"></i> View All</a>
+      <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline"><i class="fas fa-eye"></i> View All</a>
     </div>
 
     <div class="table-container">
@@ -99,14 +99,14 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <a href="{% url 'edit_inventory_item' item.part_id %}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                  <a href="{% url 'adminpanel:edit_inventory_item' item.part_id %}" class="btn btn-outline btn-sm"><i class="fas fa-edit"></i> Edit</a>
                 </div>
               </td>
             </tr>
           {% empty %}
             <tr>
               <td colspan="5" class="text-center">
-                No inventory items found. <a href="{% url 'add_inventory_item' %}">Add your first item</a>
+                No inventory items found. <a href="{% url 'adminpanel:add_inventory_item' %}">Add your first item</a>
               </td>
             </tr>
           {% endfor %}
@@ -118,7 +118,7 @@
   <div class="content-wrapper">
     <div class="header-actions">
       <h3>Recent Jobs</h3>
-      <a href="{% url 'jobs' %}" class="btn btn-outline"><i class="fas fa-eye"></i> View All</a>
+      <a href="{% url 'adminpanel:jobs' %}" class="btn btn-outline"><i class="fas fa-eye"></i> View All</a>
     </div>
 
     <div class="table-container">

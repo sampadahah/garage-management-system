@@ -763,34 +763,20 @@
 </div>
         
         <nav class="menu">
-            <a href="{% url 'dashboard' %}" class="menu-item {% if page_title == 'Dashboard' %}active{% endif %}">
+            <a href="{% url 'adminpanel:dashboard' %}" class="menu-item {% if page_title == 'Dashboard' %}active{% endif %}">
              
                 <span>Dashboard</span>
             </a>
-            <a href="{% url 'inventory' %}" class="menu-item {% if page_title == 'Inventory' %}active{% endif %}">
+            <a href="{% url 'adminpanel:inventory' %}" class="menu-item {% if page_title == 'Inventory' %}active{% endif %}">
                
                 <span>Inventory</span>
             </a>
-            <a href="{% url 'jobs' %}" class="menu-item {% if page_title == 'Jobs' %}active{% endif %}">
+            <a href="{% url 'adminpanel:jobs' %}" class="menu-item {% if page_title == 'Jobs' %}active{% endif %}">
                
                 <span>Jobs</span>
             </a>
-            <a href="{% url 'customers' %}" class="menu-item {% if page_title == 'Customers' %}active{% endif %}">
-                
-                <span>Customers</span>
-            </a>
-            <a href="{% url 'appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
-                
-                <span>Slots</span>
-            </a>
-            <a href="{% url 'reports' %}" class="menu-item {% if page_title == 'Reports' %}active{% endif %}">
-                
-                <span>Reports</span>
-            </a>
-            <a href="{% url 'staff' %}" class="menu-item {% if page_title == 'Staff' %}active{% endif %}">
-                
-                <span>Staff</span>
-            </a>
+        
+            
         </nav>
     </div>
     
@@ -829,10 +815,7 @@
                         <span>Settings</span>
                         <i class="fas fa-chevron-right settings-arrow"></i>
                     </div>
-                   <a href="{% url 'admin_logout' %}" class="dropdown-item">
-    <i class="fas fa-sign-out-alt"></i>
-    <span>Logout</span>
-</a>
+                  
                 </div>
                 
                 <!-- Settings Submenu -->

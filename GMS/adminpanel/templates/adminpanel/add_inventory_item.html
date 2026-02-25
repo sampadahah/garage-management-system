@@ -8,7 +8,7 @@
 <div class="content-wrapper">
     <div class="header-actions mb-30">
         <h3>Add New Part</h3>
-        <a href="{% url 'inventory' %}" class="btn btn-outline">
+        <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">
             <i class="fas fa-arrow-left"></i> Back to Inventory
         </a>
     </div>
@@ -101,7 +101,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Add Part
                 </button>
-                <a href="{% url 'inventory' %}" class="btn btn-outline">Cancel</a>
+                <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">Cancel</a>
             </div>
         </form>
     </div>

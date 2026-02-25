@@ -8,7 +8,7 @@
 <div class="content-wrapper">
     <div class="header-actions">
         <h3>{{ item.name }} - Details</h3>
-        <a href="{% url 'inventory' %}" class="btn btn-outline">
+        <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">
             <i class="fas fa-arrow-left"></i> Back to Inventory
         </a>
     </div>
@@ -107,10 +107,10 @@
                     {% endif %}
                     
                     <div class="action-buttons">
-                        <a href="{% url 'edit_inventory_item' item.part_id %}" class="btn btn-outline">
+                        <a href="{% url 'adminpanel:edit_inventory_item' item.part_id %}" class="btn btn-outline">
                             <i class="fas fa-edit"></i> Edit Item
                         </a>
-                        <a href="{% url 'inventory' %}" class="btn btn-outline">
+                        <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">
                             <i class="fas fa-arrow-left"></i> Back to Inventory
                         </a>
                     </div>

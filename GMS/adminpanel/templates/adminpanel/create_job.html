@@ -7,7 +7,7 @@
 <div class="content-wrapper">
     <div class="header-actions mb-30">
         <h3>Create Vacancy</h3>
-        <a href="{% url 'jobs' %}" class="btn btn-outline">
+        <a href="{% url 'adminpanel:jobs' %}" class="btn btn-outline">
             <i class="fas fa-arrow-left"></i> Back
         </a>
     </div>
@@ -51,7 +51,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-paper-plane"></i> Publish
                 </button>
-                <a href="{% url 'jobs' %}" class="btn btn-outline">Cancel</a>
+                <a href="{% url 'adminpanel:jobs' %}" class="btn btn-outline">Cancel</a>
             </div>
         </div>
     </form>

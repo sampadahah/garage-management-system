@@ -1,7 +1,9 @@
 from django.urls import path
 from . import views
+app_name = "adminpanel"
 
 urlpatterns = [
+
     # Dashboard
     path("dashboard/", views.dashboard, name="dashboard"),
 
@@ -18,4 +20,6 @@ urlpatterns = [
 
     # Logout
     path("logout/", views.admin_logout, name="admin_logout"),
+
+
 ]

@@ -146,7 +146,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load .env file
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR .parent / ".env")
 
 # SECURITY
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-y&nt^+j0q!s&ibbtc@_4r4y@2keeuw_@&xrdv%w8ca3k5r^^e1")
