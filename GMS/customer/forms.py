@@ -119,3 +119,25 @@ class VehicleForm(forms.ModelForm):
             "plate_no": forms.TextInput(attrs={"class": "profile-input"}),
             "image": forms.FileInput(attrs={"class": "profile-input"}),
         }
+
+class AppointmentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Appointment
+        fields = ["vehicle",  "appointment_date", "appointment_time", "notes"]
+        widgets = {
+            "appointment_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "appointment_time": forms.TimeInput(attrs={"type": "time", "class": "form-control"}),
+            "notes": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Write additional notes..."}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+        self.fields["vehicle"].widget.attrs.update({"class": "form-select"})
+       
+
+        if user:
+            self.fields["vehicle"].queryset = Vehicle.objects.filter(user=user).order_by("-created_at")
+
+        self.fields["vehicle"].empty_label = "Choose vehicle"
