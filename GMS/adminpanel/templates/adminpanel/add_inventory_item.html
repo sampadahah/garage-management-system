@@ -1,0 +1,136 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Add Part - Garage Management System{% endblock %}
+
+{% block page_subtitle %}Add new part to inventory{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions mb-30">
+        <h3>Add New Part</h3>
+        <a href="{% url 'inventory' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Inventory
+        </a>
+    </div>
+    
+    <div class="form-container">
+        <form method="post" id="addItemForm" enctype="multipart/form-data" onsubmit="return validateForm('addItemForm')">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="alert-box" style="background-color: rgba(255, 193, 7, 0.1); border-color: var(--warning-yellow); margin-bottom: 20px;">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <h4>Please correct the errors below</h4>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label class="form-label" for="id_name">Part Name *</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="text-danger" style="font-size: 0.85rem; margin-top: 5px;">
+                    {{ form.name.errors }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="id_compatible_model">Compatible Model</label>
+                {{ form.compatible_model }}
+            </div>
+            
+            <div class="d-flex gap-20">
+                <div class="form-group" style="flex: 1;">
+                    <label class="form-label" for="id_price">Price (Nrs) *</label>
+                    {{ form.price }}
+                    {% if form.price.errors %}
+                    <div class="text-danger" style="font-size: 0.85rem; margin-top: 5px;">
+                        {{ form.price.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group" style="flex: 1;">
+                    <label class="form-label" for="id_quantity">Quantity *</label>
+                    {{ form.quantity }}
+                    {% if form.quantity.errors %}
+                    <div class="text-danger" style="font-size: 0.85rem; margin-top: 5px;">
+                        {{ form.quantity.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="d-flex gap-20">
+                <div class="form-group" style="flex: 1;">
+                    <label class="form-label" for="id_min_stock_level">Minimum Stock Level</label>
+                    {{ form.min_stock_level }}
+                    <small class="text-light">Alert when stock falls below this level</small>
+                </div>
+                
+                <div class="form-group" style="flex: 1;">
+                    <label class="form-label" for="id_category">Category</label>
+                    {{ form.category }}
+                </div>
+            </div>
+            
+            <div class="d-flex gap-20">
+                <div class="form-group" style="flex: 1;">
+                    <label class="form-label" for="id_brand">Brand</label>
+                    {{ form.brand }}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="id_image">Part Image</label>
+                {{ form.image }}
+                <small class="text-light">Upload a clear image of the part (optional)</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="id_description">Description</label>
+                {{ form.description }}
+                <small class="text-light">Add details about the part, specifications, etc.</small>
+            </div>
+            
+            <div class="form-group mt-30">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Add Part
+                </button>
+                <a href="{% url 'inventory' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Add form-control class to all form fields
+    document.querySelectorAll('input, select, textarea').forEach(field => {
+        if (!field.classList.contains('form-control')) {
+            field.classList.add('form-control');
+        }
+    });
+    
+    // Form validation
+    function validateForm(formId) {
+        const form = document.getElementById(formId);
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.borderColor = 'var(--danger-red)';
+                isValid = false;
+            } else {
+                field.style.borderColor = 'var(--border-color)';
+            }
+        });
+        
+        return isValid;
+    }
+</script>
+{% endblock %}

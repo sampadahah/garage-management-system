@@ -244,6 +244,21 @@ def vehicle_delete(request, pk):
         "vehicle": vehicle
     })
 
+@login_required
+def create_appointment(request):
+    if request.method == "POST":
+        form = AppointmentCreateForm(request.POST, user=request.user)
+        if form.is_valid():
+            appt = form.save(commit=False)
+            appt.user = request.user
+            appt.save()
+            messages.success(request, "Appointment booked successfully!")
+            return redirect("create_appointment") 
+    else:
+        form = AppointmentCreateForm(user=request.user)
+
+    return render(request, "create_appointment.html", {"form": form})
+
 def logout_view(request):
     logout(request)
     return redirect("login")
