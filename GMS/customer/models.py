@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from adminpanel.models import Slot
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -91,8 +92,12 @@ class Appointment(models.Model):
         related_name="appointments"
     )
 
-    appointment_date = models.DateField()
-    appointment_time = models.TimeField()
+    # appointment_date = models.DateField()
+    slot = models.OneToOneField(   # One slot can be booked once
+        Slot,
+        on_delete=models.PROTECT,
+        related_name="appointment"
+    )
     notes = models.TextField(blank=True)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
@@ -102,4 +107,4 @@ class Appointment(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.user} - {self.vehicle} - {self.appointment_date} {self.appointment_time}"
+        return f"{self.vehicle} - {self.slot.date} {self.slot.start_time}"
