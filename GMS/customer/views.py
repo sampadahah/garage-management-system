@@ -190,13 +190,18 @@ def vehicle_list(request):
 @login_required
 def vehicle_create(request):
     if request.method == "POST":
-        form = VehicleForm(request.POST, request.FILES)
+        form = VehicleForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             vehicle = form.save(commit=False)
             vehicle.user = request.user
             vehicle.save()
             messages.success(request, "Vehicle added successfully!")
             return redirect("vehicle_list")
+        else: 
+            # Show form errors using messages framework
+            for field in form.errors:
+                for error in form.errors[field]:
+                    messages.error(request, error)
     else:
         form = VehicleForm()
 
@@ -211,7 +216,7 @@ def vehicle_update(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk, user=request.user)
 
     if request.method == "POST":
-        form = VehicleForm(request.POST, request.FILES, instance=vehicle)
+        form = VehicleForm(request.POST, request.FILES, instance=vehicle, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Vehicle updated successfully!")
