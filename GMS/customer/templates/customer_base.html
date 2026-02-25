@@ -17,11 +17,19 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar__logo">
+        {% comment %} <div class="sidebar__logo">
             <i class="bi bi-car-front-fill sidebar__icon"></i>
+            <iconify-icon icon="bxs:car-garage"></iconify-icon>
             <span class="sidebar__brand">e-Garage</span>
+        </div> {% endcomment %}
+        <div class="sidebar__brand">
+            <iconify-icon icon="bxs:car-garage"></iconify-icon>
+            <h2 class="brand-name">
+                <span class="brand-e">e-</span>Garage
+            </h2>
         </div>
         
+        {% comment %} <nav class="sidebar__nav">
         <nav class="sidebar__nav">
 
             <a href="{% url 'customer_dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}">
@@ -43,6 +51,54 @@
                 <i class="bi bi-receipt"></i>
                 <span>Invoices</span>
             </a>
+        </nav> {% endcomment %}
+        <nav class="sidebar__nav">
+
+            {% if request.user.is_superuser %}
+
+                <!-- ADMIN SIDEBAR -->
+
+                <a href="{% url 'adminpanel:dashboard' %}" 
+                    class="sidebar__link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'adminpanel:slot_calendar' %}" 
+                    class="sidebar__link {% if request.resolver_match.url_name == 'slot_calendar' %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Slots</span>
+                </a>
+                
+                {% comment %} <a href="{% url 'adminpanel:appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
+                    <span>Slots</span>
+                </a> {% endcomment %}
+
+            {% else %}
+
+                <!-- CUSTOMER SIDEBAR -->
+
+                <a href="{% url 'customer_dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{% url 'vehicle_list' %}" class="sidebar__link {% if request.resolver_match.url_name == 'vehicle_list' %}active{% endif %}">
+                    <i class="bi bi-car-front"></i>
+                    <span>My Vehicles</span>
+                </a>
+
+                <a href="{% url 'create_appointment' %}" class="sidebar__link {% if request.resolver_match.url_name == 'create_appointment' %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+
+                <a href="{% url 'signup' %}" class="sidebar__link">
+                    <i class="bi bi-receipt"></i>
+                    <span>Invoices</span>
+                </a>
+
+            {% endif %}
+
         </nav>
     </aside>
 
@@ -141,5 +197,7 @@ setTimeout(() => {
   }
 }, 3000);
 </script>
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+
 </body>
 </html>
