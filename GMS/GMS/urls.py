@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from customer.views import login_view 
+from adminpanel.views import admin_login
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,10 +25,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path("", include("customer.urls")),
 
-    # path("adminpanel/", include("adminpanel.urls")),
+    path("adminpanel/", include("adminpanel.urls")),
     path("customer/", include("customer.urls")),
     # path("staff/", include("staff.urls")),
-    path("", login_view, name="login"), 
+    path("", login_view, name="login"),  # Customer login
+    path("admin-login/", admin_login, name="admin_login"),  # Admin login
 ]
 urlpatterns += static(settings.MEDIA_URL, 
                       document_root=settings.MEDIA_ROOT)
