@@ -1,10 +1,55 @@
-{% extends 'customer_base.html' %}
+{% extends "customer_base.html" %}
+{% load static %}
 
 {% block page_title %}Dashboard{% endblock %}
 {% block page_subtitle %}
-Track your cars, services, and updates at a glance.
+Track your cars and updates at a glance.
 {% endblock %}
 
 {% block content %}
-<!-- Dashboard content -->
+
+<div class="dashboard-wrapper">
+
+    <div class="dashboard-header">
+        <h2>My Vehicles</h2>
+        <a href="{% url 'vehicle_add' %}" class="add-vehicle-btn">
+            + Add Vehicle
+        </a>
+    </div>
+
+    {% if vehicles %}
+    <div class="vehicle-grid">
+        {% for vehicle in vehicles %}
+        <div class="vehicle-card">
+
+            <div class="vehicle-image">
+                {% if vehicle.image %}
+                    <img src="{{ vehicle.image.url }}" alt="{{ vehicle.model }}">
+                {% else %}
+                    <div class="no-image">
+                        <i class="bi bi-car-front"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="vehicle-info">
+                <h4>{{ vehicle.model }}</h4>
+                <p>Year: {{ vehicle.year }}</p>
+                <p class="plate">Plate Number: {{ vehicle.plate_no }}</p>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="empty-state">
+            <p>You have not added any vehicles yet.</p>
+            <a href="{% url 'vehicle_create' %}" class="add-vehicle-btn">
+                Add Your First Vehicle
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+
 {% endblock %}
