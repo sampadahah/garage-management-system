@@ -40,6 +40,12 @@ Track your cars and updates at a glance.
 
         </div>
         {% endfor %}
+
+        {%else%}
+        <div class="empty-state">
+                <p>You have not added any vehicles yet.</p>
+        </div>
+    {% endif %}
     </div>
     {% endif %}
 
