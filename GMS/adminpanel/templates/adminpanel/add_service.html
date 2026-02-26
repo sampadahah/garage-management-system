@@ -1,0 +1,40 @@
+{% extends "customer_base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Card for Better UI -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Service</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="submit" class="btn btn-success">
+                                {% if form.instance.pk %}Update{% else %}Add{% endif %}
+                            </button>
+                            <a href="{% url 'service_list' %}" class="btn btn-secondary">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+    }
+    .card-header h3 {
+        font-weight: 600;
+    }
+    button.btn {
+        min-width: 100px;
+    }
+</style>
+{% endblock %}

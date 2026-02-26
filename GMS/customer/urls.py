@@ -52,4 +52,5 @@ urlpatterns = [
     path("vehicles/<int:pk>/delete/", vehicle_delete, name="vehicle_delete"),
 
     path("appointments/", create_appointment, name="create_appointment"),
+    path("appointments/available-slots/", available_slots, name="available_slots"),
 ]

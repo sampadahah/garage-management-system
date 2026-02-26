@@ -10,6 +10,10 @@ from django.urls import reverse
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from adminpanel.models import Slot
+from django.db import transaction
 
 User = get_user_model()
 
@@ -128,6 +132,15 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
+            
+            # Check if user is staff and redirect accordingly
+            if hasattr(user, 'staff_profile'):
+                messages.success(request, f'Welcome back, {user.name}!')
+                return redirect("staff_dashboard")
+            else:
+                return redirect("customer_dashboard")
+        else:
+            messages.error(request, "Invalid email or password.")
 
             print("REMEMBER ME VALUE:", request.POST.get("remember_me"))
 
@@ -282,15 +295,52 @@ def create_appointment(request):
     if request.method == "POST":
         form = AppointmentCreateForm(request.POST, user=request.user)
         if form.is_valid():
-            appt = form.save(commit=False)
-            appt.user = request.user
-            appt.save()
-            messages.success(request, "Appointment booked successfully!")
-            return redirect("create_appointment") 
+            with transaction.atomic():
+                appt = form.save(commit=False)
+                appt.user = request.user
+
+                # lock slot to prevent double booking
+                slot = Slot.objects.select_for_update().get(id=appt.slot_id)
+
+                # extra safety: ensure slot matches selected date
+                selected_date = form.cleaned_data["date"]
+                if slot.date != selected_date:
+                    form.add_error("slot", "Selected slot does not match the selected date.")
+                elif slot.is_booked:
+                    form.add_error("slot", "This slot is already booked. Please choose another.")
+                else:
+                    slot.is_booked = True
+                    slot.save()
+
+                    appt.save()
+                    messages.success(request, "Appointment booked successfully!")
+                    return redirect("create_appointment")
     else:
         form = AppointmentCreateForm(user=request.user)
 
     return render(request, "create_appointment.html", {"form": form})
+
+
+
+@login_required
+@require_GET
+def available_slots(request):
+    date = request.GET.get("date")
+    if not date:
+        return JsonResponse({"slots": []})
+
+    slots = Slot.objects.filter(date=date, is_booked=False).order_by("start_time")
+
+    data = [
+        {
+            "id": s.id,
+            "label": f"{s.start_time.strftime('%I:%M %p')} - {s.end_time.strftime('%I:%M %p')}",
+        }
+        for s in slots
+    ]
+
+    return JsonResponse({"slots": data})
+
 
 def logout_view(request):
     logout(request)
