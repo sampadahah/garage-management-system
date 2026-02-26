@@ -1,0 +1,84 @@
+{% extends 'staff/base.html' %}
+
+{% block title %}Update Staff{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-pencil"></i> Update Staff Member</h2>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <h5 class="mb-3">Personal Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name</label>
+                    {{ user_form.name }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone</label>
+                    {{ user_form.phone }}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                {{ user_form.address }}
+            </div>
+            
+            <hr class="my-4">
+            
+            <h5 class="mb-3">Employment Information</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Role</label>
+                    {{ staff_form.role }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Department</label>
+                    {{ staff_form.department }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hire Date</label>
+                    {{ staff_form.hire_date }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Salary</label>
+                    {{ staff_form.salary }}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                {{ staff_form.status }}
+            </div>
+            
+            <hr class="my-4">
+            
+            <h5 class="mb-3">Emergency Contact</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Emergency Contact Name</label>
+                    {{ staff_form.emergency_contact_name }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Emergency Contact Phone</label>
+                    {{ staff_form.emergency_contact_phone }}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Update Staff
+                </button>
+                <a href="{% url 'staff_detail' staff.pk %}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

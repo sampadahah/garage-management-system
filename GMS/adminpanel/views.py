@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import Slot
-from .forms import SlotForm
+from .models import Slot, Service
+from .forms import SlotForm, ServiceForm
 from datetime import date, datetime, timedelta
 from django.http import HttpResponseForbidden
+
 
 
 def is_staff_or_superuser(u):
@@ -282,3 +283,40 @@ def download_all_reports(request):
     response['Content-Disposition'] = 'attachment; filename="all_reports.zip"'
     
     return response
+
+# adminpanel/views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Service
+from .forms import ServiceForm
+
+def admin_service_list(request):
+    services = Service.objects.all()
+    return render(request, 'adminpanel/service_list.html', {'services': services})
+
+def admin_add_service(request):
+    if request.method == 'POST':
+        form = ServiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_service_list')
+    else:
+        form = ServiceForm()
+    return render(request, 'adminpanel/service_form.html', {'form': form, 'title': 'Add Service'})
+
+def admin_edit_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, instance=service)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_service_list')
+    else:
+        form = ServiceForm(instance=service)
+    return render(request, 'adminpanel/service_form.html', {'form': form, 'title': 'Edit Service'})
+
+def admin_delete_service(request, pk):
+    service = get_object_or_404(Service, pk=pk)
+    if request.method == 'POST':
+        service.delete()
+        return redirect('admin_service_list')
+    return render(request, 'adminpanel/service_confirm_delete.html', {'service': service})

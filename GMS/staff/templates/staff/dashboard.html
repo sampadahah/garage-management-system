@@ -1,0 +1,424 @@
+{% extends 'staff/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-header {
+        background: linear-gradient(135deg, #1D2939 0%, #2c3e50 100%);
+        padding: 30px;
+        border-radius: 20px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+        animation: slideDown 0.5s ease-out;
+    }
+    
+    .welcome-header h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .welcome-header p {
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    .welcome-header .mustard-accent {
+        color: var(--mustard);
+    }
+    
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease-out;
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #E5E7EB;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        border-color: var(--mustard);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: rgba(212, 175, 55, 0.05);
+        transform: rotate(45deg);
+        transition: all 0.5s ease;
+    }
+    
+    .stat-card:hover::before {
+        top: -100%;
+        right: -100%;
+    }
+    
+    .stat-icon {
+        font-size: 3rem;
+        opacity: 0.15;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--mustard);
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 10px 0;
+        position: relative;
+        z-index: 1;
+        color: var(--text);
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        z-index: 1;
+        color: var(--muted);
+        font-weight: 600;
+    }
+    
+    .stat-card small {
+        color: var(--muted);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .stat-card.blue .stat-icon { color: #667eea; }
+    .stat-card.green .stat-icon { color: #43e97b; }
+    .stat-card.orange .stat-icon { color: #4facfe; }
+    .stat-card.red .stat-icon { color: #f5576c; }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .section-card {
+        animation: fadeInUp 0.8s ease-out;
+        transition: all 0.3s ease;
+        border: 1px solid #E5E7EB;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .section-card:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        border-color: var(--mustard);
+    }
+    
+    .schedule-item {
+        background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--mustard);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .schedule-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    }
+    
+    .badge-custom {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+    
+    .card-header.mustard-header {
+        background: var(--mustard) !important;
+        color: #000 !important;
+    }
+    
+    .card-header.dark-header {
+        background: linear-gradient(135deg, #1D2939 0%, #2c3e50 100%) !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Header -->
+<div class="welcome-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="bi bi-stars mustard-accent"></i> Welcome back, {{ user.name }}!</h1>
+            <p><i class="bi bi-calendar-check mustard-accent"></i> {{ staff.department|default:"Staff Member" }} • Today is {% now "l, F j, Y" %}</p>
+        </div>
+        <a href="{% url 'staff_logout' %}" class="btn btn-outline-light">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card blue" style="animation-delay: 0.1s;">
+            <i class="bi bi-person-badge stat-icon"></i>
+            <div class="stat-label">Employee ID</div>
+            <div class="stat-value">{{ staff.employee_id }}</div>
+            <small><i class="bi bi-info-circle"></i> Your Identifier</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card green" style="animation-delay: 0.2s;">
+            <i class="bi bi-shield-check stat-icon"></i>
+            <div class="stat-label">Role</div>
+            <div class="stat-value">{{ staff.role.name }}</div>
+            <small><i class="bi bi-award"></i> Your Position</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card orange" style="animation-delay: 0.3s;">
+            <i class="bi bi-activity stat-icon"></i>
+            <div class="stat-label">Status</div>
+            <div class="stat-value">{{ staff.status }}</div>
+            <small><i class="bi bi-check-circle"></i> Current State</small>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card red" style="animation-delay: 0.4s;">
+            <i class="bi bi-calendar-x stat-icon"></i>
+            <div class="stat-label">Pending Leaves</div>
+            <div class="stat-value">{{ pending_leaves.count }}</div>
+            <small><i class="bi bi-hourglass-split"></i> Awaiting Review</small>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="row g-4">
+    <!-- Today's Schedule -->
+    <div class="col-lg-6">
+        <div class="card section-card" style="animation-delay: 0.5s;">
+            <div class="card-header mustard-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-day"></i> Today's Schedule</h5>
+            </div>
+            <div class="card-body">
+                {% if today_schedule %}
+                    {% for schedule in today_schedule %}
+                    <div class="schedule-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1" style="color: #667eea; font-weight: 600;">
+                                    <i class="bi bi-clock-fill"></i> {{ schedule.shift }}
+                                </h6>
+                                <p class="mb-0 text-muted">
+                                    <i class="bi bi-alarm"></i> {{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}
+                                </p>
+                            </div>
+                            <span class="badge-custom bg-success">
+                                <i class="bi bi-check-circle-fill"></i> Active
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-x"></i>
+                        <p>No schedule for today</p>
+                        <small class="text-muted">Enjoy your day off!</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Schedules -->
+    <div class="col-lg-6">
+        <div class="card section-card" style="animation-delay: 0.6s;">
+            <div class="card-header dark-header">
+                <h5 class="mb-0"><i class="bi bi-calendar3"></i> Upcoming Schedules</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_schedules %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="bi bi-calendar"></i> Day</th>
+                                    <th><i class="bi bi-sun"></i> Shift</th>
+                                    <th><i class="bi bi-clock"></i> Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in upcoming_schedules %}
+                                <tr style="transition: all 0.3s ease;">
+                                    <td><strong>{{ schedule.day_of_week }}</strong></td>
+                                    <td><span class="badge bg-info">{{ schedule.shift }}</span></td>
+                                    <td><small>{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-check"></i>
+                        <p>No upcoming schedules</p>
+                        <small class="text-muted">Check back later</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leave Requests Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card section-card" style="animation-delay: 0.7s;">
+            <div class="card-header mustard-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-x"></i> Recent Leave Requests</h5>
+                <a href="{% url 'leave_request_create' %}" class="btn btn-dark btn-sm">
+                    <i class="bi bi-plus-circle"></i> New Request
+                </a>
+            </div>
+            <div class="card-body">
+                {% if pending_leaves %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="bi bi-tag"></i> Type</th>
+                                    <th><i class="bi bi-calendar-event"></i> Start Date</th>
+                                    <th><i class="bi bi-calendar-event"></i> End Date</th>
+                                    <th><i class="bi bi-info-circle"></i> Status</th>
+                                    <th><i class="bi bi-gear"></i> Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in pending_leaves %}
+                                <tr style="transition: all 0.3s ease;">
+                                    <td><strong>{{ leave.leave_type }}</strong></td>
+                                    <td>{{ leave.start_date }}</td>
+                                    <td>{{ leave.end_date }}</td>
+                                    <td>
+                                        <span class="badge-custom bg-warning text-dark">
+                                            <i class="bi bi-hourglass-split"></i> {{ leave.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'leave_request_detail' leave.pk %}" 
+                                           class="btn btn-sm btn-outline-primary"
+                                           style="transition: all 0.3s ease;">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-check-circle"></i>
+                        <p>No pending leave requests</p>
+                        <small class="text-muted">All caught up!</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Info Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card section-card" style="animation-delay: 0.8s;">
+            <div class="card-header dark-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Quick Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong><i class="bi bi-building"></i> Department:</strong>
+                            <p class="text-muted mb-0">{{ staff.department|default:"Not assigned" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-calendar-check"></i> Hire Date:</strong>
+                            <p class="text-muted mb-0">{{ staff.hire_date }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-envelope"></i> Email:</strong>
+                            <p class="text-muted mb-0">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong><i class="bi bi-telephone"></i> Phone:</strong>
+                            <p class="text-muted mb-0">{{ user.phone|default:"Not provided" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-geo-alt"></i> Address:</strong>
+                            <p class="text-muted mb-0">{{ user.address|default:"Not provided" }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <strong><i class="bi bi-activity"></i> Status:</strong>
+                            <p class="mb-0">
+                                <span class="badge-custom bg-success">
+                                    <i class="bi bi-check-circle-fill"></i> {{ staff.status }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -27,6 +27,21 @@
     <!-- Login Card -->
     <div class="auth-card">
         <h2 class="auth-title">Login to your account</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 14px;">
+            <i class="bi bi-info-circle"></i> Staff and Customers login here
+        </p>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+            <div style="padding: 12px; margin-bottom: 15px; border-radius: 8px; font-size: 14px; 
+                        {% if message.tags == 'error' %}background-color: #fee; color: #c33; border: 1px solid #fcc;
+                        {% elif message.tags == 'success' %}background-color: #efe; color: #3c3; border: 1px solid #cfc;
+                        {% else %}background-color: #fef9e7; color: #856404; border: 1px solid #ffeaa7;{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
 
         <form method="POST">
             {% csrf_token %}
