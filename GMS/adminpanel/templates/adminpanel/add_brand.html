@@ -1,0 +1,30 @@
+{% extends "adminpanel/base.html" %}
+
+{% block title %}Add Brand{% endblock %}
+{% block page_subtitle %}Create new brand{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="max-width: 600px;">
+    <div class="header-actions mb-20">
+        <h3>Add Brand</h3>
+        <a href="{% url 'adminpanel:brands' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Brand Name *</label>
+            <input type="text" name="brand_name" class="form-control" required>
+        </div>
+
+        <div class="mt-20 d-flex gap-10">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <a href="{% url 'adminpanel:brands' %}" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
