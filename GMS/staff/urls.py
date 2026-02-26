@@ -28,6 +28,7 @@ urlpatterns = [
     path('leave-requests/<int:pk>/', views.leave_request_detail, name='leave_request_detail'),
     path('leave-requests/<int:pk>/approve/', views.leave_request_approve, name='leave_request_approve'),
     path('leave-requests/<int:pk>/reject/', views.leave_request_reject, name='leave_request_reject'),
+    path('leave-requests/<int:pk>/delete/', views.leave_request_delete, name='leave_request_delete'),
     
     # Role Management
     path('roles/', views.role_list, name='role_list'),

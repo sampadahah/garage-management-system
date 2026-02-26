@@ -453,6 +453,32 @@ def leave_request_reject(request, pk):
     return render(request, 'staff/leave_request_reject.html', {'leave_request': leave_request})
 
 
+@login_required
+def leave_request_delete(request, pk):
+    if not hasattr(request.user, 'staff_profile'):
+        messages.error(request, 'Access denied.')
+        return redirect('staff_dashboard')
+    
+    leave_request = get_object_or_404(LeaveRequest, pk=pk)
+    
+    # Staff can delete their own pending requests, admin can delete any
+    if not request.user.is_superuser and leave_request.staff != request.user.staff_profile:
+        messages.error(request, 'You do not have permission to delete this leave request.')
+        return redirect('leave_request_list')
+    
+    # Only allow deletion of pending requests
+    if leave_request.status != 'Pending' and not request.user.is_superuser:
+        messages.error(request, 'You can only delete pending leave requests.')
+        return redirect('leave_request_list')
+    
+    if request.method == 'POST':
+        leave_request.delete()
+        messages.success(request, 'Leave request deleted successfully!')
+        return redirect('leave_request_list')
+    
+    return render(request, 'staff/leave_request_confirm_delete.html', {'leave_request': leave_request})
+
+
 # Staff Role Management
 @login_required
 def role_list(request):

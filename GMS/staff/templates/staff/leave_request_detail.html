@@ -85,6 +85,22 @@
                 </div>
                 {% endif %}
                 {% endif %}
+                
+                <!-- Action Buttons -->
+                <div class="mt-4 d-flex gap-2">
+                    {% if user.is_superuser %}
+                    <a href="{% url 'leave_request_delete' leave_request.pk %}" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Request
+                    </a>
+                    {% elif leave_request.staff == user.staff_profile and leave_request.status == 'Pending' %}
+                    <a href="{% url 'leave_request_delete' leave_request.pk %}" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Request
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'leave_request_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                </div>
             </div>
         </div>
     </div>
