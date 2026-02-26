@@ -145,7 +145,6 @@ class WorkList(models.Model):
 
     work_list_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
 
     job_status = models.CharField(
         max_length=20,
