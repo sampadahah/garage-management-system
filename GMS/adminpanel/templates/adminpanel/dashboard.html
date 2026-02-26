@@ -1,14 +1,14 @@
-{% extends 'customer_base.html' %}
+{% extends 'adminpanel/base.html' %}
 
-{% block page_title %}Dashboard{% endblock %}
+{% block title %}
+  Dashboard - Garage Management System
+{% endblock %}
+
 {% block page_subtitle %}
   Let's check your garage today
 {% endblock %}
 
 {% block content %}
-<!-- Dashboard content -->
-{% endblock %}
-{% comment %} {% block content %}
   <div class="summary-cards">
     <div class="summary-card">
       <div class="card-header">
@@ -74,7 +74,7 @@
   <div class="content-wrapper">
     <div class="header-actions">
       <h3>Recent Inventory</h3>
-      <a href="{% url 'inventory' %}" class="btn btn-outline"><i class="fas fa-eye"></i> View All</a>
+      <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline"><i class="fas fa-eye"></i> View All</a>
     </div>
 
     <div class="table-container">
@@ -213,4 +213,4 @@
       </div>
     </div>
   </div>
-{% endblock %} {% endcomment %}
+{% endblock %}
