@@ -775,6 +775,19 @@
                
                 <span>Jobs</span>
             </a>
+            <a href="{% url 'adminpanel:leaves' %}" class="menu-item {% if page_title == 'Leaves' %}active{% endif %}">
+    <span>Leaves</span>
+</a>
+            <a href="{% url 'adminpanel:categories' %}" class="menu-item {% if page_title == 'Categories' %}active{% endif %}">
+                <span>Categories</span>
+            </a>
+            <a href="{% url 'adminpanel:brands' %}" class="menu-item {% if page_title == 'Brands' %}active{% endif %}">
+                <span>Brands</span>
+            </a>
+             <a href="#" class="menu-item" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
            
         </nav>
     </div>

@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.contrib import messages
@@ -10,8 +10,9 @@ from django.contrib.auth import get_user_model
 from .forms import JobVacancyForm, PartForm
 from .models import JobVacancy, Part, WorkList
 
+from django.shortcuts import redirect
 
-
+from .models import InventoryCategory, Brand
 
 def admin_login(request):
     """Admin login view that checks for staff/superuser status"""
@@ -113,7 +114,12 @@ def inventory(request):
     qs = Part.objects.select_related("category", "brand").all()
 
     if search_query:
-        qs = qs.filter(name__icontains=search_query)
+            qs = qs.filter(
+        Q(name__icontains=search_query) |
+        Q(compatible_model__icontains=search_query) |
+        Q(category__category_name__icontains=search_query) |
+        Q(brand__brand_name__icontains=search_query)
+    )
 
     out_of_stock_items = qs.filter(quantity=0).count()
 
@@ -140,7 +146,7 @@ def add_inventory_item(request):
         form = PartForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect("inventory")
+            return redirect("adminpanel:inventory")
     else:
         form = PartForm()
 
@@ -156,7 +162,7 @@ def edit_inventory_item(request, part_id):
         form = PartForm(request.POST, request.FILES, instance=item)
         if form.is_valid():
             form.save()
-            return redirect("inventory")
+            return redirect("adminpanel:inventory")
     else:
         form = PartForm(instance=item)
 
@@ -176,7 +182,7 @@ def delete_inventory_item(request, part_id):
 
     if request.method == "POST":
         item.delete()
-        return redirect("adminpanel:inventory")  # ✅ FIXED
+        return redirect("adminpanel:inventory")  
 
     return render(
         request,
@@ -207,7 +213,7 @@ def create_job(request):
         form = JobVacancyForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("adminpanel:jobs")  # ✅ FIX
+            return redirect("adminpanel:jobs")
     else:
         form = JobVacancyForm()
 
@@ -220,17 +226,116 @@ def create_job(request):
 
 # -------- Logout --------
 @login_required
+@user_passes_test(is_admin)
 def admin_logout(request):
-    logout(request)
-    # change this to your login url name if different
-    return redirect("admin_login")
+    if request.method in ["POST", "GET"]:
+        logout(request)
+        return redirect("login")
 
-# @login_required
-# @user_passes_test(is_admin)
-# def leaves(request):
-#     leaves = LeaveApplication.objects.select_related("user").order_by("-applied_at")
-#     return render(
-#         request,
-#         "adminpanel/leaves.html",
-#         {"page_title": "Leaves", "leaves": leaves},
-#     )
+# -------- Leaves (if you have staff branch merged) --------
+try:
+    from staff.models import LeaveApplication
+except Exception:
+    LeaveApplication = None
+def is_admin(user):
+    return user.is_authenticated and (user.is_superuser or user.is_staff)
+
+
+@login_required
+@user_passes_test(is_admin)
+def leaves(request):
+    if LeaveApplication is None:
+        # staff branch not merged yet
+        return render(
+            request,
+            "adminpanel/leaves_not_ready.html",
+            {"page_title": "Leaves"},
+        )
+
+    leaves_qs = LeaveApplication.objects.select_related("user").order_by("-applied_at")
+    return render(
+        request,
+        "adminpanel/leaves.html",
+        {"page_title": "Leaves", "leaves": leaves_qs},
+    )
+
+
+@login_required
+@user_passes_test(is_admin)
+def decide_leave(request, leave_id, action):
+    if LeaveApplication is None:
+        return redirect("adminpanel:leaves")
+
+    leave = get_object_or_404(LeaveApplication, leave_id=leave_id)
+
+    if action == "approve":
+        leave.status = "approved"
+    elif action == "reject":
+        leave.status = "rejected"
+    else:
+        return redirect("adminpanel:leaves")
+
+    leave.decided_at = timezone.now()
+    leave.save(update_fields=["status", "decided_at"])
+
+    return redirect("adminpanel:leaves")
+
+
+def is_admin(user):
+    return user.is_authenticated and (user.is_superuser or user.is_staff)
+
+# ----------- Categories -----------
+@login_required
+@user_passes_test(is_admin)
+def categories(request):
+    categories = InventoryCategory.objects.all().order_by("category_name")
+    return render(request, "adminpanel/categories.html", {
+        "page_title": "Categories",
+        "categories": categories,
+    })
+
+@login_required
+@user_passes_test(is_admin)
+def add_category(request):
+    if request.method == "POST":
+        name = (request.POST.get("category_name") or "").strip()
+        if name:
+            InventoryCategory.objects.get_or_create(category_name=name)
+            return redirect("adminpanel:categories")
+
+    return render(request, "adminpanel/add_category.html", {"page_title": "Categories"})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_category(request, category_id):
+    category = get_object_or_404(InventoryCategory, category_id=category_id)
+    category.delete()
+    return redirect("adminpanel:categories")
+
+# ----------- Brands -----------
+@login_required
+@user_passes_test(is_admin)
+def brands(request):
+    brands = Brand.objects.all().order_by("brand_name")
+    return render(request, "adminpanel/brands.html", {
+        "page_title": "Brands",
+        "brands": brands,
+    })
+
+@login_required
+@user_passes_test(is_admin)
+def add_brand(request):
+    if request.method == "POST":
+        name = (request.POST.get("brand_name") or "").strip()
+        if name:
+            Brand.objects.get_or_create(brand_name=name)
+            return redirect("adminpanel:brands")
+
+    return render(request, "adminpanel/add_brand.html", {"page_title": "Brands"})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_brand(request, brand_id):
+    brand = get_object_or_404(Brand, brand_id=brand_id)
+    brand.delete()
+    return redirect("adminpanel:brands")

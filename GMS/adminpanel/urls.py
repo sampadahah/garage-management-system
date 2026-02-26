@@ -21,5 +21,14 @@ urlpatterns = [
     # Logout
     path("logout/", views.admin_logout, name="admin_logout"),
 
+    path("leaves/", views.leaves, name="leaves"),
+    path("leaves/<int:leave_id>/<str:action>/", views.decide_leave, name="decide_leave"),
 
+    path("categories/", views.categories, name="categories"),
+    path("categories/add/", views.add_category, name="add_category"),
+    path("categories/<int:category_id>/delete/", views.delete_category, name="delete_category"),
+
+    path("brands/", views.brands, name="brands"),
+    path("brands/add/", views.add_brand, name="add_brand"),
+    path("brands/<int:brand_id>/delete/", views.delete_brand, name="delete_brand"),
 ]

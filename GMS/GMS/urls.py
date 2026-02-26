@@ -30,6 +30,7 @@ urlpatterns = [
     # path("staff/", include("staff.urls")),
     path("", login_view, name="login"),  # Customer login
     # path("admin-login/", admin_login, name="admin_login"),  # Admin login
+    
 ]
 urlpatterns += static(settings.MEDIA_URL, 
                       document_root=settings.MEDIA_ROOT)

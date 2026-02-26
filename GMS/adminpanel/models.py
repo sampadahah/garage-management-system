@@ -101,6 +101,12 @@ class JobVacancy(models.Model):
     class Meta:
         db_table = "job_vacancies"
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["category", "title", "deadline"],
+                name="unique_job_by_category_title_deadline",
+        )
+    ]
 
     def __str__(self):
         return f"{self.title} ({self.get_category_display()})"
