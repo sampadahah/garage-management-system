@@ -1,0 +1,89 @@
+{% extends 'staff/base.html' %}
+
+{% block title %}Schedules{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-calendar3"></i> Work Schedules</h2>
+    {% if can_manage %}
+    <a href="{% url 'schedule_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Schedule
+    </a>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-10">
+                <select name="day" class="form-select">
+                    <option value="">All Days</option>
+                    <option value="Monday" {% if day_filter == 'Monday' %}selected{% endif %}>Monday</option>
+                    <option value="Tuesday" {% if day_filter == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                    <option value="Wednesday" {% if day_filter == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                    <option value="Thursday" {% if day_filter == 'Thursday' %}selected{% endif %}>Thursday</option>
+                    <option value="Friday" {% if day_filter == 'Friday' %}selected{% endif %}>Friday</option>
+                    <option value="Saturday" {% if day_filter == 'Saturday' %}selected{% endif %}>Saturday</option>
+                    <option value="Sunday" {% if day_filter == 'Sunday' %}selected{% endif %}>Sunday</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Staff Member</th>
+                        <th>Day</th>
+                        <th>Shift</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        {% if can_manage %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.staff.user.name }}</td>
+                        <td>{{ schedule.day_of_week }}</td>
+                        <td><span class="badge bg-info">{{ schedule.shift }}</span></td>
+                        <td>{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</td>
+                        <td>
+                            {% if schedule.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        {% if can_manage %}
+                        <td>
+                            <a href="{% url 'schedule_update' schedule.pk %}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'schedule_delete' schedule.pk %}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if can_manage %}6{% else %}5{% endif %}" class="text-center text-muted py-4">
+                            <i class="bi bi-calendar-x" style="font-size: 2rem;"></i><br>
+                            No schedules found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -145,12 +145,16 @@ class VehicleForm(forms.ModelForm):
         return plate
 
 class AppointmentCreateForm(forms.ModelForm):
+
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+        required=True
+    )
+
     class Meta:
         model = Appointment
-        fields = ["vehicle",  "appointment_date", "appointment_time", "notes"]
+        fields = ["vehicle", "slot", "notes"]
         widgets = {
-            "appointment_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
-            "appointment_time": forms.TimeInput(attrs={"type": "time", "class": "form-control"}),
             "notes": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Write additional notes..."}),
         }
 
@@ -158,11 +162,14 @@ class AppointmentCreateForm(forms.ModelForm):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
-        self.fields["vehicle"].widget.attrs.update({"class": "form-select"})
+        self.fields["vehicle"].widget.attrs["class"] = "form-select"
+        self.fields["slot"].widget.attrs["class"] = "form-select"
        
 
         if user:
             self.fields["vehicle"].queryset = Vehicle.objects.filter(user=user).order_by("-created_at")
 
         self.fields["vehicle"].empty_label = "Choose vehicle"
+        self.fields["slot"].queryset = Slot.objects.none()
+        self.fields["slot"].empty_label = "Select time slot"
 
