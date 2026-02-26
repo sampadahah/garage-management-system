@@ -94,6 +94,12 @@ def customer_signup(request):
 
 
 def login_view(request):
+
+    if request.user.is_authenticated:
+        if request.user.is_superuser or request.user.is_staff:
+            return redirect("adminpanel:dashboard")
+        return redirect("customer_dashboard")
+    
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
@@ -121,23 +127,31 @@ def login_view(request):
                 user = None
 
         if user is not None:
-            if user is not None:
-                login(request, user)
+            login(request, user)
 
-                # Superuser
-                if user.is_superuser:
-                    return redirect("adminpanel:dashboard")
+            print("REMEMBER ME VALUE:", request.POST.get("remember_me"))
 
-                # Staff / Admin role (if you use role field)
-                if hasattr(user, "role") and user.role == "admin":
-                    return redirect("adminpanel:dashboard")
+            if not request.POST.get("remember_me"):
+                # Session expires when browser closes
+                request.session.set_expiry(0)
+            else:
+                # Keep user logged in for 30 days
+                request.session.set_expiry(60 * 60 * 24 * 7)
+            
+            # Superuser
+            if user.is_superuser:
+                return redirect("adminpanel:dashboard")
 
-                # Or if using is_staff
-                if user.is_staff:
-                    return redirect("adminpanel:dashboard")
+            # Staff / Admin role (if you use role field)
+            if hasattr(user, "role") and user.role == "admin":
+                return redirect("adminpanel:dashboard")
 
-                # Default → Customer
-                return redirect("customer_dashboard")
+            # Or if using is_staff
+            if user.is_staff:
+                return redirect("adminpanel:dashboard")
+
+            # Default → Customer
+            return redirect("customer_dashboard")
         
         messages.error(request, "Invalid email or password.")
         return render(request, "login.html")
@@ -168,7 +182,7 @@ def verify_email(request, uidb64, token):
 @login_required
 def customer_dashboard(request):
     vehicles = Vehicle.objects.filter(user=request.user)
-
+    print("Authenticated:", request.user.is_authenticated)
     return render(request, "dashboard.html", {
         "vehicles": vehicles
     })
