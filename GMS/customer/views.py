@@ -295,7 +295,7 @@ def create_appointment(request):
     else:
         form = AppointmentCreateForm(user=request.user)
 
-    return render(request, "customer/create_appointment.html", {"form": form})
+    return render(request, "create_appointment.html", {"form": form})
 
 
 

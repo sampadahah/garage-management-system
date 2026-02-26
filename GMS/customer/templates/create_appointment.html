@@ -1,4 +1,4 @@
-{% extends "customer/customer_base.html" %}
+{% extends "customer_base.html" %}
 
 {% block page_title %}Appointments{% endblock %}
 {% block page_subtitle %}Choose a date to see available slots{% endblock %}
@@ -47,9 +47,11 @@
           </div>
 
           <div class="col-12">
-            <button type="submit" class="btn btn-warning w-100 py-3 fw-semibold rounded-3">
-              Confirm Booking
-            </button>
+            <button type="submit"
+                  class="btn w-100 py-3 fw-semibold rounded-3"
+                  style="background-color:#D4AF37; border:none; color:#000;">
+            Confirm Booking
+          </button>
           </div>
 
         </div>
