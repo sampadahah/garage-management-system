@@ -1,7 +1,7 @@
 {% extends "customer_base.html" %}
 
-{% block title %}
-  Inventory - Garage Management System
+{% block page_title %}
+  Inventory 
 {% endblock %}
 
 {% block page_subtitle %}
@@ -29,10 +29,10 @@
           <input type="text" name="search" value="{{ search_query }}" placeholder="Search items..." class="form-control" style="width: 250px;" />
           <button type="submit" class="btn btn-outline"><i class="fas fa-search"></i> Search</button>
           {% if search_query %}
-            <a href="{% url 'inventory' %}" class="btn btn-outline"><i class="fas fa-times"></i> Clear</a>
+            <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline"><i class="fas fa-times"></i> Clear</a>
           {% endif %}
         </form>
-        <a href="{% url 'add_inventory_item' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Part</a>
+        <a href="{% url 'adminpanel:add_inventory_item' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Part</a>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
           {% for item in inventory_items %}
             <tr>
               <td>
-                <a href="{% url 'item_details' item.part_id %}" class="item-link">
+                <a href="{% url 'adminpanel:item_details' item.part_id %}" class="item-link">
                   <strong>{{ item.name }}</strong>
                   {% if item.compatible_model %}
                     <br /><small class="text-light">Compatible: {{ item.compatible_model }}</small>
@@ -75,8 +75,8 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <a href="{% url 'edit_inventory_item' item.part_id %}" class="btn btn-outline btn-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                  <a href="{% url 'delete_inventory_item' item.part_id %}" class="btn btn-danger btn-icon" title="Delete"><i class="fas fa-trash"></i></a>
+                  <a href="{% url 'adminpanel:edit_inventory_item' item.part_id %}" class="btn btn-outline btn-icon" title="Edit"><i class="fas fa-edit"></i></a>
+                  <a href="{% url 'adminpanel:delete_inventory_item' item.part_id %}" class="btn btn-danger btn-icon" title="Delete"><i class="fas fa-trash"></i></a>
                 </div>
               </td>
             </tr>
@@ -86,7 +86,7 @@
                 {% if search_query %}
                   No items found matching "{{ search_query }}"
                 {% else %}
-                  No inventory items found. <a href="{% url 'add_inventory_item' %}">Add your first item</a>
+                  No inventory items found. <a href="{% url 'adminpanel:add_inventory_item' %}">Add your first item</a>
                 {% endif %}
               </td>
             </tr>

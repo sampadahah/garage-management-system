@@ -4,4 +4,4 @@
     {{ form.as_p }}
     <button type="submit">{% if form.instance.pk %}Update{% else %}Add{% endif %}</button>
 </form>
-<a href="{% url 'service_list' %}">Back to Service List</a>
+<a href="{% url 'adminpanel:service_list' %}">Back to Service List</a>

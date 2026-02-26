@@ -1,6 +1,6 @@
 {% extends "customer_base.html" %}
 
-{% block title %}Staff - Garage Management System{% endblock %}
+{% block page_title %}Staff {% endblock %}
 
 {% block page_subtitle %}Manage staff members and roles{% endblock %}
 
@@ -8,7 +8,7 @@
 <div class="content-wrapper">
     <div class="header-actions">
         <h3>Staff Management</h3>
-        <a href="{% url 'create_user' %}" class="btn btn-primary">
+        <a href="{% url 'adminpanel:create_user' %}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Add Staff Member
         </a>
     </div>

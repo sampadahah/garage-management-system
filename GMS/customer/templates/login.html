@@ -19,17 +19,17 @@
     <!-- Logo -->
     <div class="brand">
         <div class="brand__logo">
-            <i class="bi bi-car-front-fill brand__icon"></i>
-            <div class="brand__name">e-Garage</div>
+            <iconify-icon icon="bxs:car-garage" width="60" height="60"></iconify-icon>
+            <h2 class="brand-name">
+                <span class="brand-e">e-</span>Garage
+            </h2>
         </div>
     </div>
+
 
     <!-- Login Card -->
     <div class="auth-card">
         <h2 class="auth-title">Login to your account</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 14px;">
-            <i class="bi bi-info-circle"></i> Staff and Customers login here
-        </p>
 
         <!-- Messages -->
         {% if messages %}
@@ -91,6 +91,6 @@ togglePassword.addEventListener("click", function () {
     this.classList.toggle("bi-eye-slash");
 });
 </script>
-
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
 </body>
 </html>

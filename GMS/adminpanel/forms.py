@@ -1,5 +1,5 @@
 from django import forms
-from .models import Slot, Service
+from .models import Slot, Service, JobVacancy, Part
 from django.forms import DateInput, TimeInput
 
 class SlotForm(forms.ModelForm):
@@ -22,4 +22,34 @@ class ServiceForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'duration': forms.NumberInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+class PartForm(forms.ModelForm):
+    class Meta:
+        model = Part
+        fields = [
+            "name",
+            "compatible_model",
+            "price",
+            "quantity",
+            "min_stock_level",
+            "category",
+            "brand",
+            "image",
+            "description",
+        ]
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 4}),
+            "requirements": forms.Textarea(attrs={"rows": 4}),
+        }
+
+
+class JobVacancyForm(forms.ModelForm):
+    class Meta:
+        model = JobVacancy
+        fields = ["category", "title", "openings", "deadline", "description", "requirements", "status"]
+        widgets = {
+            "deadline": forms.DateInput(attrs={"type": "date"}),
+            "description": forms.Textarea(attrs={"rows": 5}),
+            "requirements": forms.Textarea(attrs={"rows": 5}),
         }

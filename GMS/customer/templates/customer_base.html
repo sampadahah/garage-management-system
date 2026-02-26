@@ -29,51 +29,45 @@
             </h2>
         </div>
         
-        {% comment %} <nav class="sidebar__nav">
-        <nav class="sidebar__nav">
-
-            <a href="{% url 'customer_dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}">
-                <i class="bi bi-grid-fill"></i>
-                <span>Dashboard</span>
-            </a>
-
-            <a href="{% url 'vehicle_list' %}" class="sidebar__link {% if request.resolver_match.url_name == 'vehicle_list' %}active{% endif %}">
-                <i class="bi bi-car-front"></i>
-                <span>My Vehicles</span>
-            </a>
-
-            <a href="{% url 'create_appointment' %}" class="sidebar__link {% if request.resolver_match.url_name == 'create_appointment' %}active{% endif %}">
-                <i class="bi bi-calendar-check"></i>
-                <span>Appointments</span>
-            </a>
-
-            <a href="{% url 'signup' %}" class="sidebar__link">
-                <i class="bi bi-receipt"></i>
-                <span>Invoices</span>
-            </a>
-        </nav> {% endcomment %}
         <nav class="sidebar__nav">
 
             {% if request.user.is_superuser %}
 
                 <!-- ADMIN SIDEBAR -->
-
-                <a href="{% url 'adminpanel:dashboard' %}" 
-                    class="sidebar__link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <a href="{% url 'adminpanel:dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{% url 'adminpanel:slot_calendar' %}" 
-                    class="sidebar__link {% if request.resolver_match.url_name == 'slot_calendar' %}active{% endif %}">
+
+                <a href="{% url 'adminpanel:inventory' %}" class="sidebar__link {% if request.resolver_match.url_name == 'inventory' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Inventory</span>
+                </a>
+
+                <a href="{% url 'adminpanel:jobs' %}" class="sidebar__link {% if request.resolver_match.url_name == 'jobs' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Jobs</span>
+                </a>
+
+                <a href="{% url 'adminpanel:customers' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customers' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Customers</span>
+                </a>
+
+                <a href="{% url 'adminpanel:slot_calendar' %}" class="sidebar__link {% if request.resolver_match.url_name == 'slot_calendar' %}active{% endif %}">
                     <i class="bi bi-calendar-check"></i>
                     <span>Slots</span>
                 </a>
-                
-                {% comment %} <a href="{% url 'adminpanel:appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
-                    <span>Slots</span>
+                {% comment %} <a href="{% url 'reports' %}" class="menu-item {% if page_title == 'Reports' %}active{% endif %}">
+                    
+                    <span>Reports</span>
+                </a> {% endcomment %}
+                {% comment %} <a href="{% url 'staff' %}" class="menu-item {% if page_title == 'Staff' %}active{% endif %}">
+                    
+                    <span>Staff</span>
                 </a> {% endcomment %}
 
-            {% else %}
+                {% else %}
 
                 <!-- CUSTOMER SIDEBAR -->
 

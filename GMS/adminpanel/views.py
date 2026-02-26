@@ -2,18 +2,31 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import Slot, Service
-from .forms import SlotForm, ServiceForm
 from datetime import date, datetime, timedelta
 from django.http import HttpResponseForbidden
+from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
+from django.db.models import Count, F, Q
+from django.utils import timezone
+from django.contrib.auth import get_user_model
 
+
+from .models import Slot, Service
+from .forms import SlotForm, ServiceForm
+from .forms import JobVacancyForm, PartForm
+from .models import JobVacancy, Part
+
+from .models import InventoryCategory, Brand
 
 
 def is_staff_or_superuser(u):
     return u.is_authenticated and (u.is_staff or u.is_superuser)
 
+def is_admin(user):
+    return user.is_authenticated and (user.is_superuser or user.is_staff)
+
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def admin_dashboard(request):
     """Admin dashboard showing overview"""
     today = date.today()
@@ -31,7 +44,7 @@ def admin_dashboard(request):
     return render(request, "adminpanel/dashboard.html", context)
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def slot_calendar(request):
     """Show calendar and slots for selected date or all slots"""
     selected_date = request.GET.get("date")
@@ -57,7 +70,7 @@ def slot_calendar(request):
     return render(request, "adminpanel/slot_calendar.html", context)
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def toggle_slot_status(request, slot_id):
     """Toggle slot status between available and booked"""
     if request.method == "POST":
@@ -77,7 +90,7 @@ def toggle_slot_status(request, slot_id):
     return redirect("adminpanel:slot_calendar")
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def add_slot(request):
     """Add a new slot"""
     if request.method == "POST":
@@ -96,7 +109,7 @@ def add_slot(request):
     return render(request, "adminpanel/add_slot.html", {"form": form})
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def customers(request):
     """View all customers"""
     from django.contrib.auth import get_user_model
@@ -112,7 +125,7 @@ def customers(request):
     return render(request, "adminpanel/customers.html", context)
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def reports(request):
     """View reports page with download options"""
     from django.contrib.auth import get_user_model
@@ -132,7 +145,7 @@ def reports(request):
     return render(request, "adminpanel/reports.html", context)
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def download_slots_report(request):
     """Download slots report as CSV"""
     import csv
@@ -158,7 +171,7 @@ def download_slots_report(request):
     return response
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def download_customers_report(request):
     """Download customers report as CSV"""
     import csv
@@ -189,7 +202,7 @@ def download_customers_report(request):
     return response
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def download_bookings_report(request):
     """Download bookings report as CSV"""
     import csv
@@ -214,7 +227,7 @@ def download_bookings_report(request):
     return response
 
 @login_required
-@user_passes_test(is_staff_or_superuser, login_url='/customer/login/')
+@user_passes_test(is_staff_or_superuser)
 def download_all_reports(request):
     """Download all reports as ZIP file"""
     import csv
@@ -284,10 +297,6 @@ def download_all_reports(request):
     
     return response
 
-# adminpanel/views.py
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Service
-from .forms import ServiceForm
 
 def admin_service_list(request):
     services = Service.objects.all()
@@ -321,58 +330,6 @@ def admin_delete_service(request, pk):
         return redirect('admin_service_list')
     return render(request, 'adminpanel/service_confirm_delete.html', {'service': service})
 
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.paginator import Paginator
-from django.db.models import Count, F, Q
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-
-from .forms import JobVacancyForm, PartForm
-from .models import JobVacancy, Part, WorkList
-
-from django.shortcuts import redirect
-
-from .models import InventoryCategory, Brand
-
-def admin_login(request):
-    """Admin login view that checks for staff/superuser status"""
-    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
-        return redirect("dashboard")
-    
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        
-        User = get_user_model()
-        
-        try:
-            user = User.objects.get(email=email)
-            if not (user.is_staff or user.is_superuser):
-                messages.error(request, "Access denied. Admin privileges required.")
-                return render(request, "login.html")
-        except User.DoesNotExist:
-            messages.error(request, "Invalid email or password.")
-            return render(request, "login.html")
-        
-        user = authenticate(request, username=email, password=password)
-        
-        if user is not None:
-            if user.is_staff or user.is_superuser:
-                login(request, user)
-                return redirect("dashboard")
-            else:
-                messages.error(request, "Access denied. Admin privileges required.")
-        else:
-            messages.error(request, "Invalid email or password.")
-        
-        return render(request, "login.html")
-    
-    return render(request, "login.html")
-
-
 def is_admin(user):
     # adjust if you have your own role field
     return user.is_authenticated and (user.is_superuser or user.is_staff)
@@ -390,11 +347,11 @@ def dashboard(request):
     recent_inventory = Part.objects.all().order_by("-created_at")[:5]
 
     # Jobs stats (WorkList)
-    total_jobs = WorkList.objects.count()
-    pending_jobs = WorkList.objects.filter(job_status="assigned").count()
-    in_progress_jobs = WorkList.objects.filter(job_status="in_progress").count()
+    # total_jobs = WorkList.objects.count()
+    # pending_jobs = WorkList.objects.filter(job_status="assigned").count()
+    # in_progress_jobs = WorkList.objects.filter(job_status="in_progress").count()
 
-    recent_jobs = WorkList.objects.select_related("user", "appointment").order_by("-created_at")[:5]
+    # recent_jobs = WorkList.objects.select_related("user", "appointment").order_by("-created_at")[:5]
 
     # Customers stats (if you have Customer model later, replace this)
     # For now we count non-staff users as customers
@@ -418,12 +375,12 @@ def dashboard(request):
         "low_stock_items": low_stock_items,
         "out_of_stock_items": out_of_stock_items,
         "recent_inventory": recent_inventory,
-        "total_jobs": total_jobs,
-        "recent_jobs": recent_jobs,
+        # "total_jobs": total_jobs,
+        # "recent_jobs": recent_jobs,
         "total_customers": total_customers,
         "new_customers_today": new_customers_today,
-        "pending_jobs": pending_jobs,
-        "in_progress_jobs": in_progress_jobs,
+        # "pending_jobs": pending_jobs,
+        # "in_progress_jobs": in_progress_jobs,
         "pending_appointments": pending_appointments,
     }
     return render(request, "adminpanel/dashboard.html", context)
@@ -547,65 +504,52 @@ def create_job(request):
     )
 
 
-# -------- Logout --------
-@login_required
-@user_passes_test(is_admin)
-def admin_logout(request):
-    if request.method in ["POST", "GET"]:
-        logout(request)
-        return redirect("login")
-
 # -------- Leaves (if you have staff branch merged) --------
-try:
-    from staff.models import LeaveApplication
-except Exception:
-    LeaveApplication = None
-def is_admin(user):
-    return user.is_authenticated and (user.is_superuser or user.is_staff)
+# try:
+#     from staff.models import LeaveApplication
+# except Exception:
+#     LeaveApplication = None
 
 
-@login_required
-@user_passes_test(is_admin)
-def leaves(request):
-    if LeaveApplication is None:
-        # staff branch not merged yet
-        return render(
-            request,
-            "adminpanel/leaves_not_ready.html",
-            {"page_title": "Leaves"},
-        )
+# @login_required
+# @user_passes_test(is_admin)
+# def leaves(request):
+#     if LeaveApplication is None:
+#         # staff branch not merged yet
+#         return render(
+#             request,
+#             "adminpanel/leaves_not_ready.html",
+#             {"page_title": "Leaves"},
+#         )
 
-    leaves_qs = LeaveApplication.objects.select_related("user").order_by("-applied_at")
-    return render(
-        request,
-        "adminpanel/leaves.html",
-        {"page_title": "Leaves", "leaves": leaves_qs},
-    )
-
-
-@login_required
-@user_passes_test(is_admin)
-def decide_leave(request, leave_id, action):
-    if LeaveApplication is None:
-        return redirect("adminpanel:leaves")
-
-    leave = get_object_or_404(LeaveApplication, leave_id=leave_id)
-
-    if action == "approve":
-        leave.status = "approved"
-    elif action == "reject":
-        leave.status = "rejected"
-    else:
-        return redirect("adminpanel:leaves")
-
-    leave.decided_at = timezone.now()
-    leave.save(update_fields=["status", "decided_at"])
-
-    return redirect("adminpanel:leaves")
+#     leaves_qs = LeaveApplication.objects.select_related("user").order_by("-applied_at")
+#     return render(
+#         request,
+#         "adminpanel/leaves.html",
+#         {"page_title": "Leaves", "leaves": leaves_qs},
+#     )
 
 
-def is_admin(user):
-    return user.is_authenticated and (user.is_superuser or user.is_staff)
+# @login_required
+# @user_passes_test(is_admin)
+# def decide_leave(request, leave_id, action):
+#     if LeaveApplication is None:
+#         return redirect("adminpanel:leaves")
+
+#     leave = get_object_or_404(LeaveApplication, leave_id=leave_id)
+
+#     if action == "approve":
+#         leave.status = "approved"
+#     elif action == "reject":
+#         leave.status = "rejected"
+#     else:
+#         return redirect("adminpanel:leaves")
+
+#     leave.decided_at = timezone.now()
+#     leave.save(update_fields=["status", "decided_at"])
+
+#     return redirect("adminpanel:leaves")
+
 
 # ----------- Categories -----------
 @login_required
