@@ -8,7 +8,6 @@ from datetime import date, datetime, timedelta
 from django.http import HttpResponseForbidden
 
 
-
 def is_staff_or_superuser(u):
     return u.is_authenticated and (u.is_staff or u.is_superuser)
 
