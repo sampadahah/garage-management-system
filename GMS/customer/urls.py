@@ -6,9 +6,9 @@ urlpatterns = [
     path("signup/", customer_signup, name="signup"),
     path("dashboard/", customer_dashboard, name="customer_dashboard"),
     path("login/", login_view, name="login"),
-    path("verify-email/<uuid:token>/", verify_email, name="verify_email"),
+    path("verify-email/<uidb64>/<token>/", verify_email, name="verify_email"),
 
-        path(
+    path(
         "forgot-password/",
         auth_views.PasswordResetView.as_view(
             template_name="password_reset.html",
@@ -42,4 +42,15 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+
+    path("profile/", profile_view, name="profile"),
+    path("logout/", logout_view, name="logout"),
+
+    path("vehicles/", vehicle_list, name="vehicle_list"),
+    path("vehicles/add/", vehicle_create, name="vehicle_add"),
+    path("vehicles/<int:pk>/edit/", vehicle_update, name="vehicle_edit"),
+    path("vehicles/<int:pk>/delete/", vehicle_delete, name="vehicle_delete"),
+
+    path("appointments/", create_appointment, name="create_appointment"),
+       path("appointments/available-slots/", available_slots, name="available_slots"),
 ]

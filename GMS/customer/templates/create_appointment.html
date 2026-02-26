@@ -1,0 +1,100 @@
+{% extends "customer_base.html" %}
+
+{% block page_title %}Appointments{% endblock %}
+{% block page_subtitle %}Choose a date to see available slots{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-4 p-md-5">
+      <h3 class="fw-bold mb-4">Book Appointment</h3>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="row g-4">
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Select vehicle</label>
+            {{ form.vehicle }}
+            {% if form.vehicle.errors %}<div class="text-danger small">{{ form.vehicle.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Select service</label>
+            {{ form.service }}
+            {% if form.service.errors %}<div class="text-danger small">{{ form.service.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <!-- ✅ Date (form-only field) -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Select date</label>
+            {{ form.date }}
+            {% if form.date.errors %}<div class="text-danger small">{{ form.date.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <!-- ✅ Slot dropdown -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Available slots</label>
+            {{ form.slot }}
+            <div class="form-text">Pick a date to load slots.</div>
+            {% if form.slot.errors %}<div class="text-danger small">{{ form.slot.errors|striptags }}</div>{% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Notes (optional)</label>
+            {{ form.notes }}
+          </div>
+
+          <div class="col-12">
+            <button type="submit"
+                  class="btn w-100 py-3 fw-semibold rounded-3"
+                  style="background-color:#D4AF37; border:none; color:#000;">
+            Confirm Booking
+          </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const dateInput = document.querySelector('input[name="date"]');
+  const slotSelect = document.querySelector('select[name="slot"]');
+
+  async function loadSlots(dateValue) {
+    slotSelect.innerHTML = '<option value="">Loading...</option>';
+
+    if (!dateValue) {
+      slotSelect.innerHTML = '<option value="">Select time slot</option>';
+      return;
+    }
+
+    const url = "{% url 'available_slots' %}" + "?date=" + encodeURIComponent(dateValue);
+    const res = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
+    const data = await res.json();
+
+    if (!data.slots || data.slots.length === 0) {
+      slotSelect.innerHTML = '<option value="">No slots available</option>';
+      return;
+    }
+
+    slotSelect.innerHTML = '<option value="">Select time slot</option>';
+    data.slots.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.label;
+      slotSelect.appendChild(opt);
+    });
+  }
+
+  if (dateInput) {
+    dateInput.addEventListener("change", (e) => loadSlots(e.target.value));
+    if (dateInput.value) loadSlots(dateInput.value);
+  }
+})();
+</script>
+{% endblock %}

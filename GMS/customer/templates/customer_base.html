@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'customer.css' %}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        {% comment %} <div class="sidebar__logo">
+            <i class="bi bi-car-front-fill sidebar__icon"></i>
+            <iconify-icon icon="bxs:car-garage"></iconify-icon>
+            <span class="sidebar__brand">e-Garage</span>
+        </div> {% endcomment %}
+        <div class="sidebar__brand">
+            <iconify-icon icon="bxs:car-garage"></iconify-icon>
+            <h2 class="brand-name">
+                <span class="brand-e">e-</span>Garage
+            </h2>
+        </div>
+        
+        {% comment %} <nav class="sidebar__nav">
+        <nav class="sidebar__nav">
+
+            <a href="{% url 'customer_dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'vehicle_list' %}" class="sidebar__link {% if request.resolver_match.url_name == 'vehicle_list' %}active{% endif %}">
+                <i class="bi bi-car-front"></i>
+                <span>My Vehicles</span>
+            </a>
+
+            <a href="{% url 'create_appointment' %}" class="sidebar__link {% if request.resolver_match.url_name == 'create_appointment' %}active{% endif %}">
+                <i class="bi bi-calendar-check"></i>
+                <span>Appointments</span>
+            </a>
+
+            <a href="{% url 'signup' %}" class="sidebar__link">
+                <i class="bi bi-receipt"></i>
+                <span>Invoices</span>
+            </a>
+        </nav> {% endcomment %}
+        <nav class="sidebar__nav">
+
+            {% if request.user.is_superuser %}
+
+                <!-- ADMIN SIDEBAR -->
+
+                <a href="{% url 'adminpanel:dashboard' %}" 
+                    class="sidebar__link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'adminpanel:slot_calendar' %}" 
+                    class="sidebar__link {% if request.resolver_match.url_name == 'slot_calendar' %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Slots</span>
+                </a>
+                
+                {% comment %} <a href="{% url 'adminpanel:appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
+                    <span>Slots</span>
+                </a> {% endcomment %}
+
+            {% else %}
+
+                <!-- CUSTOMER SIDEBAR -->
+
+                <a href="{% url 'customer_dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{% url 'vehicle_list' %}" class="sidebar__link {% if request.resolver_match.url_name == 'vehicle_list' %}active{% endif %}">
+                    <i class="bi bi-car-front"></i>
+                    <span>My Vehicles</span>
+                </a>
+
+                <a href="{% url 'create_appointment' %}" class="sidebar__link {% if request.resolver_match.url_name == 'create_appointment' %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+
+                <a href="{% url 'signup' %}" class="sidebar__link">
+                    <i class="bi bi-receipt"></i>
+                    <span>Invoices</span>
+                </a>
+
+            {% endif %}
+
+        </nav>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="main">
+    <div class="topbar">
+
+        <div class="topbar__left">
+            <h2 class="topbar__title">
+                {% block page_title %}{% endblock %}
+            </h2>
+            <p class="topbar__subtitle">
+                {% block page_subtitle %}
+                {% endblock %}
+            </p>
+        </div>
+
+        {% comment %} <div class="topbar__center">
+            <div class="search">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search..." />
+            </div>
+        </div> {% endcomment %}
+
+        <div class="topbar__right">
+            <div class="profile" id="profileToggle">
+
+                <div class="profile__info">
+                    <span class="profile__name">
+                        {{ request.user.name }}
+                    </span>
+                    <span class="profile__role">
+                        {{ request.user.role|capfirst }}
+                    </span>
+                </div>
+
+                <div class="profile__avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+
+                <div class="profile__dropdown">
+                    <a href="{% url 'profile' %}">
+                        <i class="bi bi-person"></i> My Profile
+                    </a>
+                    <a href="{% url 'logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    {% comment %} {% if messages %}
+    <div class="toast-container">
+        {% for message in messages %}
+            <div class="toast-message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %} {% endcomment %}
+    {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+    <!-- PAGE CONTENT -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+</main>
+</div>
+<script>
+const profile = document.getElementById("profileToggle");
+
+profile.addEventListener("click", function(e){
+    e.stopPropagation();
+    this.classList.toggle("active");
+});
+
+document.addEventListener("click", function(){
+    profile.classList.remove("active");
+});
+</script>
+<script>
+setTimeout(() => {
+  const messages = document.querySelector('.messages');
+  if (messages) {
+    messages.style.transition = "opacity 0.4s ease";
+    messages.style.opacity = "0";
+    setTimeout(() => messages.remove(), 400);
+  }
+}, 3000);
+</script>
+<script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+
+</body>
+</html>

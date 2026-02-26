@@ -1,0 +1,51 @@
+{% extends "customer_base.html" %}
+{% load static %}
+
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Enter vehicle details{% endblock %}
+
+{% block content %}
+
+<div class="vehicle-form-card">
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if vehicle.image %}
+            <img src="{{ vehicle.image.url }}"
+                 style="width:100%; height:200px; object-fit:cover; border-radius:16px; margin-bottom:20px;">
+        {% endif %}
+
+        <div class="vehicle-form-grid">
+
+            <div>
+                <label class="vehicle-label">Vehicle Model</label>
+                {{ form.model }}
+            </div>
+
+            <div>
+                <label class="vehicle-label">Year</label>
+                {{ form.year }}
+            </div>
+
+            <div>
+                <label class="vehicle-label">Plate Number</label>
+                {{ form.plate_no }}
+            </div>
+
+            <div>
+                <label class="vehicle-label">Vehicle Image</label>
+                {{ form.image }}
+            </div>
+
+        </div>
+
+        <button type="submit" class="vehicle-submit">
+            Save Vehicle
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

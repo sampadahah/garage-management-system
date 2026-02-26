@@ -1,0 +1,65 @@
+{% extends "customer_base.html" %}
+
+{% block title %}Create Hiring Vacancy{% endblock %}
+{% block page_subtitle %}Post a new job opening{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="header-actions mb-30">
+        <h3>Create Vacancy</h3>
+        <a href="{% url 'jobs' %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <label class="form-label">Category</label>
+                {{ form.category }}
+            </div>
+
+            <div class="summary-card">
+                <label class="form-label">Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="summary-card">
+                <label class="form-label">Openings</label>
+                {{ form.openings }}
+            </div>
+
+            <div class="summary-card">
+                <label class="form-label">Deadline</label>
+                {{ form.deadline }}
+            </div>
+        </div>
+
+        <div class="content-wrapper mt-30">
+            <label class="form-label">Description</label>
+            {{ form.description }}
+
+            <label class="form-label mt-20">Requirements</label>
+            {{ form.requirements }}
+
+            <label class="form-label mt-20">Status</label>
+            {{ form.status }}
+
+            <div class="mt-30 d-flex gap-10">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Publish
+                </button>
+                <a href="{% url 'jobs' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.classList.add('form-control');
+});
+</script>
+{% endblock %}
