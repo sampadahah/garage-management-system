@@ -146,7 +146,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load .env file
-load_dotenv(BASE_DIR.parent/ ".env")
+load_dotenv(BASE_DIR.parent / ".env")
 
 # SECURITY
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -229,7 +229,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # Static
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Custom user
 AUTH_USER_MODEL = "customer.Users"
