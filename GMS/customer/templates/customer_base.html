@@ -68,6 +68,12 @@
                     <i class="bi bi-calendar-check"></i>
                     <span>Slots</span>
                 </a>
+
+                <a href="{% url 'adminpanel:admin_service_list' %}" 
+                    class="sidebar__link {% if request.resolver_match.url_name == 'admin_service_list' %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Service</span>
+                </a>
                 
                 {% comment %} <a href="{% url 'adminpanel:appointments' %}" class="menu-item {% if page_title == 'Bookings' %}active{% endif %}">
                     <span>Slots</span>

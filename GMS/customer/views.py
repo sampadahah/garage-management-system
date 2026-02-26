@@ -99,8 +99,9 @@ def customer_signup(request):
 
 def login_view(request):
 
+    #if user is already loggedin, redirect immediately
     if request.user.is_authenticated:
-        if request.user.is_superuser or request.user.is_staff:
+        if request.user.is_superuser:
             return redirect("adminpanel:dashboard")
         return redirect("customer_dashboard")
     
@@ -132,17 +133,6 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            
-            # Check if user is staff and redirect accordingly
-            if hasattr(user, 'staff_profile'):
-                messages.success(request, f'Welcome back, {user.name}!')
-                return redirect("staff_dashboard")
-            else:
-                return redirect("customer_dashboard")
-        else:
-            messages.error(request, "Invalid email or password.")
-
-            print("REMEMBER ME VALUE:", request.POST.get("remember_me"))
 
             if not request.POST.get("remember_me"):
                 # Session expires when browser closes
@@ -150,7 +140,9 @@ def login_view(request):
             else:
                 # Keep user logged in for 30 days
                 request.session.set_expiry(60 * 60 * 24 * 7)
-            
+
+            print("REMEMBER ME VALUE:", request.POST.get("remember_me"))
+
             # Superuser
             if user.is_superuser:
                 return redirect("adminpanel:dashboard")
@@ -160,8 +152,8 @@ def login_view(request):
                 return redirect("adminpanel:dashboard")
 
             # Or if using is_staff
-            if user.is_staff:
-                return redirect("adminpanel:dashboard")
+            # if hasattr(user,"role") and user.role =="mechanic":
+            #     return redirect("staff:dashboard")
 
             # Default → Customer
             return redirect("customer_dashboard")

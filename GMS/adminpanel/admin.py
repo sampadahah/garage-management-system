@@ -1,6 +1,6 @@
-from django.contrib import admin
-from .models import InventoryCategory, Brand, Part
+# from django.contrib import admin
+# from .models import  Brand, Part
 
-admin.site.register(InventoryCategory)
-admin.site.register(Brand)
-admin.site.register(Part)
+# # admin.site.register(InventoryCategory)
+# admin.site.register(Brand)
+# admin.site.register(Part)
