@@ -1,40 +1,56 @@
 {% extends "customer_base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <!-- Card for Better UI -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white text-center">
-                    <h3 class="mb-0">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Service</h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="submit" class="btn btn-success">
-                                {% if form.instance.pk %}Update{% else %}Add{% endif %}
-                            </button>
-                            <a href="{% url 'adminpanel:service_list' %}" class="btn btn-secondary">Back</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+<!-- Page Header -->
+<div class="page-head">
+    <div>
+        <h2 class="page-title">{% if form.instance.pk %}Edit Service{% else %}Add Service{% endif %}</h2>
+        <p class="page-subtitle">Create and manage services for your garage.</p>
+    </div>
+
+    <div class="page-actions">
+        <a href="{% url 'adminpanel:service_list' %}" class="btn btn-outline">
+            ← Back
+        </a>
+        <button type="submit" form="serviceForm" class="btn btn-gold">
+            {% if form.instance.pk %}Update{% else %}+ Add{% endif %}
+        </button>
     </div>
 </div>
 
-<style>
-    .card {
-        border-radius: 10px;
-    }
-    .card-header h3 {
-        font-weight: 600;
-    }
-    button.btn {
-        min-width: 100px;
-    }
-</style>
+<!-- Card -->
+<div class="card card-lg">
+    <div class="card-body">
+        <form method="post" id="serviceForm" class="form-grid">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label" for="{{ field.id_for_label }}">
+                        {{ field.label }}{% if field.field.required %} <span class="req">*</span>{% endif %}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="help-text">{{ field.help_text }}</small>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="field-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </form>
+    </div>
+</div>
 {% endblock %}
