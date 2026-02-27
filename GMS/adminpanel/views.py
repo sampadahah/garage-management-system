@@ -504,23 +504,21 @@ def jobs(request):
     vacancies = JobVacancy.objects.all()
     return render(request, "adminpanel/jobs.html", {"page_title": "Jobs", "vacancies": vacancies})
 
-
 @login_required
 @user_passes_test(is_admin)
 def create_job(request):
     if request.method == "POST":
         form = JobVacancyForm(request.POST)
         if form.is_valid():
-            form.save()
+            obj = form.save(commit=False)
+            obj.category = "mechanic"   # ✅ force mechanic only
+            obj.save()
+            messages.success(request, "Mechanic vacancy posted successfully.")
             return redirect("adminpanel:jobs")
     else:
         form = JobVacancyForm()
 
-    return render(
-        request,
-        "adminpanel/create_job.html",
-        {"page_title": "Jobs", "form": form},
-    )
+    return render(request, "adminpanel/create_job.html", {"form": form})
 
 
 # -------- Leaves (if you have staff branch merged) --------
@@ -625,3 +623,59 @@ def delete_brand(request, brand_id):
     brand = get_object_or_404(Brand, brand_id=brand_id)
     brand.delete()
     return redirect("adminpanel:brands")
+
+
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+
+
+from customer.models import Appointment   
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def is_admin(user):
+    return user.is_authenticated and user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def appointments_list(request):
+    appointments = (
+        Appointment.objects
+        .select_related("user", "vehicle", "slot")
+        .order_by("-created_at") 
+    )
+    return render(request, "adminpanel/appointments.html", {"appointments": appointments})
+
+
+@login_required
+@user_passes_test(is_admin)
+def assign_mechanic(request, appointment_id):
+    appt = get_object_or_404(Appointment, pk=appointment_id)
+
+    # get all mechanics (based on your user.role)
+    mechanics = User.objects.filter(role__iexact="Mechanic", is_active=True)
+
+    if request.method == "POST":
+        mechanic_id = request.POST.get("mechanic_id")
+
+        if not mechanic_id:
+            messages.error(request, "Please select a mechanic.")
+            return redirect("adminpanel:assign_mechanic", appointment_id=appointment_id)
+
+        mechanic = get_object_or_404(mechanics, pk=mechanic_id)
+
+        # assign mechanic
+        appt.mechanic = mechanic          # make sure Appointment has mechanic FK
+        appt.status = "assigned"          # optional: if you have status field
+        appt.save()
+
+        messages.success(request, f"Mechanic assigned: {mechanic.get_full_name() or mechanic.username}")
+        return redirect("adminpanel:appointments")
+
+    return render(request, "adminpanel/assign_mechanic.html", {
+        "appt": appt,
+        "mechanics": mechanics
+    })

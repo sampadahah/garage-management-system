@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from .views import (inventory, add_inventory_item,edit_inventory_item,delete_inventory_item,item_details,
                     jobs,create_job,categories, add_category, delete_category,
                     brands, add_brand, delete_brand,
@@ -53,4 +54,8 @@ urlpatterns = [
     path('services/add/', admin_add_service, name='admin_add_service'),
     path('services/edit/<int:pk>/', admin_edit_service, name='admin_edit_service'),
     path('services/delete/<int:pk>/', admin_delete_service, name='admin_delete_service'),
+
+
+    path("appointments/", views.appointments_list, name="appointments"),
+    path("appointments/<int:appointment_id>/assign/", views.assign_mechanic, name="assign_mechanic"),
 ]

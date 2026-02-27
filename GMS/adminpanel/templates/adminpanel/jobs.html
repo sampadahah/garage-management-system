@@ -1,58 +1,76 @@
 {% extends "customer_base.html" %}
+{% load static %}
 
 {% block page_title %}Hiring{% endblock %}
 {% block page_subtitle %}Manage hiring vacancies in your garage{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="content-wrapper">
-    <div class="header-actions">
-        <h3>Hiring Vacancies</h3>
-        <a href="{% url 'adminpanel:create_job' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> New Vacancy
-        </a>
+<div class="ap-page-center">
+
+    <div class="ap-card-large">
+
+        <!-- Header -->
+        <div class="ap-header">
+            <h2 class="ap-title-large">Hiring Vacancies</h2>
+
+            <a href="{% url 'adminpanel:create_job' %}" class="ap-btn ap-btn-primary">
+                + New Vacancy
+            </a>
+        </div>
+
+        <!-- Table -->
+        <div class="ap-table-container">
+            <table class="ap-table-modern">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                        <th>Openings</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for v in vacancies %}
+                    <tr>
+                        <td>#{{ v.vacancy_id }}</td>
+                        <td>{{ v.get_category_display }}</td>
+                        <td><strong>{{ v.title }}</strong></td>
+                        <td>{{ v.openings }}</td>
+                        <td>
+                            {% if v.deadline %}
+                                {{ v.deadline|date:"M d, Y" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.status == "open" %}
+                                <span class="ap-badge ap-badge-success">Open</span>
+                            {% else %}
+                                <span class="ap-badge ap-badge-danger">Closed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="ap-empty">
+                            No vacancies created.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
 
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Category</th>
-                    <th>Title</th>
-                    <th>Openings</th>
-                    <th>Deadline</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in vacancies %}
-                <tr>
-                    <td>#{{ v.vacancy_id }}</td>
-                    <td>{{ v.get_category_display }}</td>
-                    <td><strong>{{ v.title }}</strong></td>
-                    <td>{{ v.openings }}</td>
-                    <td>
-                        {% if v.deadline %}
-                            {{ v.deadline|date:"M d, Y" }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if v.status == "open" %}
-                            <span class="status-badge status-success">Open</span>
-                        {% else %}
-                            <span class="status-badge status-danger">Closed</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center">No vacancies created.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
 </div>
 {% endblock %}

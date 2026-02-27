@@ -1,0 +1,51 @@
+{% extends "customer_base.html" %}
+{% load static %}
+
+{% block page_title %}Assign Mechanic{% endblock %}
+{% block page_subtitle %}Assign mechanic to appointment{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ap-page">
+  <section class="ap-surface">
+
+    <header class="ap-panel-header">
+      <h2 class="ap-panel-title">Assign Mechanic</h2>
+      <a class="ap-btn ap-btn-outline" href="{% url 'adminpanel:appointments' %}">← Back</a>
+    </header>
+
+    <section class="ap-panel">
+      <h3 class="ap-panel-title" style="font-size:16px;">Appointment Details</h3>
+
+      <table class="ap-details-table">
+        <tr><td class="ap-details-key">Appointment ID</td><td class="ap-details-value">#{{ appt.appointment_id }}</td></tr>
+        <tr><td class="ap-details-key">Customer</td><td class="ap-details-value">{{ appt.customer.get_full_name|default:appt.customer.username }}</td></tr>
+        <tr><td class="ap-details-key">Date</td><td class="ap-details-value">{{ appt.date|date:"M d, Y" }}</td></tr>
+        <tr><td class="ap-details-key">Time</td><td class="ap-details-value">{{ appt.time }}</td></tr>
+      </table>
+
+      <form method="post" class="ap-mt-18">
+        {% csrf_token %}
+        <div class="ap-form-group">
+          <label class="ap-label">Select Mechanic</label>
+          <select name="mechanic_id" class="ap-input" required>
+            <option value="">-- Choose mechanic --</option>
+            {% for m in mechanics %}
+              <option value="{{ m.id }}">{{ m.get_full_name|default:m.username }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="ap-actions">
+          <button class="ap-btn ap-btn-primary" type="submit">Assign</button>
+          <a class="ap-btn ap-btn-outline" href="{% url 'adminpanel:appointments' %}">Cancel</a>
+        </div>
+      </form>
+    </section>
+
+  </section>
+</section>
+{% endblock %}
