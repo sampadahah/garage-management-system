@@ -3,14 +3,11 @@ from .views import (inventory, add_inventory_item,edit_inventory_item,delete_inv
                     jobs,create_job,categories, add_category, delete_category,
                     brands, add_brand, delete_brand,
                     admin_dashboard, slot_calendar, add_slot,toggle_slot_status,
-                    customers, reports, download_slots_report,download_customers_report,download_bookings_report,download_all_reports,
-                    admin_service_list,admin_add_service,admin_delete_service,admin_edit_service)
+                    users_list, reports, download_slots_report,download_customers_report,download_bookings_report,download_all_reports,
+                    admin_service_list,admin_add_service,admin_delete_service,admin_edit_service, create_user)
 app_name = "adminpanel"
 
 urlpatterns = [
-
-    # Dashboard
-    # path("dashboard/", views.dashboard, name="dashboard"),
 
     # Inventory
     path("inventory/", inventory, name="inventory"),
@@ -23,8 +20,6 @@ urlpatterns = [
     path("jobs/", jobs, name="jobs"),
     path("jobs/create/", create_job, name="create_job"),
 
-    # Logout
-    # path("logout/", views.admin_logout, name="admin_logout"),
 
     # path("leaves/", views.leaves, name="leaves"),
     # path("leaves/<int:leave_id>/<str:action>/", views.decide_leave, name="decide_leave"),
@@ -42,7 +37,11 @@ urlpatterns = [
     path("calendar/", slot_calendar, name="slot_calendar"),
     path("add-slot/", add_slot, name="add_slot"),
     path("toggle-slot/<int:slot_id>/", toggle_slot_status, name="toggle_slot_status"),
-    path("customers/", customers, name="customers"),
+    path("users/",users_list, name="users_list"),
+
+    #add mechanic or admin
+    path("users-add/",create_user, name="create_user"),
+
     path("reports/", reports, name="reports"),
     path("reports/download-slots/", download_slots_report, name="download_slots_report"),
     path("reports/download-customers/", download_customers_report, name="download_customers_report"),

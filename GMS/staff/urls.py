@@ -1,10 +1,10 @@
 from django.urls import path
 from . import views
-
+app_name = "staff"
 urlpatterns = [
     # Authentication
-    path('login/', views.staff_login, name='staff_login'),
-    path('logout/', views.staff_logout, name='staff_logout'),
+    # path('login/', views.staff_login, name='staff_login'),
+    # path('logout/', views.staff_logout, name='staff_logout'),
     
     # Dashboard
     path('dashboard/', views.staff_dashboard, name='staff_dashboard'),

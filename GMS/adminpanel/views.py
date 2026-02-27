@@ -12,39 +12,49 @@ from django.contrib.auth import get_user_model
 
 
 from .models import Slot, Service
-from .forms import SlotForm, ServiceForm
+from .forms import SlotForm, ServiceForm, AdminUserCreateForm
 from .forms import JobVacancyForm, PartForm
 from .models import JobVacancy, Part
 
 from .models import InventoryCategory, Brand
 
 
-def is_staff_or_superuser(u):
-    return u.is_authenticated and (u.is_staff or u.is_superuser)
+
+Users=get_user_model()
 
 def is_admin(user):
     return user.is_authenticated and (user.is_superuser or user.is_staff)
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
-def admin_dashboard(request):
-    """Admin dashboard showing overview"""
-    today = date.today()
-    total_slots = Slot.objects.count()
-    available_slots = Slot.objects.filter(is_booked=False).count()
-    booked_slots = Slot.objects.filter(is_booked=True).count()
-    today_slots = Slot.objects.filter(date=today).count()
-    
-    context = {
-        'total_slots': total_slots,
-        'available_slots': available_slots,
-        'booked_slots': booked_slots,
-        'today_slots': today_slots,
-    }
-    return render(request, "adminpanel/dashboard.html", context)
+@user_passes_test(is_admin)
+def create_user(request):
+
+    if request.method == "POST":
+        form = AdminUserCreateForm(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data["password1"])
+
+            # If Admin role selected
+            if user.role == "Admin":
+                user.is_superuser = True
+                user.is_staff = True
+
+            user.save()
+
+            messages.success(request, "User created successfully.")
+            return redirect("adminpanel:users_list")
+
+    else:
+        form = AdminUserCreateForm()
+
+    return render(request, "adminpanel/create_user.html", {
+        "form": form
+    })
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def slot_calendar(request):
     """Show calendar and slots for selected date or all slots"""
     selected_date = request.GET.get("date")
@@ -70,7 +80,7 @@ def slot_calendar(request):
     return render(request, "adminpanel/slot_calendar.html", context)
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def toggle_slot_status(request, slot_id):
     """Toggle slot status between available and booked"""
     if request.method == "POST":
@@ -90,7 +100,7 @@ def toggle_slot_status(request, slot_id):
     return redirect("adminpanel:slot_calendar")
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def add_slot(request):
     """Add a new slot"""
     if request.method == "POST":
@@ -109,23 +119,35 @@ def add_slot(request):
     return render(request, "adminpanel/add_slot.html", {"form": form})
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
-def customers(request):
-    """View all customers"""
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
+@user_passes_test(is_admin)
+# def customers(request):
+#     """View all customers"""
+#     from django.contrib.auth import get_user_model
+#     User = get_user_model()
     
-    # Get all customers (non-staff users)
-    customers_list = User.objects.filter(is_staff=False, is_superuser=False).order_by('-date_joined')
+#     # Get all customers (non-staff users)
+#     customers_list = User.objects.filter(is_staff=False, is_superuser=False).order_by('-date_joined')
     
-    context = {
-        'customers': customers_list,
-        'total_customers': customers_list.count(),
-    }
-    return render(request, "adminpanel/customers.html", context)
+#     context = {
+#         'customers': customers_list,
+#         'total_customers': customers_list.count(),
+#     }
+#     return render(request, "adminpanel/customers.html", context)
+def users_list(request):
+    role_filter = request.GET.get("role")
+
+    users = Users.objects.all().order_by("-id")
+
+    if role_filter:
+        users = users.filter(role=role_filter)
+
+    return render(request, "adminpanel/user_list.html", {
+        "users": users,
+        "role_filter": role_filter
+    })
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def reports(request):
     """View reports page with download options"""
     from django.contrib.auth import get_user_model
@@ -145,7 +167,7 @@ def reports(request):
     return render(request, "adminpanel/reports.html", context)
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def download_slots_report(request):
     """Download slots report as CSV"""
     import csv
@@ -164,14 +186,13 @@ def download_slots_report(request):
             slot.start_time.strftime('%H:%M'),
             slot.end_time.strftime('%H:%M'),
             'Booked' if slot.is_booked else 'Available',
-            slot.created_by.email if slot.created_by else 'N/A',
             slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
         ])
     
     return response
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def download_customers_report(request):
     """Download customers report as CSV"""
     import csv
@@ -202,7 +223,7 @@ def download_customers_report(request):
     return response
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def download_bookings_report(request):
     """Download bookings report as CSV"""
     import csv
@@ -220,14 +241,13 @@ def download_bookings_report(request):
             slot.date.strftime('%Y-%m-%d'),
             slot.start_time.strftime('%H:%M'),
             slot.end_time.strftime('%H:%M'),
-            slot.created_by.email if slot.created_by else 'N/A',
             slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
         ])
     
     return response
 
 @login_required
-@user_passes_test(is_staff_or_superuser)
+@user_passes_test(is_admin)
 def download_all_reports(request):
     """Download all reports as ZIP file"""
     import csv
@@ -253,7 +273,6 @@ def download_all_reports(request):
                 slot.start_time.strftime('%H:%M'),
                 slot.end_time.strftime('%H:%M'),
                 'Booked' if slot.is_booked else 'Available',
-                slot.created_by.email if slot.created_by else 'N/A',
                 slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
             ])
         zip_file.writestr('slots_report.csv', slots_data.getvalue())
@@ -286,7 +305,6 @@ def download_all_reports(request):
                 slot.date.strftime('%Y-%m-%d'),
                 slot.start_time.strftime('%H:%M'),
                 slot.end_time.strftime('%H:%M'),
-                slot.created_by.email if slot.created_by else 'N/A',
                 slot.created_at.strftime('%Y-%m-%d %H:%M:%S')
             ])
         zip_file.writestr('bookings_report.csv', bookings_data.getvalue())
@@ -307,7 +325,7 @@ def admin_add_service(request):
         form = ServiceForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('admin_service_list')
+            return redirect('adminpanel:admin_service_list')
     else:
         form = ServiceForm()
     return render(request, 'adminpanel/service_form.html', {'form': form, 'title': 'Add Service'})
@@ -318,7 +336,7 @@ def admin_edit_service(request, pk):
         form = ServiceForm(request.POST, instance=service)
         if form.is_valid():
             form.save()
-            return redirect('admin_service_list')
+            return redirect('adminpanel:admin_service_list')
     else:
         form = ServiceForm(instance=service)
     return render(request, 'adminpanel/service_form.html', {'form': form, 'title': 'Edit Service'})
@@ -327,7 +345,7 @@ def admin_delete_service(request, pk):
     service = get_object_or_404(Service, pk=pk)
     if request.method == 'POST':
         service.delete()
-        return redirect('admin_service_list')
+        return redirect('adminpanel:admin_service_list')
     return render(request, 'adminpanel/service_confirm_delete.html', {'service': service})
 
 def is_admin(user):
@@ -337,7 +355,7 @@ def is_admin(user):
 
 @login_required
 @user_passes_test(is_admin)
-def dashboard(request):
+def admin_dashboard(request):
     # Inventory stats
     total_items = Part.objects.count()
     low_stock_items = Part.objects.filter(quantity__gt=0, quantity__lte=F("min_stock_level")).count()
@@ -355,6 +373,7 @@ def dashboard(request):
 
     # Customers stats (if you have Customer model later, replace this)
     # For now we count non-staff users as customers
+
     from django.contrib.auth import get_user_model
     User = get_user_model()
 
