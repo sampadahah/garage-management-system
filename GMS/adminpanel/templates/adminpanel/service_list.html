@@ -1,13 +1,13 @@
 {% extends "customer_base.html" %}
 
-{% block title %}Manage Services{% endblock %}
+{% block page_title %}Manage Services{% endblock %}
 
 {% block content %}
 <div class="container my-5">
     <div class="card service-card shadow-sm border-0">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="mb-0">Service Management</h3>
-            <a href="{% url 'admin_add_service' %}" class="btn btn-success">Add New Service</a>
+            <a href="{% url 'adminpanel:admin_add_service' %}" class="btn btn-success">Add New Service</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -29,7 +29,7 @@
                             <td>{{ service.id }}</td>
                             <td>{{ service.name }}</td>
                             <td>{{ service.description }}</td>
-                            <td>${{ service.price }}</td>
+                            <td>Rs. {{ service.price }}</td>
                             <td>{{ service.duration }}</td>
                             <td>
                                 {% if service.is_active %}
@@ -39,8 +39,8 @@
                                 {% endif %}
                             </td>
                             <td class="d-flex gap-2">
-                                <a href="{% url 'admin_edit_service' service.id %}" class="btn btn-primary btn-sm">Edit</a>
-                                <form action="{% url 'admin_delete_service' service.id %}" method="post" style="display:inline;">
+                                <a href="{% url 'adminpanel:admin_edit_service' service.id %}" class="btn btn-primary btn-sm">Edit</a>
+                                <form action="{% url 'adminpanel:admin_delete_service' service.id %}" method="post" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
                                 </form>
