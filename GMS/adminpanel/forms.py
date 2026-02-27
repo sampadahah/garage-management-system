@@ -27,13 +27,6 @@ class ServiceForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-<<<<<<< HEAD
-from django import forms
-from .models import Part, JobVacancy
-
-
-=======
->>>>>>> 76d74920ba13f72e930266cd6b1a3c34c0a441e3
 class PartForm(forms.ModelForm):
     class Meta:
         model = Part
@@ -62,9 +55,6 @@ class JobVacancyForm(forms.ModelForm):
             "deadline": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"rows": 5}),
             "requirements": forms.Textarea(attrs={"rows": 5}),
-<<<<<<< HEAD
-        }
-=======
         }
 
 class AdminUserCreateForm(forms.ModelForm):
@@ -93,4 +83,3 @@ class AdminUserCreateForm(forms.ModelForm):
 
         validate_password(p1)
         return cleaned
->>>>>>> 76d74920ba13f72e930266cd6b1a3c34c0a441e3

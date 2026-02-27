@@ -14,7 +14,7 @@ class Slot(models.Model):
         ordering = ["date", "start_time"]
         unique_together = ("date", "start_time", "end_time")
 
-    def _str_(self):
+    def __str__(self):
         status = "Booked" if self.is_booked else "Available"
         return f"{self.date} {self.start_time}-{self.end_time} ({status})"
     
@@ -126,30 +126,27 @@ class JobVacancy(models.Model):
     def __str__(self):
         return f"{self.title} ({self.get_category_display()})"
 
-class WorkList(models.Model):
-    JOB_STATUS_CHOICES = [
-        ("assigned", "Assigned"),
-        ("in_progress", "In Progress"),
-        ("completed", "Completed"),
-    ]
+# class WorkList(models.Model):
+#     JOB_STATUS_CHOICES = [
+#         ("assigned", "Assigned"),
+#         ("in_progress", "In Progress"),
+#         ("completed", "Completed"),
+#     ]
 
-    work_list_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-<<<<<<< HEAD
-=======
-    appointment = models.ForeignKey("customer.Appointment", on_delete=models.CASCADE)
->>>>>>> 76d74920ba13f72e930266cd6b1a3c34c0a441e3
+#     work_list_id = models.AutoField(primary_key=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     appointment = models.ForeignKey("customer.Appointment", on_delete=models.CASCADE)
 
-    job_status = models.CharField(
-        max_length=20,
-        choices=JOB_STATUS_CHOICES,
-        default="assigned"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
+#     job_status = models.CharField(
+#         max_length=20,
+#         choices=JOB_STATUS_CHOICES,
+#         default="assigned"
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = "work_list"
-        ordering = ["-created_at"]
+#     class Meta:
+#         db_table = "work_list"
+#         ordering = ["-created_at"]
 
 class Service(models.Model):
     name = models.CharField(max_length=100)
