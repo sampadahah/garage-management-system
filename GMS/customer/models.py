@@ -19,10 +19,10 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
         extra_fields.setdefault("is_verified", True)
-        extra_fields.setdefault("role", "Admin") 
+        extra_fields.setdefault("role", "Admin")
 
         return self.create_user(email, name, password, **extra_fields)
-    
+   
 class Users(AbstractUser):
     ROLE_CHOICES = (
         ("Admin", "Admin"),
@@ -30,7 +30,7 @@ class Users(AbstractUser):
         ("Mechanic", "Mechanic"),
     )
 
-    
+   
     username = None
     email = models.EmailField(unique=True)
 
@@ -42,7 +42,7 @@ class Users(AbstractUser):
     status = models.CharField(max_length=20, default="Active")
 
     is_verified = models.BooleanField(default=False)
-    
+   
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
@@ -51,7 +51,7 @@ class Users(AbstractUser):
 
     def __str__(self):
         return f"{self.name} ({self.role})"
-    
+   
 
 class Vehicle(models.Model):
     user = models.ForeignKey(
