@@ -16,8 +16,11 @@ db.sqlite3
 media/
 
 # Migrations (optional)
-*/migrations/
-!*/migrations/__init__.py
+# */migrations/
+# !*/migrations/__init__.py
+
+**/migrations/
+!**/migrations/__init__.py
 
 # IDE / Editor
 .vscode/
