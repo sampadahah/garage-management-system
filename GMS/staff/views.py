@@ -14,68 +14,68 @@ User = get_user_model()
 
 
 # Authentication Views
-def staff_login(request):
-    if request.user.is_authenticated and hasattr(request.user, 'staff_profile'):
-        return redirect('staff_dashboard')
+# def staff_login(request):
+#     if request.user.is_authenticated and hasattr(request.user, 'staff_profile'):
+#         return redirect('staff_dashboard')
     
-    if request.method == 'POST':
-        form = StaffLoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
+#     if request.method == 'POST':
+#         form = StaffLoginForm(request.POST)
+#         if form.is_valid():
+#             email = form.cleaned_data['email']
+#             password = form.cleaned_data['password']
             
-            user = authenticate(request, username=email, password=password)
+#             user = authenticate(request, username=email, password=password)
             
-            if user is not None:
-                # Check if user is staff
-                if hasattr(user, 'staff_profile'):
-                    login(request, user)
-                    messages.success(request, f'Welcome back, {user.name}!')
-                    return redirect('staff_dashboard')
-                else:
-                    messages.error(request, 'You do not have staff access.')
-            else:
-                messages.error(request, 'Invalid email or password.')
-    else:
-        form = StaffLoginForm()
+#             if user is not None:
+#                 # Check if user is staff
+#                 if hasattr(user, 'staff_profile'):
+#                     login(request, user)
+#                     messages.success(request, f'Welcome back, {user.name}!')
+#                     return redirect('staff_dashboard')
+#                 else:
+#                     messages.error(request, 'You do not have staff access.')
+#             else:
+#                 messages.error(request, 'Invalid email or password.')
+#     else:
+#         form = StaffLoginForm()
     
-    return render(request, 'staff/login.html', {'form': form})
+#     return render(request, 'staff/login.html', {'form': form})
 
 
-@login_required
-def staff_logout(request):
-    logout(request)
-    messages.success(request, 'You have been logged out successfully.')
-    return redirect('staff_login')
+# @login_required
+# def staff_logout(request):
+#     logout(request)
+#     messages.success(request, 'You have been logged out successfully.')
+#     return redirect('staff_login')
 
 
 # Dashboard
 @login_required
 def staff_dashboard(request):
-    if not hasattr(request.user, 'staff_profile'):
-        messages.error(request, 'Access denied. Staff only.')
-        return redirect('login')
-    
-    staff = request.user.staff_profile
+    return render(request, "staff/dashboard.html")
+
+    # if not hasattr(request.user, 'Mechanic'):
+    #     messages.error(request, 'Access denied. Staff only.')
+    #     return redirect('login')
     
     # Get today's schedule
-    today = timezone.now().strftime('%A')
-    today_schedule = Schedule.objects.filter(staff=staff, day_of_week=today, is_active=True)
+    # today = timezone.now().strftime('%A')
+    # today_schedule = Schedule.objects.filter(staff=staff, day_of_week=today, is_active=True)
     
-    # Get pending leave requests
-    pending_leaves = LeaveRequest.objects.filter(staff=staff, status='Pending')
+    # # Get pending leave requests
+    # pending_leaves = LeaveRequest.objects.filter(staff=staff, status='Pending')
     
-    # Get upcoming schedules
-    upcoming_schedules = Schedule.objects.filter(staff=staff, is_active=True)[:5]
+    # # Get upcoming schedules
+    # upcoming_schedules = Schedule.objects.filter(staff=staff, is_active=True)[:5]
     
-    context = {
-        'staff': staff,
-        'today_schedule': today_schedule,
-        'pending_leaves': pending_leaves,
-        'upcoming_schedules': upcoming_schedules,
-    }
+    # context = {
+    #     'staff': staff,
+    #     'today_schedule': today_schedule,
+    #     'pending_leaves': pending_leaves,
+    #     'upcoming_schedules': upcoming_schedules,
+    # }
     
-    return render(request, 'staff/dashboard.html', context)
+    # return render(request, 'staff/dashboard.html', context)
 
 
 # Staff CRUD Operations

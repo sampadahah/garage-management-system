@@ -1,0 +1,231 @@
+{% extends "customer_base.html" %}
+{% load static %}
+
+{% block page_title %}Create User{% endblock %}
+{% block page_subtitle %}
+Add a new Admin, Mechanic or Customer.
+{% endblock %}
+
+{% block content %}
+
+<style>/* ===========================
+   CREATE USER PAGE
+=========================== */
+
+.create-bg {
+    background: #F3F4F6;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+.create-container {
+    background: #ffffff;
+    max-width: 800px;
+    margin: auto;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+}
+
+.create-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* FORM */
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* INPUT STYLE */
+
+.form-control {
+    height: 46px;
+    border-radius: 10px;
+    border: 1px solid #E5E7EB;
+    padding: 0 14px;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    outline: none;
+}
+
+/* DIVIDER */
+
+.divider {
+    border: none;
+    border-top: 1px solid #F1F5F9;
+}
+
+/* BUTTONS */
+
+.btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background: #D4AF37;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #caa532;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+}
+
+.btn-outline:hover {
+    background: #F9FAFB;
+}
+
+/* ERRORS */
+
+.error {
+    font-size: 13px;
+    color: #B91C1C;
+    margin-top: 5px;
+}</style>
+<div class="create-bg">
+
+    <div class="create-container">
+
+        <h2 class="create-title">Add New User</h2>
+
+        <form method="POST" class="create-form">
+            {% csrf_token %}
+
+            <div class="grid-2">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="error">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="error">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="grid-2">
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    {{ form.phone }}
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    {{ form.address }}
+                </div>
+
+            </div>
+
+            <div class="grid-2">
+
+                <div class="form-group">
+                    <label>Role</label>
+                    {{ form.role }}
+                </div>
+
+                {% comment %} <div class="form-group">
+                    <label>Status</label>
+                    {{ form.status }}
+                </div> {% endcomment %}
+
+            </div>
+
+            <hr class="divider">
+
+            <div class="grid-2">
+
+                <div class="form-group">
+                    <label>Password</label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <div class="error">{{ form.password1.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="error">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="error mt-2">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="btn-row">
+                <a href="{% url 'adminpanel:users_list' %}" class="btn-outline">
+                    Cancel
+                </a>
+
+                <button type="submit" class="btn-primary">
+                    Create User
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

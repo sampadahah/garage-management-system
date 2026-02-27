@@ -1,14 +1,14 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
-from customer.models import Appointment
+
+
 
 class Slot(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     is_booked = models.BooleanField(default=False)
-    # created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -19,12 +19,6 @@ class Slot(models.Model):
         status = "Booked" if self.is_booked else "Available"
         return f"{self.date} {self.start_time}-{self.end_time} ({status})"
     
-
-from django.conf import settings
-from django.db import models
-from django.utils import timezone
-
-
 
 class InventoryCategory(models.Model):
     category_id = models.AutoField(primary_key=True)
@@ -133,10 +127,6 @@ class JobVacancy(models.Model):
     def __str__(self):
         return f"{self.title} ({self.get_category_display()})"
 
-
-
-
-
 class WorkList(models.Model):
     JOB_STATUS_CHOICES = [
         ("assigned", "Assigned"),
@@ -146,7 +136,7 @@ class WorkList(models.Model):
 
     work_list_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    appointment = models.ForeignKey("customer.Appointment", on_delete=models.CASCADE)
 
     job_status = models.CharField(
         max_length=20,
@@ -158,6 +148,7 @@ class WorkList(models.Model):
     class Meta:
         db_table = "work_list"
         ordering = ["-created_at"]
+
 class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)

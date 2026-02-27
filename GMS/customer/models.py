@@ -2,7 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from adminpanel.models import Slot
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -94,7 +94,7 @@ class Appointment(models.Model):
 
     # appointment_date = models.DateField()
     slot = models.OneToOneField(   # One slot can be booked once
-        adminpanel.Slot,
+        "adminpanel.Slot",
         on_delete=models.PROTECT,
         related_name="appointment"
     )

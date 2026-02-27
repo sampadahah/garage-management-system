@@ -1,6 +1,6 @@
 {% extends "customer_base.html" %}
 
-{% block title %}Delete Part - Garage Management System{% endblock %}
+{% block page_title %}Delete Part{% endblock %}
 
 {% block page_subtitle %}Confirm deletion of part{% endblock %}
 
@@ -8,7 +8,7 @@
 <div class="content-wrapper">
     <div class="header-actions mb-30">
         <h3>Delete Part</h3>
-        <a href="{% url 'inventory' %}" class="btn btn-outline">
+        <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">
             <i class="fas fa-arrow-left"></i> Back to Inventory
         </a>
     </div>
@@ -61,7 +61,7 @@
                     <button type="submit" class="btn btn-danger" onclick="return confirmDelete()">
                         <i class="fas fa-trash"></i> Yes, Delete Permanently
                     </button>
-                    <a href="{% url 'inventory' %}" class="btn btn-outline">No, Cancel</a>
+                    <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">No, Cancel</a>
                 </div>
             </form>
         </div>
