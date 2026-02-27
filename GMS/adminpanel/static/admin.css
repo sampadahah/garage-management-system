@@ -1,0 +1,119 @@
+/* ===========================
+   CREATE USER PAGE
+=========================== */
+
+.create-bg {
+    background: #F3F4F6;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+.create-container {
+    background: #ffffff;
+    max-width: 800px;
+    margin: auto;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+}
+
+.create-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* FORM */
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+/* INPUT STYLE */
+
+.form-control {
+    height: 46px;
+    border-radius: 10px;
+    border: 1px solid #E5E7EB;
+    padding: 0 14px;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    outline: none;
+}
+
+/* DIVIDER */
+
+.divider {
+    border: none;
+    border-top: 1px solid #F1F5F9;
+}
+
+/* BUTTONS */
+
+.btn-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background: #D4AF37;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #caa532;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+}
+
+.btn-outline:hover {
+    background: #F9FAFB;
+}
+
+/* ERRORS */
+
+.error {
+    font-size: 13px;
+    color: #B91C1C;
+    margin-top: 5px;
+}
