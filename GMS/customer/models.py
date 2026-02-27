@@ -94,7 +94,7 @@ class Appointment(models.Model):
 
     # appointment_date = models.DateField()
     slot = models.OneToOneField(   # One slot can be booked once
-        Slot,
+        adminpanel.Slot,
         on_delete=models.PROTECT,
         related_name="appointment"
     )

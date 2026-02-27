@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from customer.models import Appointment
 
 class Slot(models.Model):
     date = models.DateField()
