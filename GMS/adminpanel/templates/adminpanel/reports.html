@@ -2,35 +2,148 @@
 {% load static %}
 
 {% block page_title %}Reports{% endblock %}
-{% block page_subtitle %}Download reports in PDF format{% endblock %}
+{% block page_subtitle %}Date range + charts + PDF export (Full + Separate){% endblock %}
 
 {% block content %}
 
-<!-- Header -->
 <div class="page-head">
   <div>
     <h2 class="page-title">Reports</h2>
-    <p class="page-subtitle">Export system reports in PDF format for printing and official records.</p>
+    <p class="page-subtitle">
+      Select a date range, preview charts, then export PDFs (Full report or separate reports).
+    </p>
   </div>
 </div>
 
-<!-- Summary Cards -->
-<div class="report-grid">
+<!-- Date Range Filter -->
+<div class="card card-xl" style="margin-bottom: 18px;">
+  <div class="card-body">
+    <form method="get" style="display:flex; gap:12px; flex-wrap:wrap; align-items:end;">
+      <div style="min-width:220px;">
+        <label style="font-size:0.9rem; color:var(--text-light); margin-bottom:6px; display:block;">Start Date</label>
+        <input type="date" name="start" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+      </div>
 
-  <!-- Slots -->
+      <div style="min-width:220px;">
+        <label style="font-size:0.9rem; color:var(--text-light); margin-bottom:6px; display:block;">End Date</label>
+        <input type="date" name="end" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+
+      <button class="btn btn-gold" type="submit" style="height:42px;">
+        <i class="bi bi-funnel"></i> Apply Filter
+      </button>
+
+      <a class="btn btn-soft" style="height:42px; display:flex; align-items:center;"
+         href="{% url 'adminpanel:reports' %}">
+        <i class="bi bi-x-circle"></i>&nbsp; Clear
+      </a>
+
+      <div style="margin-left:auto; color:var(--text-light); font-size:0.9rem;">
+        <strong>Range:</strong>
+        {% if start_date %}{{ start_date }}{% else %}Any{% endif %}
+        to
+        {% if end_date %}{{ end_date }}{% else %}Any{% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Download Buttons -->
+<div class="report-grid" style="margin-bottom: 18px;">
+
   <div class="report-card">
     <div class="report-card-head">
       <div class="report-head-left">
-        <div class="report-icon icon-gold">
-          <i class="fas fa-calendar-alt"></i>
-        </div>
+        <div class="report-icon icon-gold"><i class="fas fa-file-pdf"></i></div>
         <div>
-          <div class="report-card-title">Slots Report</div>
-          <div class="report-card-sub">Time slots summary</div>
+          <div class="report-card-title">Full Report (PDF)</div>
+          <div class="report-card-sub">All charts + KPIs + recent appointments</div>
         </div>
       </div>
-
       <span class="report-chip">PDF</span>
+    </div>
+
+    <div class="report-actions">
+      <a href="{% url 'adminpanel:download_full_report_pdf' %}?start={{ start_date|date:'Y-m-d' }}&end={{ end_date|date:'Y-m-d' }}"
+         class="btn btn-gold btn-full">
+        <i class="fas fa-file-pdf"></i> Download Full Report PDF
+      </a>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="report-card-head">
+      <div class="report-head-left">
+        <div class="report-icon icon-blue"><i class="fas fa-calendar-alt"></i></div>
+        <div>
+          <div class="report-card-title">Slots Report (PDF)</div>
+          <div class="report-card-sub">Chart + slots list</div>
+        </div>
+      </div>
+      <span class="report-chip">PDF</span>
+    </div>
+
+    <div class="report-actions">
+      <a href="{% url 'adminpanel:download_slots_report_pdf' %}?start={{ start_date|date:'Y-m-d' }}&end={{ end_date|date:'Y-m-d' }}"
+         class="btn btn-soft btn-full">
+        <i class="fas fa-file-pdf"></i> Download Slots PDF
+      </a>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="report-card-head">
+      <div class="report-head-left">
+        <div class="report-icon icon-red"><i class="fas fa-calendar-check"></i></div>
+        <div>
+          <div class="report-card-title">Appointments Report (PDF)</div>
+          <div class="report-card-sub">Charts + list</div>
+        </div>
+      </div>
+      <span class="report-chip">PDF</span>
+    </div>
+
+    <div class="report-actions">
+      <a href="{% url 'adminpanel:download_appointments_report_pdf' %}?start={{ start_date|date:'Y-m-d' }}&end={{ end_date|date:'Y-m-d' }}"
+         class="btn btn-soft btn-full">
+        <i class="fas fa-file-pdf"></i> Download Appointments PDF
+      </a>
+    </div>
+  </div>
+
+  <div class="report-card">
+    <div class="report-card-head">
+      <div class="report-head-left">
+        <div class="report-icon icon-gold"><i class="fas fa-users"></i></div>
+        <div>
+          <div class="report-card-title">Customers Report (PDF)</div>
+          <div class="report-card-sub">Chart + customers list</div>
+        </div>
+      </div>
+      <span class="report-chip">PDF</span>
+    </div>
+
+    <div class="report-actions">
+      <a href="{% url 'adminpanel:download_customers_report_pdf' %}?start={{ start_date|date:'Y-m-d' }}&end={{ end_date|date:'Y-m-d' }}"
+         class="btn btn-soft btn-full">
+        <i class="fas fa-file-pdf"></i> Download Customers PDF
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="report-grid">
+  <div class="report-card">
+    <div class="report-card-head">
+      <div class="report-head-left">
+        <div class="report-icon icon-blue"><i class="fas fa-calendar-alt"></i></div>
+        <div>
+          <div class="report-card-title">Slots Summary</div>
+          <div class="report-card-sub">Filtered by selected date range</div>
+        </div>
+      </div>
+      <span class="report-chip">KPI</span>
     </div>
 
     <div class="report-stat">
@@ -43,62 +156,18 @@
       <div>Available: <strong>{{ available_slots }}</strong></div>
       <div>Utilization: <strong>{{ utilization }}%</strong></div>
     </div>
-
-    <div class="report-actions">
-      <a href="{% url 'adminpanel:download_slots_report_pdf' %}" class="btn btn-gold btn-full">
-        <i class="fas fa-file-pdf"></i> Download PDF
-      </a>
-    </div>
   </div>
 
-
-  <!-- Customers -->
   <div class="report-card">
     <div class="report-card-head">
       <div class="report-head-left">
-        <div class="report-icon icon-blue">
-          <i class="fas fa-users"></i>
-        </div>
+        <div class="report-icon icon-red"><i class="fas fa-calendar-check"></i></div>
         <div>
-          <div class="report-card-title">Customers Report</div>
-          <div class="report-card-sub">Registered customer details</div>
+          <div class="report-card-title">Appointments Summary</div>
+          <div class="report-card-sub">Filtered by selected date range</div>
         </div>
       </div>
-
-      <span class="report-chip">PDF</span>
-    </div>
-
-    <div class="report-stat">
-      <div class="report-number">{{ total_customers }}</div>
-      <div class="report-label">Total Customers</div>
-    </div>
-
-    <div class="report-meta">
-      <div>Mechanics: <strong>{{ total_mechanics }}</strong></div>
-    </div>
-
-    <div class="report-actions">
-      <a href="{% url 'adminpanel:download_customers_report_pdf' %}" class="btn btn-gold btn-full">
-        <i class="fas fa-file-pdf"></i> Download PDF
-      </a>
-    </div>
-  </div>
-
-
-  <!-- Appointments -->
-  <div class="report-card">
-    <div class="report-card-head">
-      <div class="report-head-left">
-        <div class="report-icon icon-red">
-          <i class="fas fa-calendar-check"></i>
-        </div>
-        <div>
-          <div class="report-card-title">Appointments Report</div>
-          <div class="report-card-sub">Bookings status overview</div>
-        </div>
-      </div>
-
-      <span class="report-chip">PDF</span>
+      <span class="report-chip">KPI</span>
     </div>
 
     <div class="report-stat">
@@ -112,25 +181,84 @@
       <div>Completed: <strong>{{ appointment_status.completed }}</strong></div>
       <div>Cancelled: <strong>{{ appointment_status.cancelled }}</strong></div>
     </div>
-
-    <div class="report-actions">
-      <a href="{% url 'adminpanel:download_appointments_report_pdf' %}" class="btn btn-gold btn-full">
-        <i class="fas fa-file-pdf"></i> Download PDF
-      </a>
-    </div>
   </div>
 
+  <div class="report-card">
+    <div class="report-card-head">
+      <div class="report-head-left">
+        <div class="report-icon icon-gold"><i class="fas fa-users"></i></div>
+        <div>
+          <div class="report-card-title">Customers Summary</div>
+          <div class="report-card-sub">Customers registered in this range</div>
+        </div>
+      </div>
+      <span class="report-chip">KPI</span>
+    </div>
+
+    <div class="report-stat">
+      <div class="report-number">{{ customers_in_range }}</div>
+      <div class="report-label">Customers (in range)</div>
+    </div>
+
+    <div class="report-meta">
+      <div>Total Mechanics: <strong>{{ total_mechanics }}</strong></div>
+    </div>
+  </div>
 </div>
 
-
-<!-- Details -->
+<!-- Charts Preview -->
 <div class="card card-xl mt-18">
   <div class="card-body">
-
     <div class="section-head">
       <div>
-        <h3 class="section-title">Report Details</h3>
-        <p class="section-subtitle">See what’s included in each PDF before downloading.</p>
+        <h3 class="section-title">Charts (Preview)</h3>
+        <p class="section-subtitle">These charts are included in PDF downloads.</p>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px;">
+      <div class="card" style="border: 1px solid rgba(0,0,0,0.06);">
+        <div class="card-body">
+          <h4 style="margin-bottom:10px;">Slot Utilization</h4>
+          <img src="data:image/png;base64,{{ slot_pie }}" alt="Slot Pie"
+               style="width:100%; max-width:520px; border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
+        </div>
+      </div>
+
+      <div class="card" style="border: 1px solid rgba(0,0,0,0.06);">
+        <div class="card-body">
+          <h4 style="margin-bottom:10px;">Appointments by Status</h4>
+          <img src="data:image/png;base64,{{ status_bar }}" alt="Status Bar"
+               style="width:100%; max-width:520px; border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
+        </div>
+      </div>
+
+      <div class="card" style="border: 1px solid rgba(0,0,0,0.06);">
+        <div class="card-body">
+          <h4 style="margin-bottom:10px;">Appointments per Day</h4>
+          <img src="data:image/png;base64,{{ appt_daily_bar }}" alt="Appointments per Day"
+               style="width:100%; max-width:520px; border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
+        </div>
+      </div>
+
+      <div class="card" style="border: 1px solid rgba(0,0,0,0.06);">
+        <div class="card-body">
+          <h4 style="margin-bottom:10px;">Customer Verification</h4>
+          <img src="data:image/png;base64,{{ customers_verify_pie }}" alt="Customer Verify Pie"
+               style="width:100%; max-width:520px; border-radius:12px; border:1px solid rgba(0,0,0,0.08);">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Latest Appointments -->
+<div class="card card-xl mt-18">
+  <div class="card-body">
+    <div class="section-head">
+      <div>
+        <h3 class="section-title">Latest Appointments</h3>
+        <p class="section-subtitle">Top 10 recent bookings from the selected range.</p>
       </div>
     </div>
 
@@ -138,59 +266,28 @@
       <table class="table-ui">
         <thead>
           <tr>
-            <th>Report Name</th>
-            <th>Description</th>
-            <th>Includes</th>
-            <th style="width:220px;">Action</th>
+            <th>Customer</th>
+            <th>Vehicle</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
           </tr>
         </thead>
-
         <tbody>
+          {% for a in latest_appointments %}
           <tr>
-            <td class="td-strong">Slots Report</td>
-            <td class="td-muted">Complete list of all time slots</td>
-            <td class="td-muted">Date, Time, Status, Created At</td>
-            <td>
-              <div class="action-cell">
-                <a href="{% url 'adminpanel:download_slots_report_pdf' %}" class="btn btn-soft btn-full">
-                  <i class="fas fa-file-pdf"></i> Download PDF
-                </a>
-              </div>
-            </td>
+            <td class="td-strong">{{ a.user.name }}</td>
+            <td class="td-muted">{{ a.vehicle.model }} ({{ a.vehicle.plate_no }})</td>
+            <td class="td-muted">{{ a.slot.date }}</td>
+            <td class="td-muted">{{ a.slot.start_time }} - {{ a.slot.end_time }}</td>
+            <td class="td-muted">{{ a.status }}</td>
           </tr>
-
-          <tr>
-            <td class="td-strong">Customers Report</td>
-            <td class="td-muted">All registered customers information</td>
-            <td class="td-muted">Name, Email, Phone, Address, Verified, Status</td>
-            <td>
-              <div class="action-cell">
-                <a href="{% url 'adminpanel:download_customers_report_pdf' %}" class="btn btn-soft btn-full">
-                  <i class="fas fa-file-pdf"></i> Download PDF
-                </a>
-              </div>
-            </td>
-          </tr>
-
-          <tr>
-            <td class="td-strong">Appointments Report</td>
-            <td class="td-muted">All booked appointments details</td>
-            <td class="td-muted">Customer, Vehicle, Slot Date/Time, Status, Booked At</td>
-            <td>
-              <div class="action-cell">
-                <a href="{% url 'adminpanel:download_appointments_report_pdf' %}" class="btn btn-soft btn-full">
-                  <i class="fas fa-file-pdf"></i> Download PDF
-                </a>
-
-                
-              </div>
-            </td>
-          </tr>
-
+          {% empty %}
+          <tr><td colspan="5" class="td-muted">No appointments found for this range.</td></tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
-
   </div>
 </div>
 

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (download_appointments_report_pdf, download_customers_report_pdf, download_slots_report_pdf,
+from .views import (download_appointments_report_pdf, download_customers_report_pdf, download_slots_report_pdf,download_full_report_pdf,
                     inventory, add_inventory_item,edit_inventory_item,delete_inventory_item,item_details,
                     jobs,create_job,categories, add_category, delete_category,
                     brands, add_brand, delete_brand,
@@ -45,6 +45,7 @@ urlpatterns = [
     path("users-add/",create_user, name="create_user"),
 
     path("reports/", reports, name="reports"),
+    path("reports/full/pdf/", download_full_report_pdf, name="download_full_report_pdf"),
 
     path("reports/slots/pdf/", download_slots_report_pdf, name="download_slots_report_pdf"),
     path("reports/customers/pdf/", download_customers_report_pdf, name="download_customers_report_pdf"),

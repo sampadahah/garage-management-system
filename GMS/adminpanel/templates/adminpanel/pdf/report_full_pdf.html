@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+
+@page {
+    size: A4;
+    margin: 25px;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+h2 {
+    margin-bottom: 5px;
+}
+
+h3 {
+    margin-top: 18px;
+}
+
+.meta {
+    color: #555;
+    margin-bottom: 12px;
+}
+
+.kpi {
+    margin: 8px 0;
+}
+
+.chart {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.chart img {
+    width: 450px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 6px;
+    text-align: left;
+}
+
+th {
+    background: #f2f2f2;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>{{ title }}</h2>
+
+<div class="meta">
+Generated on: {% now "Y-m-d H:i" %}<br>
+
+Date Range:
+{% if start_date %}{{ start_date }}{% else %}Any{% endif %}
+to
+{% if end_date %}{{ end_date }}{% else %}Any{% endif %}
+</div>
+
+
+<div class="kpi">
+<strong>Slots:</strong>
+Total {{ total_slots }},
+Booked {{ booked_slots }},
+Available {{ available_slots }},
+Utilization {{ utilization }}%
+</div>
+
+
+<div class="kpi">
+<strong>Appointments:</strong>
+Total {{ total_appointments }},
+Pending {{ appointment_status.pending }},
+Confirmed {{ appointment_status.confirmed }},
+Completed {{ appointment_status.completed }},
+Cancelled {{ appointment_status.cancelled }}
+</div>
+
+
+<div class="kpi">
+<strong>Customers Registered (in range):</strong>
+{{ customers_in_range }}
+</div>
+
+
+<h3>Charts</h3>
+
+
+<div class="chart">
+<h4>Slot Utilization</h4>
+<img src="data:image/png;base64,{{ slot_pie }}">
+</div>
+
+
+<div class="chart">
+<h4>Appointments by Status</h4>
+<img src="data:image/png;base64,{{ status_bar }}">
+</div>
+
+
+<div class="chart">
+<h4>Appointments per Day</h4>
+<img src="data:image/png;base64,{{ appt_daily_bar }}">
+</div>
+
+
+<div class="chart">
+<h4>Customer Verification</h4>
+<img src="data:image/png;base64,{{ customers_verify_pie }}">
+</div>
+
+
+<h3>Recent Appointments (Top 25)</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Customer</th>
+<th>Vehicle</th>
+<th>Date</th>
+<th>Time</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for a in appointments %}
+
+<tr>
+<td>{{ a.id }}</td>
+<td>{{ a.user.name }}</td>
+<td>{{ a.vehicle.model }} ({{ a.vehicle.plate_no }})</td>
+<td>{{ a.slot.date }}</td>
+<td>{{ a.slot.start_time }} - {{ a.slot.end_time }}</td>
+<td>{{ a.status }}</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6">No appointments found.</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</body>
+</html>

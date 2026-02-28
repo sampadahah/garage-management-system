@@ -4,26 +4,39 @@
   <meta charset="utf-8">
   <style>
     body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; }
-    h2 { margin: 0 0 10px 0; }
-    .meta { margin-bottom: 12px; color: #555; }
-    table { width: 100%; border-collapse: collapse; }
+    h2 { margin: 0 0 6px 0; }
+    h3 { margin: 14px 0 6px 0; }
+    .meta { color:#555; margin-bottom: 10px; }
+    img { width: 520px; max-width: 100%; margin: 10px 0; border: 1px solid #ddd; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #333; padding: 6px; }
     th { background: #f2f2f2; }
   </style>
 </head>
 <body>
   <h2>{{ title }}</h2>
-  <div class="meta">Generated on: {% now "Y-m-d H:i" %}</div>
+  <div class="meta">
+    Generated on: {% now "Y-m-d H:i" %}<br>
+    Date Range:
+    {% if start_date %}{{ start_date }}{% else %}Any{% endif %}
+    to
+    {% if end_date %}{{ end_date }}{% else %}Any{% endif %}
+  </div>
 
+  <div>
+    Total Customers (in range): <strong>{{ total_customers }}</strong><br>
+    Verified: <strong>{{ verified_yes }}</strong>,
+    Not Verified: <strong>{{ verified_no }}</strong>
+  </div>
+
+  <h3>Chart</h3>
+  <img src="data:image/png;base64,{{ customers_verify_pie }}" alt="Verification Pie">
+
+  <h3>Customers List</h3>
   <table>
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Address</th>
-        <th>Verified</th>
-        <th>Status</th>
+        <th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Verified</th><th>Status</th>
       </tr>
     </thead>
     <tbody>
