@@ -2,7 +2,9 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import *
-from adminpanel.models import Slot
+from adminpanel.models import Slot, Service
+from django.utils.dateparse import parse_date
+
 User = get_user_model()
 
 class SignUpForm(forms.ModelForm):
@@ -145,32 +147,59 @@ class VehicleForm(forms.ModelForm):
 
         return plate
 
+
 class AppointmentCreateForm(forms.ModelForm):
 
     date = forms.DateField(
+        input_formats=["%Y-%m-%d", "%m/%d/%Y"],
         widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
         required=True
     )
 
     class Meta:
         model = Appointment
-        fields = ["vehicle", "slot", "notes"]
+        fields = ["vehicle", "service", "slot", "notes"]
         widgets = {
             "notes": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Write additional notes..."}),
         }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
+        service_id = kwargs.pop("service_id", None)  # ✅ ADD THIS
         super().__init__(*args, **kwargs)
 
         self.fields["vehicle"].widget.attrs["class"] = "form-select"
+        self.fields["service"].widget.attrs["class"] = "form-select"
         self.fields["slot"].widget.attrs["class"] = "form-select"
-       
 
         if user:
             self.fields["vehicle"].queryset = Vehicle.objects.filter(user=user).order_by("-created_at")
 
         self.fields["vehicle"].empty_label = "Choose vehicle"
+        self.fields["service"].queryset = Service.objects.filter(is_active=True)
+        self.fields["service"].empty_label = "Choose service"
+
+        # ✅ SET DEFAULT SERVICE FROM BOOK NOW LINK (GET)
+        if service_id:
+            self.initial["service"] = service_id
+
+        # slot default
         self.fields["slot"].queryset = Slot.objects.none()
         self.fields["slot"].empty_label = "Select time slot"
 
+        # On POST rebuild slot queryset
+        if self.data:
+            date_val = self.data.get("date")
+            service_id_post = self.data.get("service")  # available on POST
+
+            date_obj = parse_date(date_val)
+            if date_obj is None and date_val:
+                from datetime import datetime
+                try:
+                    date_obj = datetime.strptime(date_val, "%m/%d/%Y").date()
+                except ValueError:
+                    date_obj = None
+
+            if date_obj:
+                qs = Slot.objects.filter(date=date_obj, is_booked=False).order_by("start_time")
+                self.fields["slot"].queryset = qs

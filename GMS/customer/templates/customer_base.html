@@ -99,9 +99,19 @@
                     <span>Dashboard</span>
                 </a>
 
+                <a href="{% url 'service_list' %}" class="sidebar__link {% if request.resolver_match.url_name == 'service_list' %}active{% endif %}">
+                    <i class="bi bi-tools"></i>
+                    <span>Services</span>
+                </a>
+
                 <a href="{% url 'vehicle_list' %}" class="sidebar__link {% if request.resolver_match.url_name == 'vehicle_list' %}active{% endif %}">
                     <i class="bi bi-car-front"></i>
                     <span>My Vehicles</span>
+                </a>
+
+                <a href="{% url 'my_appointments' %}" class="sidebar__link {% if request.resolver_match.url_name == 'my_appointments' %}active{% endif %}">
+                <i class="bi bi-calendar-check"></i>
+                <span>Appointments</span>
                 </a>
 
                 <a href="{% url 'create_appointment' %}" class="sidebar__link {% if request.resolver_match.url_name == 'create_appointment' %}active{% endif %}">

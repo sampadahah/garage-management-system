@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 
 
+
 class Slot(models.Model):
     date = models.DateField()
     start_time = models.TimeField()

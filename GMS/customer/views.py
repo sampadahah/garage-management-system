@@ -12,8 +12,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from adminpanel.models import Slot
+from adminpanel.models import Slot, Service
 from django.db import transaction
+from datetime import datetime, timedelta
 
 User = get_user_model()
 
@@ -284,9 +285,21 @@ def vehicle_delete(request, pk):
     })
 
 @login_required
+def service_list(request):
+    services = Service.objects.filter(is_active=True).order_by("name")
+    return render(request, "service_list.html", {"services": services})
+
+
+@login_required
 def create_appointment(request):
     if request.method == "POST":
         form = AppointmentCreateForm(request.POST, user=request.user)
+
+        service_id = request.POST.get("service")
+        if service_id:
+            form.fields["service"].initial = service_id
+
+            print("POST date:", request.POST.get("date"), "slot:", request.POST.get("slot"))
         if form.is_valid():
             with transaction.atomic():
                 appt = form.save(commit=False)
@@ -309,31 +322,49 @@ def create_appointment(request):
                     messages.success(request, "Appointment booked successfully!")
                     return redirect("create_appointment")
     else:
-        form = AppointmentCreateForm(user=request.user)
+        service_id = request.GET.get("service")
+        form = AppointmentCreateForm(user=request.user, service_id=service_id)
 
     return render(request, "create_appointment.html", {"form": form})
-
 
 
 @login_required
 @require_GET
 def available_slots(request):
     date = request.GET.get("date")
+    service_id = request.GET.get("service")
     if not date:
         return JsonResponse({"slots": []})
+    
+    service = Service.objects.get(id=service_id)
 
     slots = Slot.objects.filter(date=date, is_booked=False).order_by("start_time")
 
-    data = [
-        {
-            "id": s.id,
-            "label": f"{s.start_time.strftime('%I:%M %p')} - {s.end_time.strftime('%I:%M %p')}",
-        }
-        for s in slots
-    ]
+    valid_slots = []
 
-    return JsonResponse({"slots": data})
+    for slot in slots:
+        duration = (
+            datetime.combine(slot.date, slot.end_time) -
+            datetime.combine(slot.date, slot.start_time)
+        ).total_seconds() / 60
 
+        if duration >= service.duration:
+            valid_slots.append({
+                "id": slot.id,
+                "label": f"{slot.start_time.strftime('%I:%M %p')} - {slot.end_time.strftime('%I:%M %p')}"
+            })
+
+    return JsonResponse({"slots": valid_slots})
+
+@login_required
+def my_appointments(request):
+    appointments = (
+        Appointment.objects
+        .filter(user=request.user)
+        .select_related("vehicle", "service", "slot")
+        .order_by("-created_at")
+    )
+    return render(request, "my_appointments.html", {"appointments": appointments})
 
 def logout_view(request):
     logout(request)

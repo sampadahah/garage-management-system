@@ -62,23 +62,30 @@
 </div>
 
 <script>
-(function() {
+(function(){
   const dateInput = document.querySelector('input[name="date"]');
+  const serviceSelect = document.querySelector('select[name="service"]');
   const slotSelect = document.querySelector('select[name="slot"]');
 
-  async function loadSlots(dateValue) {
+  async function loadSlots(){
+    const dateValue = dateInput.value;
+    const serviceValue = serviceSelect.value;
+
     slotSelect.innerHTML = '<option value="">Loading...</option>';
 
-    if (!dateValue) {
+    if (!dateValue || !serviceValue){
       slotSelect.innerHTML = '<option value="">Select time slot</option>';
       return;
     }
 
-    const url = "{% url 'available_slots' %}" + "?date=" + encodeURIComponent(dateValue);
-    const res = await fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } });
+    const url = "{% url 'available_slots' %}"
+      + "?date=" + encodeURIComponent(dateValue)
+      + "&service=" + encodeURIComponent(serviceValue);
+
+    const res = await fetch(url);
     const data = await res.json();
 
-    if (!data.slots || data.slots.length === 0) {
+    if (!data.slots || data.slots.length === 0){
       slotSelect.innerHTML = '<option value="">No slots available</option>';
       return;
     }
@@ -92,10 +99,10 @@
     });
   }
 
-  if (dateInput) {
-    dateInput.addEventListener("change", (e) => loadSlots(e.target.value));
-    if (dateInput.value) loadSlots(dateInput.value);
-  }
+  dateInput.addEventListener("change", loadSlots);
+  serviceSelect.addEventListener("change", loadSlots);
+
+  if (dateInput.value && serviceSelect.value) loadSlots();
 })();
 </script>
 {% endblock %}
