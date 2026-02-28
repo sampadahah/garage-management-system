@@ -14,7 +14,7 @@ class Slot(models.Model):
         ordering = ["date", "start_time"]
         unique_together = ("date", "start_time", "end_time")
 
-    def _str_(self):
+    def __str__(self):
         status = "Booked" if self.is_booked else "Available"
         return f"{self.date} {self.start_time}-{self.end_time} ({status})"
     

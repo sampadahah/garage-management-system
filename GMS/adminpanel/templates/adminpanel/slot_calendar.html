@@ -1,119 +1,163 @@
 {% extends "customer_base.html" %}
+{% load static %}
 
 {% block page_title %}Slot Calendar{% endblock %}
 {% block page_subtitle %}View and manage booking slots by date{% endblock %}
 
 {% block content %}
-<div class="content-wrapper">
-    <div class="header-actions">
-        <h3><i class="fas fa-calendar-alt"></i> Slot Calendar</h3>
-        <a href="{% url 'adminpanel:add_slot' %}" class="btn btn-primary">
-            <i class="fas fa-plus-circle"></i> Add New Slot
-        </a>
+
+<!-- Page Header -->
+<div class="page-head">
+    <div>
+        <h2 class="page-title">Slot Calendar</h2>
+        <p class="page-subtitle">View and manage booking slots by date.</p>
     </div>
-    
-    <form method="get" class="mb-30">
-        <div class="form-group">
-            <label class="form-label" for="date">
-                <i class="fas fa-calendar"></i> Filter by Date (Optional)
-            </label>
-            <input type="date" id="date" name="date" value="{% if selected_date %}{{ selected_date|date:'Y-m-d' }}{% endif %}" class="form-control" />
-        </div>
-        <button class="btn btn-primary" type="submit">
-            <i class="fas fa-search"></i> Filter Slots
-        </button>
-        {% if selected_date %}
-            <a href="{% url 'adminpanel:slot_calendar' %}" class="btn btn-outline">
-                <i class="fas fa-times"></i> Clear Filter
-            </a>
-        {% endif %}
-    </form>
-    
-    {% if showing_all %}
-        <h4 style="margin-bottom: 20px; color: var(--text-dark);">
-            <i class="fas fa-list"></i> All Available Slots
-        </h4>
-    {% else %}
-        <h4 style="margin-bottom: 20px; color: var(--text-dark);">
-            <i class="fas fa-calendar-day"></i> Slots for {{ selected_date|date:"F d, Y" }}
-        </h4>
-    {% endif %}
-    
-    {% if slots %}
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-calendar"></i> Date</th>
-                        <th><i class="fas fa-clock"></i> Start Time</th>
-                        <th><i class="fas fa-clock"></i> End Time</th>
-                        <th><i class="fas fa-info-circle"></i> Status</th>
-                        <th><i class="fas fa-user"></i> Created By</th>
-                        <th><i class="fas fa-cog"></i> Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for s in slots %}
-                    <tr>
-                        <td><strong>{{ s.date|date:"M d, Y" }}</strong></td>
-                        <td>{{ s.start_time|time:"g:i A" }}</td>
-                        <td>{{ s.end_time|time:"g:i A" }}</td>
-                        <td>
-                            {% if s.is_booked %}
-                                <span class="status-badge status-danger">
-                                    <i class="fas fa-times-circle"></i> Booked
-                                </span>
-                            {% else %}
-                                <span class="status-badge status-success">
-                                    <i class="fas fa-check-circle"></i> Available
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td>{{ s.created_by.email|default:"N/A" }}</td>
-                        <td>
-                            <form method="post" action="{% url 'adminpanel:toggle_slot_status' s.id %}" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="date_filter" value="{% if selected_date %}{{ selected_date|date:'Y-m-d' }}{% endif %}">
-                                {% if s.is_booked %}
-                                    <button type="submit" class="btn btn-sm" style="background: var(--success-green); color: white;" title="Mark as Available">
-                                        <i class="fas fa-check"></i> Mark Available
-                                    </button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-sm" style="background: var(--danger-red); color: white;" title="Mark as Booked">
-                                        <i class="fas fa-times"></i> Mark Booked
-                                    </button>
-                                {% endif %}
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <div style="margin-top: 20px; padding: 15px; background: var(--bg-gray); border-radius: 8px;">
-            <p style="color: var(--text-light); margin: 0;">
-                <i class="fas fa-info-circle"></i> 
-                Showing <strong>{{ slots|length }}</strong> slot(s)
-                {% if showing_all %}
-                    from all dates
-                {% else %}
-                    for {{ selected_date|date:"F d, Y" }}
-                {% endif %}
-            </p>
-        </div>
-    {% else %}
-        <div class="alert-box">
-            <i class="fas fa-info-circle alert-icon"></i>
-            <div class="alert-content">
-                <h4>No Slots Found</h4>
-                {% if showing_all %}
-                    <p>No slots have been created yet. Click "Add New Slot" to create your first slot.</p>
-                {% else %}
-                    <p>No slots available for {{ selected_date|date:"F d, Y" }}. Click "Add New Slot" to create one or clear the filter to see all slots.</p>
+
+    <div class="page-actions">
+        <a href="{% url 'adminpanel:add_slot' %}" class="btn-gold-pill">
+            <i class="fas fa-plus"></i> Add New Slot
+           </a>
+    </div>
+</div>
+
+<!-- Filter Card -->
+<div class="card card-xl">
+    <div class="card-body">
+
+        <form method="get" class="filter-row">
+            <div class="form-group">
+                <label class="form-label" for="date">
+                    Filter by Date (Optional)
+                </label>
+                <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value="{% if selected_date %}{{ selected_date|date:'Y-m-d' }}{% endif %}"
+                    class="form-control"
+                />
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-soft" type="submit">
+                    <i class="fas fa-search"></i> Filter Slots
+                </button>
+
+                {% if selected_date %}
+                    <a href="{% url 'adminpanel:slot_calendar' %}" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
                 {% endif %}
             </div>
-        </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Title -->
+<div class="section-top">
+    {% if showing_all %}
+        <h3 class="section-title">All Available Slots</h3>
+        <p class="section-subtitle">Showing slots from all dates.</p>
+    {% else %}
+        <h3 class="section-title">Slots for {{ selected_date|date:"F d, Y" }}</h3>
+        <p class="section-subtitle">Filtered view for the selected date.</p>
     {% endif %}
 </div>
+
+{% if slots %}
+    <div class="card card-xl">
+        <div class="card-body">
+
+            <div class="table-wrap">
+                <table class="table-ui">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Created By</th>
+                            <th style="width:230px;">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for s in slots %}
+                        <tr>
+                            <td class="td-strong">{{ s.date|date:"M d, Y" }}</td>
+                            <td>{{ s.start_time|time:"g:i A" }}</td>
+                            <td>{{ s.end_time|time:"g:i A" }}</td>
+                            <td>
+                                {% if s.is_booked %}
+                                    <span class="pill pill-danger">
+                                        <i class="fas fa-times-circle"></i> Booked
+                                    </span>
+                                {% else %}
+                                    <span class="pill pill-success">
+                                        <i class="fas fa-check-circle"></i> Available
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="td-muted">{{ s.created_by.email|default:"N/A" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'adminpanel:toggle_slot_status' s.id %}" class="inline-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="date_filter" value="{% if selected_date %}{{ selected_date|date:'Y-m-d' }}{% endif %}">
+
+                                    {% if s.is_booked %}
+                                        <button type="submit" class="btn btn-success btn-full-sm" title="Mark as Available">
+                                            <i class="fas fa-check"></i> Mark Available
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-danger btn-full-sm" title="Mark as Booked">
+                                            <i class="fas fa-times"></i> Mark Booked
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            <!-- Info Bar -->
+            <div class="info-bar">
+                <i class="fas fa-info-circle"></i>
+                <span>
+                    Showing <strong>{{ slots|length }}</strong> slot(s)
+                    {% if showing_all %}
+                        from all dates
+                    {% else %}
+                        for {{ selected_date|date:"F d, Y" }}
+                    {% endif %}
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="empty-text">
+            <h3>No Slots Found</h3>
+            {% if showing_all %}
+                <p>No slots have been created yet. Click “Add New Slot” to create your first slot.</p>
+            {% else %}
+                <p>No slots available for {{ selected_date|date:"F d, Y" }}. Add a slot or clear the filter to view all slots.</p>
+            {% endif %}
+        </div>
+        <div class="empty-actions">
+           <a href="{% url 'adminpanel:add_slot' %}" class="btn-gold-pill">
+            <i class="fas fa-plus"></i> Add New Slot
+           </a>
+        </div>
+    </div>
+{% endif %}
+
 {% endblock %}
