@@ -5,27 +5,41 @@
 {% block page_subtitle %}Create new brand{% endblock %}
 
 {% block content %}
-<div class="content-wrapper" style="max-width: 600px;">
-    <div class="header-actions mb-20">
-        <h3>Add Brand</h3>
-        <a href="{% url 'adminpanel:brands' %}" class="btn btn-outline">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
+<div class="ap-container">
+    <div class="ap-card">
+
+        <!-- Header -->
+        <div class="ap-header">
+            <h2 class="ap-title">Add Brand</h2>
+
+            <a href="{% url 'adminpanel:brands' %}" class="ap-btn ap-btn-outline">
+                ← Back
+            </a>
+        </div>
+
+        <!-- Form -->
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="ap-form-group">
+                <label class="ap-label">
+                    Brand Name <span class="ap-required">*</span>
+                </label>
+                <input type="text" name="brand_name" class="ap-input" placeholder="Enter brand name" required>
+            </div>
+
+            <div class="ap-actions">
+                <button type="submit" class="ap-btn ap-btn-primary">
+                    Save
+                </button>
+
+                <a href="{% url 'adminpanel:brands' %}" class="ap-btn ap-btn-outline">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
     </div>
-
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label class="form-label">Brand Name *</label>
-            <input type="text" name="brand_name" class="form-control" required>
-        </div>
-
-        <div class="mt-20 d-flex gap-10">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Save
-            </button>
-            <a href="{% url 'adminpanel:brands' %}" class="btn btn-outline">Cancel</a>
-        </div>
-    </form>
 </div>
+
 {% endblock %}

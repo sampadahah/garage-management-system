@@ -1,76 +1,81 @@
 {% extends "customer_base.html" %}
+{% load static %}
 
 {% block page_title %}Delete Part{% endblock %}
-
 {% block page_subtitle %}Confirm deletion of part{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="content-wrapper">
-    <div class="header-actions mb-30">
-        <h3>Delete Part</h3>
-        <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">
-            <i class="fas fa-arrow-left"></i> Back to Inventory
-        </a>
+<div class="ap-page-center">
+  <div class="ap-card-large">
+
+    <!-- Header -->
+    <div class="ap-header">
+      <h2 class="ap-title-large">Delete Part</h2>
+      <a href="{% url 'adminpanel:inventory' %}" class="ap-btn ap-btn-outline">← Back to Inventory</a>
     </div>
-    
-    <div class="alert-box" style="background-color: rgba(220, 53, 69, 0.1); border-color: var(--danger-red);">
-        <div class="alert-icon">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div class="alert-content">
-            <h4>Warning: This action cannot be undone!</h4>
-            <p>You are about to permanently delete a part from inventory. This will remove all associated data.</p>
-        </div>
+
+    <!-- Warning box -->
+    <div class="ap-alert ap-alert-danger">
+      <div class="ap-alert-icon">!</div>
+      <div class="ap-alert-content">
+        <h4 class="ap-alert-title">Warning: This action cannot be undone!</h4>
+        <p class="ap-alert-text">
+          You are about to permanently delete a part from inventory. This will remove all associated data.
+        </p>
+      </div>
     </div>
-    
-    <div class="content-wrapper mt-30">
-        <h4>Part Details</h4>
-        <div class="mt-20">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);"><strong>Part Name:</strong></td>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">{{ item.name }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);"><strong>Price:</strong></td>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">${{ item.price }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);"><strong>Quantity:</strong></td>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">{{ item.quantity }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);"><strong>Stock Status:</strong></td>
-                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">
-                        <span class="status-badge status-{{ item.stock_status_color }}">
-                            {{ item.stock_status_display }}
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px;"><strong>Created:</strong></td>
-                    <td style="padding: 10px;">{{ item.created_at|date:"F d, Y" }}</td>
-                </tr>
-            </table>
-        </div>
-        
-        <div class="form-group mt-30">
-            <form method="post">
-                {% csrf_token %}
-                <div class="d-flex align-center gap-10">
-                    <button type="submit" class="btn btn-danger" onclick="return confirmDelete()">
-                        <i class="fas fa-trash"></i> Yes, Delete Permanently
-                    </button>
-                    <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline">No, Cancel</a>
-                </div>
-            </form>
-        </div>
+
+    <!-- Details -->
+    <div class="ap-section">
+      <h4 class="ap-section-title">Part Details</h4>
+
+      <table class="ap-details-table">
+        <tr>
+          <td class="ap-details-key">Part Name:</td>
+          <td class="ap-details-value">{{ item.name }}</td>
+        </tr>
+        <tr>
+          <td class="ap-details-key">Price:</td>
+          <td class="ap-details-value">Nrs {{ item.price }}</td>
+        </tr>
+        <tr>
+          <td class="ap-details-key">Quantity:</td>
+          <td class="ap-details-value">{{ item.quantity }}</td>
+        </tr>
+        <tr>
+          <td class="ap-details-key">Stock Status:</td>
+          <td class="ap-details-value">
+            <span class="ap-badge ap-badge-{{ item.stock_status_color }}">
+              {{ item.stock_status_display }}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td class="ap-details-key">Created:</td>
+          <td class="ap-details-value">{{ item.created_at|date:"F d, Y" }}</td>
+        </tr>
+      </table>
+
+      <!-- Actions -->
+      <form method="post" class="ap-actions ap-actions-danger">
+        {% csrf_token %}
+        <button type="submit" class="ap-btn ap-btn-danger" onclick="return confirmDelete()">
+          Yes, Delete Permanently
+        </button>
+        <a href="{% url 'adminpanel:inventory' %}" class="ap-btn ap-btn-outline">No, Cancel</a>
+      </form>
     </div>
+
+  </div>
 </div>
 
 <script>
 function confirmDelete() {
-    return confirm('WARNING: This will permanently delete the part. Are you absolutely sure?');
+  return confirm('WARNING: This will permanently delete the part. Are you absolutely sure?');
 }
 </script>
 {% endblock %}

@@ -55,4 +55,8 @@ urlpatterns = [
     path('services/add/', admin_add_service, name='admin_add_service'),
     path('services/edit/<int:pk>/', admin_edit_service, name='admin_edit_service'),
     path('services/delete/<int:pk>/', admin_delete_service, name='admin_delete_service'),
+
+
+    path("appointments/", views.appointments_list, name="appointments"),
+    path("appointments/<int:appointment_id>/assign/", views.assign_mechanic, name="assign_mechanic"),
 ]
