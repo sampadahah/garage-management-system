@@ -1,9 +1,11 @@
 from django.urls import path
-from .views import (inventory, add_inventory_item,edit_inventory_item,delete_inventory_item,item_details,
+
+from .views import (download_appointments_report_pdf, download_customers_report_pdf, download_slots_report_pdf,
+                    inventory, add_inventory_item,edit_inventory_item,delete_inventory_item,item_details,
                     jobs,create_job,categories, add_category, delete_category,
                     brands, add_brand, delete_brand,
                     admin_dashboard, slot_calendar, add_slot,toggle_slot_status,
-                    users_list, reports, download_slots_report,download_customers_report,download_bookings_report,download_all_reports,
+                    users_list, reports,
                     admin_service_list,admin_add_service,admin_delete_service,admin_edit_service, create_user)
 app_name = "adminpanel"
 
@@ -43,14 +45,18 @@ urlpatterns = [
     path("users-add/",create_user, name="create_user"),
 
     path("reports/", reports, name="reports"),
-    path("reports/download-slots/", download_slots_report, name="download_slots_report"),
-    path("reports/download-customers/", download_customers_report, name="download_customers_report"),
-    path("reports/download-bookings/", download_bookings_report, name="download_bookings_report"),
-    path("reports/download-all/", download_all_reports, name="download_all_reports"),
+
+    path("reports/slots/pdf/", download_slots_report_pdf, name="download_slots_report_pdf"),
+    path("reports/customers/pdf/", download_customers_report_pdf, name="download_customers_report_pdf"),
+    path("reports/appointments/pdf/", download_appointments_report_pdf, name="download_appointments_report_pdf"),
 
     # List all services
     path('services/', admin_service_list, name='admin_service_list'),
     path('services/add/', admin_add_service, name='admin_add_service'),
     path('services/edit/<int:pk>/', admin_edit_service, name='admin_edit_service'),
     path('services/delete/<int:pk>/', admin_delete_service, name='admin_delete_service'),
+
+
+    path("appointments/", views.appointments_list, name="appointments"),
+    path("appointments/<int:appointment_id>/assign/", views.assign_mechanic, name="assign_mechanic"),
 ]

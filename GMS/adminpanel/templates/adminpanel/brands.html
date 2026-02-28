@@ -1,46 +1,58 @@
 {% extends "customer_base.html" %}
+{% load static %}
 
 {% block page_title %}Brands{% endblock %}
 {% block page_subtitle %}Manage Brands{% endblock %}
 
-{% block content %}
-<div class="content-wrapper">
-    <div class="header-actions mb-20">
-        <h3>Brands</h3>
-        <a href="{% url 'adminpanel:add_brand' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add Brand
-        </a>
-    </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
+{% endblock %}
 
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Brand Name</th>
-                    <th class="text-right">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for b in brands %}
-                <tr>
-                    <td>{{ b.brand_id }}</td>
-                    <td>{{ b.brand_name }}</td>
-                    <td class="text-right">
-                        <a href="{% url 'adminpanel:delete_brand' b.brand_id %}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Delete this brand?');">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center">No brands found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block content %}
+<div class="ap-container">
+    <div class="ap-card">
+
+        <div class="ap-header">
+            <h3 class="ap-title">Brands</h3>
+
+            <a href="{% url 'adminpanel:add_brand' %}" class="ap-btn ap-btn-primary">
+                + Add Brand
+            </a>
+        </div>
+
+        <div class="ap-table-wrapper">
+            <table class="ap-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Brand Name</th>
+                        <th class="ap-text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in brands %}
+                    <tr>
+                        <td>{{ b.brand_id }}</td>
+                        <td>{{ b.brand_name }}</td>
+                        <td class="ap-text-right">
+                            <a href="{% url 'adminpanel:delete_brand' b.brand_id %}"
+                               class="ap-btn ap-btn-danger ap-btn-sm"
+                               onclick="return confirm('Delete this brand?');">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="ap-text-center">
+                            No brands found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 {% endblock %}

@@ -1,43 +1,61 @@
 {% extends "customer_base.html" %}
+{% load static %}
 
-{% block page_title %}
-  Inventory 
-{% endblock %}
+{% block page_title %}Inventory{% endblock %}
+{% block page_subtitle %}Let's check your inventory today{% endblock %}
 
-{% block page_subtitle %}
-  Let's check your inventory today
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
 {% endblock %}
 
 {% block content %}
-  {% if out_of_stock_items > 0 %}
-    <div class="alert-box mb-30">
-      <div class="alert-icon">
-        <i class="fas fa-exclamation-circle"></i>
-      </div>
-      <div class="alert-content">
-        <h4>{{ out_of_stock_items }} item{{ out_of_stock_items|pluralize }} out of stock!</h4>
-        <p>Immediate reorder recommended to avoid service delays.</p>
-      </div>
-    </div>
-  {% endif %}
+<div class="ap-page-center">
+  <div class="ap-card-large">
 
-  <div class="content-wrapper">
-    <div class="header-actions">
-      <h3>Inventory Items</h3>
-      <div class="d-flex align-center gap-20">
-        <form method="get" class="d-flex align-center gap-10">
-          <input type="text" name="search" value="{{ search_query }}" placeholder="Search items..." class="form-control" style="width: 250px;" />
-          <button type="submit" class="btn btn-outline"><i class="fas fa-search"></i> Search</button>
+    {% if out_of_stock_items > 0 %}
+      <div class="ap-alert ap-alert-danger ap-mb-20">
+        <div class="ap-alert-icon">!</div>
+        <div class="ap-alert-content">
+          <h4 class="ap-alert-title">
+            {{ out_of_stock_items }} item{{ out_of_stock_items|pluralize }} out of stock!
+          </h4>
+          <p class="ap-alert-text">Immediate reorder recommended to avoid service delays.</p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Header -->
+    <div class="ap-header ap-header-wrap">
+      <div>
+        <h2 class="ap-title-large">Inventory Items</h2>
+      </div>
+
+      <div class="ap-toolbar">
+        <form method="get" class="ap-search">
+          <input
+            type="text"
+            name="search"
+            value="{{ search_query }}"
+            placeholder="Search items..."
+            class="ap-input ap-search-input"
+          />
+
+          <button type="submit" class="ap-btn ap-btn-outline">Search</button>
+
           {% if search_query %}
-            <a href="{% url 'adminpanel:inventory' %}" class="btn btn-outline"><i class="fas fa-times"></i> Clear</a>
+            <a href="{% url 'adminpanel:inventory' %}" class="ap-btn ap-btn-outline">Clear</a>
           {% endif %}
         </form>
-        <a href="{% url 'adminpanel:add_inventory_item' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Part</a>
+
+        <a href="{% url 'adminpanel:add_inventory_item' %}" class="ap-btn ap-btn-primary">
+          + Add New Part
+        </a>
       </div>
     </div>
 
-    <div class="table-container">
-      <table class="data-table">
+    <!-- Table -->
+    <div class="ap-table-container">
+      <table class="ap-table-modern ap-table-hover">
         <thead>
           <tr>
             <th>Part Name</th>
@@ -46,23 +64,26 @@
             <th>Min Stock</th>
             <th>Category</th>
             <th>Stock Status</th>
-            <th>Actions</th>
+            <th class="ap-text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for item in inventory_items %}
             <tr>
               <td>
-                <a href="{% url 'adminpanel:item_details' item.part_id %}" class="item-link">
+                <a href="{% url 'adminpanel:item_details' item.part_id %}" class="ap-item-link">
                   <strong>{{ item.name }}</strong>
                   {% if item.compatible_model %}
-                    <br /><small class="text-light">Compatible: {{ item.compatible_model }}</small>
+                    <br />
+                    <small class="ap-muted">Compatible: {{ item.compatible_model }}</small>
                   {% endif %}
                 </a>
               </td>
+
               <td>{{ item.price }}</td>
               <td>{{ item.quantity }}</td>
               <td>{{ item.min_stock_level }}</td>
+
               <td>
                 {% if item.category %}
                   {{ item.category.category_name }}
@@ -70,23 +91,38 @@
                   -
                 {% endif %}
               </td>
+
               <td>
-                <span class="status-badge status-{{ item.stock_status_color }}">{{ item.stock_status_display }}</span>
+                <span class="ap-badge ap-badge-{{ item.stock_status_color }}">
+                  {{ item.stock_status_display }}
+                </span>
               </td>
-              <td>
-                <div class="action-buttons">
-                  <a href="{% url 'adminpanel:edit_inventory_item' item.part_id %}" class="btn btn-outline btn-icon" title="Edit"><i class="fas fa-edit"></i></a>
-                  <a href="{% url 'adminpanel:delete_inventory_item' item.part_id %}" class="btn btn-danger btn-icon" title="Delete"><i class="fas fa-trash"></i></a>
+
+              <td class="ap-text-right">
+                <div class="ap-action-buttons">
+                  <a href="{% url 'adminpanel:edit_inventory_item' item.part_id %}"
+                     class="ap-icon-btn ap-icon-btn-outline"
+                     title="Edit">
+                    ✎
+                  </a>
+
+                  <a href="{% url 'adminpanel:delete_inventory_item' item.part_id %}"
+                     class="ap-icon-btn ap-icon-btn-danger"
+                     title="Delete"
+                     data-delete-link="1">
+                    🗑
+                  </a>
                 </div>
               </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="7" class="text-center">
+              <td colspan="7" class="ap-empty">
                 {% if search_query %}
                   No items found matching "{{ search_query }}"
                 {% else %}
-                  No inventory items found. <a href="{% url 'adminpanel:add_inventory_item' %}">Add your first item</a>
+                  No inventory items found.
+                  <a href="{% url 'adminpanel:add_inventory_item' %}" class="ap-inline-link">Add your first item</a>
                 {% endif %}
               </td>
             </tr>
@@ -95,63 +131,47 @@
       </table>
     </div>
 
+    <!-- Pagination -->
     {% if inventory_items.has_other_pages %}
-      <div class="pagination">
+      <div class="ap-pagination">
         {% if inventory_items.has_previous %}
-          <a href="?page={{ inventory_items.previous_page_number }}{% if search_query %}
-              &search={{ search_query }}
-            {% endif %}"
-            class="page-link">
-            <i class="fas fa-chevron-left"></i> Previous
+          <a class="ap-page-link"
+             href="?page={{ inventory_items.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+            ‹ Previous
           </a>
         {% endif %}
 
         {% for num in inventory_items.paginator.page_range %}
           {% if inventory_items.number == num %}
-            <span class="page-link active">{{ num }}</span>
+            <span class="ap-page-link ap-page-link-active">{{ num }}</span>
           {% elif num > inventory_items.number|add:'-3' and num < inventory_items.number|add:'3' %}
-            <a href="?page={{ num }}{% if search_query %}
-                &search={{ search_query }}
-              {% endif %}"
-              class="page-link">
+            <a class="ap-page-link"
+               href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">
               {{ num }}
             </a>
           {% endif %}
         {% endfor %}
 
         {% if inventory_items.has_next %}
-          <a href="?page={{ inventory_items.next_page_number }}{% if search_query %}
-              &search={{ search_query }}
-            {% endif %}"
-            class="page-link">
-            Next <i class="fas fa-chevron-right"></i>
+          <a class="ap-page-link"
+             href="?page={{ inventory_items.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+            Next ›
           </a>
         {% endif %}
       </div>
     {% endif %}
+
   </div>
+</div>
 
-  <script>
-    // Confirm delete action
-    document.querySelectorAll('a[href*="delete"]').forEach((link) => {
-      link.addEventListener('click', function (e) {
-        if (!confirm('Are you sure you want to delete this inventory item?')) {
-          e.preventDefault()
-        }
-      })
-    })
-  </script>
-
-  <style>
-    .item-link {
-      color: var(--text-dark);
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-    
-    .item-link:hover {
-      color: var(--primary-gold);
-      text-decoration: underline;
-    }
-  </style>
+<script>
+  // Confirm delete action (only for delete buttons)
+  document.querySelectorAll('[data-delete-link="1"]').forEach((link) => {
+    link.addEventListener('click', function (e) {
+      if (!confirm('Are you sure you want to delete this inventory item?')) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
 {% endblock %}

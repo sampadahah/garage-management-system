@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; }
+    h2 { margin: 0 0 10px 0; }
+    .meta { margin-bottom: 12px; color: #555; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #333; padding: 6px; }
+    th { background: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h2>{{ title }}</h2>
+  <div class="meta">Generated on: {% now "Y-m-d H:i" %}</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Customer</th>
+        <th>Vehicle</th>
+        <th>Plate</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Booked At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in appointments %}
+      <tr>
+        <td>{{ a.id }}</td>
+        <td>{{ a.user.name }} ({{ a.user.email }})</td>
+        <td>{{ a.vehicle.model }}</td>
+        <td>{{ a.vehicle.plate_no }}</td>
+        <td>{{ a.slot.date }}</td>
+        <td>{{ a.slot.start_time }} - {{ a.slot.end_time }}</td>
+        <td>{{ a.status }}</td>
+        <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8">No appointments found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

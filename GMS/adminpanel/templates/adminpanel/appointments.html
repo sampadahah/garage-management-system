@@ -1,0 +1,79 @@
+{% extends "customer_base.html" %}
+{% load static %}
+
+{% block page_title %}Appointments{% endblock %}
+{% block page_subtitle %}Appointments booked by customers{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ap-page">
+  <section class="ap-surface">
+    <section class="ap-panel">
+      <div class="ap-table-scroll">
+        <table class="ap-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer</th>
+              <th>Vehicle</th>
+              <th>Slot</th>
+              <th>Status</th>
+              <th class="ap-text-right">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for a in appointments %}
+            <tr>
+              <td>#{{ a.appointment_id }}</td>
+
+              <td>{{ a.user.get_full_name|default:a.user.username }}</td>
+
+              <td>
+                {% if a.vehicle %}
+                  {{ a.vehicle }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+
+              <td>
+                {% if a.slot %}
+                  {{ a.slot }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+
+              <td>
+                {% if a.status %}
+                  <span class="ap-badge ap-badge-info">{{ a.status|title }}</span>
+                {% else %}
+                  <span class="ap-badge ap-badge-warning">Pending</span>
+                {% endif %}
+              </td>
+
+              <td class="ap-text-right">
+                <a class="ap-btn ap-btn-primary ap-btn-sm"
+                   href="{% url 'adminpanel:assign_mechanic' a.appointment_id %}">
+                  Assign Mechanic
+                </a>
+              </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+              <td colspan="6" class="ap-empty">No appointments found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </section>
+</section>
+{% endblock %}

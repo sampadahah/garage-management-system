@@ -1,4 +1,7 @@
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
+{% endblock %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,6 +39,9 @@
                 <a href="{% url 'adminpanel:dashboard' %}" class="sidebar__link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                     <i class="bi bi-grid-fill"></i>
                     <span>Dashboard</span>
+                </a>
+                <a href="{% url 'adminpanel:appointments' %}"class="sidebar__link {% if request.resolver_match.url_name == 'appointments' %}active{% endif %}">
+                        <i class="bi bi-calendar-check"></i> <span>Appointments</span>
                 </a>
 
                 <a href="{% url 'adminpanel:inventory' %}" class="sidebar__link {% if request.resolver_match.url_name == 'inventory' %}active{% endif %}">
