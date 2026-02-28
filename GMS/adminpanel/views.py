@@ -17,8 +17,10 @@ from .models import JobVacancy, Part
 from .models import InventoryCategory, Brand
 
 from customer.models import Appointment
+from .report_charts import make_pie_chart, make_bar_chart
 
-
+from datetime import datetime
+from django.db.models.functions import TruncDate
 
 
 
@@ -148,89 +150,332 @@ def users_list(request):
         "role_filter": role_filter
     })
 
-@login_required
-@user_passes_test(is_admin)
-def reports(request):
-    """View reports page with download options"""
-    from django.contrib.auth import get_user_model
-    
-    User = get_user_model()
-    
-    # Get counts for display
-    total_slots = Slot.objects.count()
-    total_customers = User.objects.filter(is_staff=False, is_superuser=False).count()
-    booked_slots = Slot.objects.filter(is_booked=True).count()
-    
-    context = {
-        'total_slots': total_slots,
-        'total_customers': total_customers,
-        'booked_slots': booked_slots,
-    }
-    return render(request, "adminpanel/reports.html", context)
+def parse_date(value: str):
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def get_date_range(request):
+    start_date = parse_date(request.GET.get("start"))
+    end_date = parse_date(request.GET.get("end"))
+    return start_date, end_date
+
+
+def filter_slots(slots_qs, start_date, end_date):
+    if start_date and end_date:
+        return slots_qs.filter(date__range=[start_date, end_date])
+    if start_date:
+        return slots_qs.filter(date__gte=start_date)
+    if end_date:
+        return slots_qs.filter(date__lte=end_date)
+    return slots_qs
+
+
+def filter_appointments(app_qs, start_date, end_date):
+    if start_date and end_date:
+        return app_qs.filter(slot__date__range=[start_date, end_date])
+    if start_date:
+        return app_qs.filter(slot__date__gte=start_date)
+    if end_date:
+        return app_qs.filter(slot__date__lte=end_date)
+    return app_qs
+
+
+def filter_customers(customers_qs, start_date, end_date):
+    # Customers registered within range
+    if start_date and end_date:
+        return customers_qs.filter(date_joined__date__range=[start_date, end_date])
+    if start_date:
+        return customers_qs.filter(date_joined__date__gte=start_date)
+    if end_date:
+        return customers_qs.filter(date_joined__date__lte=end_date)
+    return customers_qs
+
+
+from django.db.models import Count
+
+def appointments_per_day_chart(appointments_qs):
+    daily = (
+        appointments_qs
+        .values("slot__date")
+        .annotate(total=Count("id"))
+        .order_by("slot__date")
+    )
+
+    labels = [str(row["slot__date"]) for row in daily]
+    values = [row["total"] for row in daily]
+
+    return make_bar_chart(labels, values, "Appointments per Day", xlabel="Date", ylabel="Appointments")
+
 
 @login_required
 @user_passes_test(is_admin)
 def reports(request):
+    """
+    Web page: date range + charts + buttons for all PDFs.
+    """
     User = get_user_model()
+    start_date, end_date = get_date_range(request)
 
-    total_slots = Slot.objects.count()
-    booked_slots = Slot.objects.filter(is_booked=True).count()
+    slots = filter_slots(Slot.objects.all(), start_date, end_date)
+    appointments = filter_appointments(
+        Appointment.objects.select_related("user", "vehicle", "slot").all(),
+        start_date,
+        end_date,
+    )
+    customers_in_range = filter_customers(User.objects.filter(role="Customer"), start_date, end_date)
+
+    # Slot KPIs
+    total_slots = slots.count()
+    booked_slots = slots.filter(is_booked=True).count()
     available_slots = total_slots - booked_slots
+    utilization = (booked_slots / total_slots * 100) if total_slots else 0
 
-    total_customers = User.objects.filter(role="Customer").count()
-    total_mechanics = User.objects.filter(role="Mechanic").count()
-
-    total_appointments = Appointment.objects.count()
-
-    appointment_status = Appointment.objects.aggregate(
+    # Appointment KPIs
+    total_appointments = appointments.count()
+    appointment_status = appointments.aggregate(
         pending=Count("id", filter=Q(status="Pending")),
         confirmed=Count("id", filter=Q(status="Confirmed")),
         completed=Count("id", filter=Q(status="Completed")),
         cancelled=Count("id", filter=Q(status="Cancelled")),
     )
 
-    utilization = (booked_slots / total_slots * 100) if total_slots else 0
+    # Charts for web + pdf
+    slot_pie = make_pie_chart(["Booked", "Available"], [booked_slots, available_slots], "Slot Utilization")
+    status_bar = make_bar_chart(
+        ["Pending", "Confirmed", "Completed", "Cancelled"],
+        [
+            appointment_status["pending"],
+            appointment_status["confirmed"],
+            appointment_status["completed"],
+            appointment_status["cancelled"],
+        ],
+        "Appointments by Status",
+        ylabel="Count",
+    )
+
+    appt_daily_bar = appointments_per_day_chart(appointments)
+
+    # Customers chart: verified vs not verified (within range)
+    verified_yes = customers_in_range.filter(is_verified=True).count()
+    verified_no = customers_in_range.filter(is_verified=False).count()
+    customers_verify_pie = make_pie_chart(
+        ["Verified", "Not Verified"], [verified_yes, verified_no], "Customer Verification (in range)"
+    )
 
     context = {
+        "start_date": start_date,
+        "end_date": end_date,
+
         "total_slots": total_slots,
         "booked_slots": booked_slots,
         "available_slots": available_slots,
         "utilization": round(utilization, 2),
-        "total_customers": total_customers,
-        "total_mechanics": total_mechanics,
+
         "total_appointments": total_appointments,
         "appointment_status": appointment_status,
+
+        "customers_in_range": customers_in_range.count(),
+
+        # charts
+        "slot_pie": slot_pie,
+        "status_bar": status_bar,
+        "appt_daily_bar": appt_daily_bar,
+        "customers_verify_pie": customers_verify_pie,
+
+        "latest_appointments": appointments.order_by("-created_at")[:10],
     }
+
     return render(request, "adminpanel/reports.html", context)
 
 
+# -----------------------
+# FULL REPORT PDF (CHARTS)
+# -----------------------
+@login_required
+@user_passes_test(is_admin)
+def download_full_report_pdf(request):
+    User = get_user_model()
+    start_date, end_date = get_date_range(request)
+
+    slots = filter_slots(Slot.objects.all(), start_date, end_date)
+    appointments = filter_appointments(
+        Appointment.objects.select_related("user", "vehicle", "slot").all(),
+        start_date,
+        end_date,
+    )
+    customers_in_range = filter_customers(User.objects.filter(role="Customer"), start_date, end_date)
+
+    total_slots = slots.count()
+    booked_slots = slots.filter(is_booked=True).count()
+    available_slots = total_slots - booked_slots
+    utilization = (booked_slots / total_slots * 100) if total_slots else 0
+
+    appointment_status = appointments.aggregate(
+        pending=Count("id", filter=Q(status="Pending")),
+        confirmed=Count("id", filter=Q(status="Confirmed")),
+        completed=Count("id", filter=Q(status="Completed")),
+        cancelled=Count("id", filter=Q(status="Cancelled")),
+    )
+
+    slot_pie = make_pie_chart(["Booked", "Available"], [booked_slots, available_slots], "Slot Utilization")
+    status_bar = make_bar_chart(
+        ["Pending", "Confirmed", "Completed", "Cancelled"],
+        [
+            appointment_status["pending"],
+            appointment_status["confirmed"],
+            appointment_status["completed"],
+            appointment_status["cancelled"],
+        ],
+        "Appointments by Status",
+        ylabel="Count",
+    )
+    appt_daily_bar = appointments_per_day_chart(appointments)
+
+    verified_yes = customers_in_range.filter(is_verified=True).count()
+    verified_no = customers_in_range.filter(is_verified=False).count()
+    customers_verify_pie = make_pie_chart(
+        ["Verified", "Not Verified"], [verified_yes, verified_no], "Customer Verification (in range)"
+    )
+
+    context = {
+        "title": "e-Garage Full Report",
+        "start_date": start_date,
+        "end_date": end_date,
+
+        "total_slots": total_slots,
+        "booked_slots": booked_slots,
+        "available_slots": available_slots,
+        "utilization": round(utilization, 2),
+
+        "total_appointments": appointments.count(),
+        "appointment_status": appointment_status,
+
+        "customers_in_range": customers_in_range.count(),
+
+        "slot_pie": slot_pie,
+        "status_bar": status_bar,
+        "appt_daily_bar": appt_daily_bar,
+        "customers_verify_pie": customers_verify_pie,
+
+        "appointments": appointments.order_by("-created_at")[:25],
+    }
+
+    return render_to_pdf("adminpanel/pdf/report_full_pdf.html", context, filename="e_garage_full_report.pdf")
+
+
+# -----------------------
+# SLOTS PDF (CHARTS)
+# -----------------------
 @login_required
 @user_passes_test(is_admin)
 def download_slots_report_pdf(request):
-    slots = Slot.objects.all().order_by("-date", "start_time")
-    context = {"title": "Slots Report", "slots": slots}
+    start_date, end_date = get_date_range(request)
+    slots = filter_slots(Slot.objects.all(), start_date, end_date).order_by("-date", "start_time")
+
+    total_slots = slots.count()
+    booked_slots = slots.filter(is_booked=True).count()
+    available_slots = total_slots - booked_slots
+    utilization = (booked_slots / total_slots * 100) if total_slots else 0
+
+    slot_pie = make_pie_chart(["Booked", "Available"], [booked_slots, available_slots], "Slot Utilization")
+
+    context = {
+        "title": "Slots Report",
+        "start_date": start_date,
+        "end_date": end_date,
+        "total_slots": total_slots,
+        "booked_slots": booked_slots,
+        "available_slots": available_slots,
+        "utilization": round(utilization, 2),
+        "slot_pie": slot_pie,
+        "slots": slots,
+    }
+
     return render_to_pdf("adminpanel/pdf/slots_report_pdf.html", context, filename="slots_report.pdf")
 
 
+# -----------------------
+# APPOINTMENTS PDF (CHARTS)
+# -----------------------
+@login_required
+@user_passes_test(is_admin)
+def download_appointments_report_pdf(request):
+    start_date, end_date = get_date_range(request)
+    appointments = filter_appointments(
+        Appointment.objects.select_related("user", "vehicle", "slot").all(),
+        start_date,
+        end_date,
+    ).order_by("-created_at")
+
+    appointment_status = appointments.aggregate(
+        pending=Count("id", filter=Q(status="Pending")),
+        confirmed=Count("id", filter=Q(status="Confirmed")),
+        completed=Count("id", filter=Q(status="Completed")),
+        cancelled=Count("id", filter=Q(status="Cancelled")),
+    )
+
+    status_bar = make_bar_chart(
+        ["Pending", "Confirmed", "Completed", "Cancelled"],
+        [
+            appointment_status["pending"],
+            appointment_status["confirmed"],
+            appointment_status["completed"],
+            appointment_status["cancelled"],
+        ],
+        "Appointments by Status",
+        ylabel="Count",
+    )
+
+    appt_daily_bar = appointments_per_day_chart(appointments)
+
+    context = {
+        "title": "Appointments Report",
+        "start_date": start_date,
+        "end_date": end_date,
+        "total_appointments": appointments.count(),
+        "appointment_status": appointment_status,
+        "status_bar": status_bar,
+        "appt_daily_bar": appt_daily_bar,
+        "appointments": appointments[:40],  # keep pdf smaller
+    }
+
+    return render_to_pdf("adminpanel/pdf/appointments_report_pdf.html", context, filename="appointments_report.pdf")
+
+
+# -----------------------
+# CUSTOMERS PDF (CHARTS)
+# -----------------------
 @login_required
 @user_passes_test(is_admin)
 def download_customers_report_pdf(request):
     User = get_user_model()
-    customers = User.objects.filter(role="Customer").order_by("name")
-    context = {"title": "Customers Report", "customers": customers}
-    return render_to_pdf("adminpanel/pdf/customers_report_pdf.html", context, filename="customers_report.pdf")
+    start_date, end_date = get_date_range(request)
 
+    customers = filter_customers(User.objects.filter(role="Customer"), start_date, end_date).order_by("name")
 
-@login_required
-@user_passes_test(is_admin)
-def download_appointments_report_pdf(request):
-    appointments = Appointment.objects.select_related("user", "vehicle", "slot").order_by("-created_at")
-    context = {"title": "Appointments Report", "appointments": appointments}
-    return render_to_pdf(
-        "adminpanel/pdf/appointments_report_pdf.html",
-        context,
-        filename="appointments_report.pdf",
+    verified_yes = customers.filter(is_verified=True).count()
+    verified_no = customers.filter(is_verified=False).count()
+    customers_verify_pie = make_pie_chart(
+        ["Verified", "Not Verified"], [verified_yes, verified_no], "Customer Verification (in range)"
     )
+
+    context = {
+        "title": "Customers Report",
+        "start_date": start_date,
+        "end_date": end_date,
+        "total_customers": customers.count(),
+        "verified_yes": verified_yes,
+        "verified_no": verified_no,
+        "customers_verify_pie": customers_verify_pie,
+        "customers": customers,
+    }
+
+    return render_to_pdf("adminpanel/pdf/customers_report_pdf.html", context, filename="customers_report.pdf")
 
 
 

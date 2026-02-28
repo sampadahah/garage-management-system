@@ -2,18 +2,59 @@
 <html>
 <head>
   <meta charset="utf-8">
+
   <style>
+    @page { size: A4; margin: 25px; }
+
     body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; }
-    h2 { margin: 0 0 10px 0; }
-    .meta { margin-bottom: 12px; color: #555; }
-    table { width: 100%; border-collapse: collapse; }
+    h2 { margin: 0 0 6px 0; }
+    h3 { margin: 16px 0 6px 0; }
+    h4 { margin: 0 0 8px 0; font-size: 13px; }
+
+    .meta { color:#555; margin-bottom: 10px; }
+    .kpi { margin: 8px 0; }
+
+    .chart { text-align:center; margin: 14px 0; }
+    .chart img { width: 450px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #333; padding: 6px; }
     th { background: #f2f2f2; }
   </style>
 </head>
+
 <body>
   <h2>{{ title }}</h2>
-  <div class="meta">Generated on: {% now "Y-m-d H:i" %}</div>
+
+  <div class="meta">
+    Generated on: {% now "Y-m-d H:i" %}<br>
+    Date Range:
+    {% if start_date %}{{ start_date }}{% else %}Any{% endif %}
+    to
+    {% if end_date %}{{ end_date }}{% else %}Any{% endif %}
+  </div>
+
+  <div class="kpi">
+    Total Appointments: <strong>{{ total_appointments }}</strong><br>
+    Pending: <strong>{{ appointment_status.pending }}</strong>,
+    Confirmed: <strong>{{ appointment_status.confirmed }}</strong>,
+    Completed: <strong>{{ appointment_status.completed }}</strong>,
+    Cancelled: <strong>{{ appointment_status.cancelled }}</strong>
+  </div>
+
+  <h3>Charts</h3>
+
+  <div class="chart">
+    <h4>Appointments by Status</h4>
+    <img src="data:image/png;base64,{{ status_bar }}" alt="Status Bar">
+  </div>
+
+  <div class="chart">
+    <h4>Appointments per Day</h4>
+    <img src="data:image/png;base64,{{ appt_daily_bar }}" alt="Appointments per Day">
+  </div>
+
+  <h3>Appointments List (Top 40)</h3>
 
   <table>
     <thead>
@@ -21,27 +62,28 @@
         <th>ID</th>
         <th>Customer</th>
         <th>Vehicle</th>
-        <th>Plate</th>
         <th>Date</th>
         <th>Time</th>
         <th>Status</th>
         <th>Booked At</th>
       </tr>
     </thead>
+
     <tbody>
       {% for a in appointments %}
       <tr>
         <td>{{ a.id }}</td>
-        <td>{{ a.user.name }} ({{ a.user.email }})</td>
-        <td>{{ a.vehicle.model }}</td>
-        <td>{{ a.vehicle.plate_no }}</td>
+        <td>{{ a.user.name }}</td>
+        <td>{{ a.vehicle.model }} ({{ a.vehicle.plate_no }})</td>
         <td>{{ a.slot.date }}</td>
         <td>{{ a.slot.start_time }} - {{ a.slot.end_time }}</td>
         <td>{{ a.status }}</td>
         <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
       </tr>
       {% empty %}
-      <tr><td colspan="8">No appointments found.</td></tr>
+      <tr>
+        <td colspan="7">No appointments found.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
