@@ -2,16 +2,13 @@
 {% load static %}
 
 {% block page_title %}Manage Services{% endblock %}
+Manage garage services and pricing.
+{% block page_subtitle %}Manage garage services and pricing.{% endblock %}
 
 {% block content %}
 
 <!-- Page Header (like Users page) -->
 <div class="page-head">
-    <div>
-        <h2 class="page-title">Service</h2>
-        <p class="page-subtitle">Manage garage services and pricing.</p>
-    </div>
-
     <div class="page-actions">
         <a href="{% url 'adminpanel:admin_add_service' %}" class="btn btn-gold">
             + Add Service

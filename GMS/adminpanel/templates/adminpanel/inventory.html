@@ -4,9 +4,6 @@
 {% block page_title %}Inventory{% endblock %}
 {% block page_subtitle %}Let's check your inventory today{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
-{% endblock %}
 
 {% block content %}
 <div class="ap-page-center">
@@ -122,7 +119,6 @@
                   No items found matching "{{ search_query }}"
                 {% else %}
                   No inventory items found.
-                  <a href="{% url 'adminpanel:add_inventory_item' %}" class="ap-inline-link">Add your first item</a>
                 {% endif %}
               </td>
             </tr>

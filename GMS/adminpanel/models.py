@@ -93,7 +93,6 @@ class JobVacancy(models.Model):
         ("mechanic", "Mechanic"),
         ("assistant", "Assistant"),
         ("reception", "Reception"),
-        ("other", "Other"),
     ]
 
     STATUS_CHOICES = [

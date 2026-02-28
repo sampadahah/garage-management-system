@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from customer.views import login_view 
+from customer.views import login_view, landing_page
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -27,7 +27,8 @@ urlpatterns = [
     path("adminpanel/", include("adminpanel.urls")),
     path("customer/", include("customer.urls")),
     path("staff/", include("staff.urls")),
-    path("", login_view, name="login"), 
+    path("login/", login_view, name="login"), 
+    path("", landing_page, name="landing"),
 ]
 urlpatterns += static(settings.MEDIA_URL, 
                       document_root=settings.MEDIA_ROOT)

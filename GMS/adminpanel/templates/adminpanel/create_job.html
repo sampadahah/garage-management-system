@@ -17,11 +17,31 @@
       <a href="{% url 'adminpanel:jobs' %}" class="ap-btn ap-btn-outline">← Back</a>
     </header>
 
+    {% for message in messages %}
+      <div class="ap-alert ap-alert-warning">{{ message }}</div>
+    {% endfor %}
+
+    {% if form.errors %}
+      <div class="ap-alert ap-alert-warning">
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          {% for error in field.errors %}
+            <div>{{ field.label }}: {{ error }}</div>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <form method="post" id="vacancyForm" class="ap-form">
       {% csrf_token %}
 
-      <!-- Top fields (same row look) -->
       <section class="ap-form-grid">
+
+        <div class="ap-field">
+          <label class="ap-label">Title</label>
+          {{ form.title }}
+        </div>
+
         <div class="ap-field">
           <label class="ap-label">Category</label>
           {{ form.category }}
@@ -41,6 +61,7 @@
           <label class="ap-label">Status</label>
           {{ form.status }}
         </div>
+
       </section>
 
       <section class="ap-form-block">
@@ -65,11 +86,10 @@
 </section>
 
 <script>
-  // Apply adminpanel input styles to Django fields
   document.querySelectorAll('#vacancyForm input, #vacancyForm select, #vacancyForm textarea').forEach(el => {
     if (el.type === "hidden") return;
     el.classList.add('ap-input');
     if (el.tagName.toLowerCase() === 'textarea') el.classList.add('ap-textarea');
   });
 </script>
-{% endblock %}
+{% endblock %}  

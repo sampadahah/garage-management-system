@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from adminpanel.models import JobVacancy
 
 
 class UserManager(BaseUserManager):
@@ -108,3 +109,30 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.vehicle} - {self.slot.date} {self.slot.start_time}"
+    
+class Applicant(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+    vacancy = models.ForeignKey(
+        JobVacancy,
+        on_delete=models.CASCADE,
+        related_name="applicants"
+    )
+
+    full_name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    resume = models.FileField(upload_to="resumes/")
+
+    status = models.CharField(
+        max_length=20,
+        default="Pending"
+    )
+
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.vacancy.title}"

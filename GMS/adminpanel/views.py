@@ -10,13 +10,15 @@ from django.db.models import Count, F, Q
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from .utils import render_to_pdf
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import Slot, Service
 from .forms import SlotForm, ServiceForm, AdminUserCreateForm
 from .forms import JobVacancyForm, PartForm
 from .models import JobVacancy, Part
 from .models import InventoryCategory, Brand
 
-from customer.models import Appointment
+from customer.models import Appointment, Applicant
 
 
 
@@ -420,7 +422,8 @@ def item_details(request, part_id):
 @user_passes_test(is_admin)
 def jobs(request):
     vacancies = JobVacancy.objects.all()
-    return render(request, "adminpanel/jobs.html", {"page_title": "Jobs", "vacancies": vacancies})
+    applications = Applicant.objects.select_related("vacancy").all()
+    return render(request, "adminpanel/jobs.html", {"page_title": "Jobs", "vacancies": vacancies,"applications": applications})
 
 @login_required
 @user_passes_test(is_admin)
@@ -438,7 +441,53 @@ def create_job(request):
 
     return render(request, "adminpanel/create_job.html", {"form": form})
 
+@login_required
+@user_passes_test(is_admin)
+def update_application_status(request, app_id, status):
 
+    application = get_object_or_404(Applicant, id=app_id)
+
+    if status in ["approved", "rejected"]:
+        application.status = status
+        application.save()
+
+        if status == "approved":
+            subject = "Your Application Has Been Approved 🎉"
+            message = f"""
+            Dear {application.full_name},
+
+            Congratulations!
+
+            Your application for the position "{application.vacancy.title}" has been APPROVED.
+
+            Our team will contact you shortly with the next steps.
+
+            Best regards,
+            eGarage Team
+            """
+        else:
+            subject = "Your Application Update"
+            message = f"""
+            Dear {application.full_name},
+
+            Thank you for applying for the position "{application.vacancy.title}".
+
+            After careful review, we regret to inform you that your application has not been selected at this time.
+
+            We appreciate your interest in eGarage and encourage you to apply again in the future.
+
+            Best regards,
+            eGarage Team
+            """
+
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [application.email],
+            fail_silently=False,
+        )
+    return redirect("adminpanel:jobs")
 # -------- Leaves (if you have staff branch merged) --------
 # try:
 #     from staff.models import LeaveApplication
@@ -486,6 +535,7 @@ def create_job(request):
 #     return redirect("adminpanel:leaves")
 
 
+
 # ----------- Categories -----------
 @login_required
 @user_passes_test(is_admin)
@@ -513,6 +563,7 @@ def delete_category(request, category_id):
     category = get_object_or_404(InventoryCategory, category_id=category_id)
     category.delete()
     return redirect("adminpanel:categories")
+
 
 # ----------- Brands -----------
 @login_required
@@ -542,15 +593,6 @@ def delete_brand(request, brand_id):
     brand.delete()
     return redirect("adminpanel:brands")
 
-
-
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-
-
-from customer.models import Appointment   
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 

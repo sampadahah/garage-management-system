@@ -1,12 +1,12 @@
 from django.urls import path
-
 from .views import (download_appointments_report_pdf, download_customers_report_pdf, download_slots_report_pdf,
                     inventory, add_inventory_item,edit_inventory_item,delete_inventory_item,item_details,
-                    jobs,create_job,categories, add_category, delete_category,
+                    jobs,categories, add_category, delete_category,
                     brands, add_brand, delete_brand,
                     admin_dashboard, slot_calendar, add_slot,toggle_slot_status,
-                    users_list, reports,
-                    admin_service_list,admin_add_service,admin_delete_service,admin_edit_service, create_user)
+                    users_list, reports,create_job,
+                    admin_service_list,admin_add_service,admin_delete_service,admin_edit_service, create_user,
+                    appointments_list,assign_mechanic, update_application_status)
 app_name = "adminpanel"
 
 urlpatterns = [
@@ -21,7 +21,7 @@ urlpatterns = [
     # Jobs
     path("jobs/", jobs, name="jobs"),
     path("jobs/create/", create_job, name="create_job"),
-
+    path("applications/<int:app_id>/<str:status>/",update_application_status,name="update_application_status"),
 
     # path("leaves/", views.leaves, name="leaves"),
     # path("leaves/<int:leave_id>/<str:action>/", views.decide_leave, name="decide_leave"),
@@ -57,6 +57,6 @@ urlpatterns = [
     path('services/delete/<int:pk>/', admin_delete_service, name='admin_delete_service'),
 
 
-    path("appointments/", views.appointments_list, name="appointments"),
-    path("appointments/<int:appointment_id>/assign/", views.assign_mechanic, name="assign_mechanic"),
+    path("appointments/", appointments_list, name="appointments"),
+    path("appointments/<int:appointment_id>/assign/", assign_mechanic, name="assign_mechanic"),
 ]

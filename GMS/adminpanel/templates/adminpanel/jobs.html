@@ -4,9 +4,6 @@
 {% block page_title %}Hiring{% endblock %}
 {% block page_subtitle %}Manage hiring vacancies in your garage{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'adminpanel.css' %}">
-{% endblock %}
 
 {% block content %}
 <div class="ap-page-center">
@@ -39,7 +36,7 @@
                 <tbody>
                     {% for v in vacancies %}
                     <tr>
-                        <td>#{{ v.vacancy_id }}</td>
+                        <td>{{ v.vacancy_id }}</td>
                         <td>{{ v.get_category_display }}</td>
                         <td><strong>{{ v.title }}</strong></td>
                         <td>{{ v.openings }}</td>
@@ -69,7 +66,84 @@
 
             </table>
         </div>
+    <!-- ================= APPLICATIONS SECTION ================= -->
+<div class="ap-card-large" style="margin-top: 40px;">
 
+    <div class="ap-header">
+        <h2 class="ap-title-large">Job Applications</h2>
+    </div>
+
+    <div class="ap-table-container">
+        <table class="ap-table-modern">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Applicant</th>
+                    <th>Vacancy</th>
+                    <th>Email</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+    {% for app in applications %}
+    <tr>
+        <td>{{ app.id }}</td>
+        <td>{{ app.full_name }}</td>
+        <td>{{ app.vacancy.title }}</td>
+        <td>{{ app.email }}</td>
+
+        <td>
+            <a href="{{ app.resume.url }}" target="_blank" style="color:#D4AF37">
+                View 
+            </a>
+        </td>
+
+        <!-- STATUS COLUMN -->
+        <td>
+            {% if app.status == "Pending" %}
+                <span style="background:#f4c430;padding:5px 10px;border-radius:20px;">
+                    Pending
+                </span>
+            {% elif app.status == "approved" %}
+                <span style="background:#28a745;color:white;padding:5px 10px;border-radius:20px;">
+                    Approved
+                </span>
+            {% elif app.status == "rejected" %}
+                <span style="background:#dc3545;color:white;padding:5px 10px;border-radius:20px;">
+                    Rejected
+                </span>
+            {% endif %}
+        </td>
+
+        <!-- ACTIONS COLUMN -->
+        <td>
+            {% if app.status == "Pending" %}
+                <a href="{% url 'adminpanel:update_application_status' app.id 'approved' %}">
+                    Approve
+                </a>
+
+                <a href="{% url 'adminpanel:update_application_status' app.id 'rejected' %}">
+                    Reject
+                </a>
+            {% else %}
+                —
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7">No applications yet.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+        </table>
+    </div>
+
+</div>
     </div>
 
 </div>

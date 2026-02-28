@@ -337,4 +337,29 @@ def available_slots(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("login")
+    return redirect("landing")
+
+def landing_page(request):
+    # show open vacancies preview on landing (optional)
+    vacancies = JobVacancy.objects.filter(status="Open").order_by("-created_at")[:6]
+    return render(request, "landing.html", {"vacancies": vacancies})
+
+def vacancies_page(request):
+    vacancies = JobVacancy.objects.filter(status="open")
+
+    if request.method == "POST":
+        vacancy_id = request.POST.get("vacancy_id")
+        vacancy = get_object_or_404(JobVacancy, vacancy_id=vacancy_id)
+
+        Applicant.objects.create(
+            vacancy=vacancy,
+            full_name=request.POST.get("full_name"),
+            email=request.POST.get("email"),
+            phone=request.POST.get("phone"),
+            resume=request.FILES.get("resume"),
+        )
+
+        messages.success(request, "Application submitted successfully!")
+        return redirect("vacancies")
+
+    return render(request, "vacancies.html", {"vacancies": vacancies})
