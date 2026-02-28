@@ -91,12 +91,16 @@ class Appointment(models.Model):
         on_delete=models.CASCADE,
         related_name="appointments"
     )
-
+    service = models.ForeignKey(
+        "adminpanel.Service",
+        on_delete=models.CASCADE,
+        related_name="appointments"
+    )
     # appointment_date = models.DateField()
     slot = models.OneToOneField(   # One slot can be booked once
         "adminpanel.Slot",
         on_delete=models.PROTECT,
-        related_name="appointment"
+        related_name="appointments"
     )
     notes = models.TextField(blank=True)
 

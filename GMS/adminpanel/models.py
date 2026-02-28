@@ -127,27 +127,27 @@ class JobVacancy(models.Model):
     def __str__(self):
         return f"{self.title} ({self.get_category_display()})"
 
-class WorkList(models.Model):
-    JOB_STATUS_CHOICES = [
-        ("assigned", "Assigned"),
-        ("in_progress", "In Progress"),
-        ("completed", "Completed"),
-    ]
+# class WorkList(models.Model):
+#     JOB_STATUS_CHOICES = [
+#         ("assigned", "Assigned"),
+#         ("in_progress", "In Progress"),
+#         ("completed", "Completed"),
+#     ]
 
-    work_list_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    appointment = models.ForeignKey("customer.Appointment", on_delete=models.CASCADE)
+#     work_list_id = models.AutoField(primary_key=True)
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     appointment = models.ForeignKey("customer.Appointment", on_delete=models.CASCADE)
 
-    job_status = models.CharField(
-        max_length=20,
-        choices=JOB_STATUS_CHOICES,
-        default="assigned"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
+#     job_status = models.CharField(
+#         max_length=20,
+#         choices=JOB_STATUS_CHOICES,
+#         default="assigned"
+#     )
+#     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = "work_list"
-        ordering = ["-created_at"]
+#     class Meta:
+#         db_table = "work_list"
+#         ordering = ["-created_at"]
 
 class Service(models.Model):
     name = models.CharField(max_length=100)
