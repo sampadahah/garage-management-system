@@ -55,18 +55,6 @@
       </div>
     </div>
 
-    {% if out_of_stock_items > 0 %}
-      <div class="ap-alert ap-alert-danger ap-mt-18">
-        <div class="ap-alert-icon">!</div>
-        <div class="ap-alert-content">
-          <h4 class="ap-alert-title">
-            {{ out_of_stock_items }} item{{ out_of_stock_items|pluralize }} out of stock!
-          </h4>
-          <p class="ap-alert-text">Immediate reorder recommended to avoid service delays.</p>
-        </div>
-      </div>
-    {% endif %}
-
     <!-- Recent Inventory -->
     <div class="ap-section ap-mt-18">
       <div class="ap-section-header">
